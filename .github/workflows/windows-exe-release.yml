@@ -19,7 +19,7 @@ jobs:
           .\tests\Test-Exe.ps1 -ExePath .\dist\IPA-Desk-Multi-0.3.1-beta.1.exe -WorkRoot $env:RUNNER_TEMP
           .\tests\Test-Engine.ps1
           .\tests\Test-Tools.ps1
-      - name: Obtain verified USB dependencies
+      - name: Obtain verified USB dependencies from primary server
         run: .\installer\Prepare-Tools.ps1
       - name: Build and check IPA Install
         run: |

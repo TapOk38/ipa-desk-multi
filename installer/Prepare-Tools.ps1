@@ -11,7 +11,10 @@ function Receive-Pinned([string]$Url,[string]$Hash,[string]$Path){
     $uri=[Uri]$Url
     if($uri.Scheme -ne 'https' -or $uri.Host -ne 'mirror.msys2.org' -or $Hash -notmatch '^[a-fA-F0-9]{64}$'){throw 'Invalid pinned package'}
     if([IO.File]::Exists($Path) -and (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash -eq $Hash){return}
-    Invoke-WebRequest -UseBasicParsing -Uri $Url -OutFile $Path
+    # Use the primary MSYS2 server instead of geo-routing to an interactive mirror.
+    $downloadUrl='https://repo.msys2.org'+$uri.AbsolutePath
+    try { Invoke-WebRequest -UseBasicParsing -Uri $downloadUrl -OutFile $Path }
+    catch { throw ('Package download failed: '+$downloadUrl) }
     if((Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash -ne $Hash){throw "Package checksum mismatch: $Url"}
 }
 $tar=Join-Path $env:SystemRoot 'System32/tar.exe'
