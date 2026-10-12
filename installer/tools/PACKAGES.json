@@ -1,0 +1,633 @@
+{
+  "packages": {
+    "mingw-w64-x86_64-bzip2": {
+      "name": "mingw-w64-x86_64-bzip2",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-bzip2",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-bzip2-1.0.8-4-any.pkg.tar.zst",
+      "binary_sha256": "123768f30ae14ba654a6feb70f8526146a331bc85f831a91a549ffb3f6cbffc7",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-bzip2-1.0.8-4.src.tar.zst",
+      "dependencies": [],
+      "licenses": [],
+      "source_sha256": "fd9360917314d1cbccb3cb15ed8450d1e56b8a9f733b606504aba52c52159e54",
+      "source_archive": null,
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz",
+          "checksum_algorithm": "sha256",
+          "expected": "ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269",
+          "actual": "ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269"
+        },
+        {
+          "source": "bzip2-cygming-1.0.6.src.all.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "7e67f77172b19f3e6c1f0875b1d3e9cb79211f8e1c752794ef9afd3704f928cf",
+          "actual": "7e67f77172b19f3e6c1f0875b1d3e9cb79211f8e1c752794ef9afd3704f928cf"
+        },
+        {
+          "source": "bzip2-buildsystem.all.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "e519a50a4adaf05b18650d3e9d644badc66e80ca86063681ffe9a2c2226319d0",
+          "actual": "e519a50a4adaf05b18650d3e9d644badc66e80ca86063681ffe9a2c2226319d0"
+        },
+        {
+          "source": "bzip2-1.0.6-progress.all.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "f93e6b50082a8e880ee8436c7ec6a65a8f01e9282436af77f95bb259b1c7f7f7",
+          "actual": "f93e6b50082a8e880ee8436c7ec6a65a8f01e9282436af77f95bb259b1c7f7f7"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-ideviceinstaller": {
+      "name": "mingw-w64-x86_64-ideviceinstaller",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-ideviceinstaller",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-ideviceinstaller-1.1.1-2-any.pkg.tar.zst",
+      "binary_sha256": "678dab509923c65d12d54d5395bc77e8b0ec2c62ab6a0fa9110fdc4fd2787973",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-ideviceinstaller-1.1.1-2.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-libimobiledevice",
+        "mingw-w64-x86_64-libplist",
+        "mingw-w64-x86_64-libzip"
+      ],
+      "licenses": [
+        "GPL-2.0-or-later"
+      ],
+      "source_sha256": "8998367b0bdfdaf06cb8987a7db77dba231c2e6e6f87e24c6c0da6209df38a5b",
+      "source_archive": "sources/mingw-w64-ideviceinstaller-1.1.1-2.src.tar.zst",
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "ideviceinstaller-1.1.1.tar.gz::https://github.com/libimobiledevice/ideviceinstaller/archive/1.1.1.tar.gz",
+          "checksum_algorithm": "sha256",
+          "expected": "b1401678a61f28c4aca95375c100b5a83ccc2cdfa0222c0de7ad0a2cfb4e3c9f",
+          "actual": "b1401678a61f28c4aca95375c100b5a83ccc2cdfa0222c0de7ad0a2cfb4e3c9f"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-libimobiledevice": {
+      "name": "mingw-w64-x86_64-libimobiledevice",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-libimobiledevice",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libimobiledevice-1.3.0-17-any.pkg.tar.zst",
+      "binary_sha256": "f0ab6ee4ca7c6ae6ccbc92c04b9b826ddaa7f8534adbfa9a8ea5f5524e33174a",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-libimobiledevice-1.3.0-17.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-libplist",
+        "mingw-w64-x86_64-libusbmuxd",
+        "mingw-w64-x86_64-openssl"
+      ],
+      "licenses": [
+        "LGPL-2.1-or-later"
+      ],
+      "source_sha256": "ae03257e0b03ded7399b28cb9e794c5fda67c622a51f5a928fc23a1e5a6e9738",
+      "source_archive": "sources/mingw-w64-libimobiledevice-1.3.0-17.src.tar.zst",
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/libimobiledevice/libimobiledevice/archive/1.3.0/libimobiledevice-1.3.0.tar.gz",
+          "checksum_algorithm": "sha256",
+          "expected": "acbfb73eabee162e64c0d9de207d71c0a5f47c40cd5ad32a5097f734328ce10a",
+          "actual": "acbfb73eabee162e64c0d9de207d71c0a5f47c40cd5ad32a5097f734328ce10a"
+        },
+        {
+          "source": "001-1.3.0-Fix-windows-build.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "c72055c417d6fd10106793fd193c64e0147240f584c9025561cb9cd28bee112d",
+          "actual": "c72055c417d6fd10106793fd193c64e0147240f584c9025561cb9cd28bee112d"
+        },
+        {
+          "source": "002-1.3.0-Link-Iphlpapi.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "693d2df13fd344ef67e41c7a769c12843a60a7d89a825e118a40914ed407a4fb",
+          "actual": "693d2df13fd344ef67e41c7a769c12843a60a7d89a825e118a40914ed407a4fb"
+        },
+        {
+          "source": "003-1.3.0-PyString_AsString-now-PyBytes_AsString.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "438469e5bfce0eca723ec597ae8e97cbaca22ee548559f2d65e1fd63aba46b4b",
+          "actual": "438469e5bfce0eca723ec597ae8e97cbaca22ee548559f2d65e1fd63aba46b4b"
+        },
+        {
+          "source": "004-clang.patch::https://github.com/libimobiledevice/libimobiledevice/commit/19f9a4c3.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "f6a5ef4500f65290d5b145bf7591e17bc3b7e420c6f7b10cf07330e076788304",
+          "actual": "f6a5ef4500f65290d5b145bf7591e17bc3b7e420c6f7b10cf07330e076788304"
+        },
+        {
+          "source": "005-libplist-2.3.0.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "57fb4616c68c240aad47df52168fa30e4bf43845bfbe53df23cc412003ae64fd",
+          "actual": "57fb4616c68c240aad47df52168fa30e4bf43845bfbe53df23cc412003ae64fd"
+        },
+        {
+          "source": "006-fix-build-with-cython3.patch::https://github.com/libimobiledevice/libimobiledevice/commit/59ec38cb.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "4e54aaf77618e72083d7dcad49328f7d68beb6dea7da503f2c18ec0a471a31b4",
+          "actual": "4e54aaf77618e72083d7dcad49328f7d68beb6dea7da503f2c18ec0a471a31b4"
+        },
+        {
+          "source": "007-cython31-fix.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "0df46672305cbea07c4c2a52406b704a8256ccdc08821f2f85e93e54293b8044",
+          "actual": "0df46672305cbea07c4c2a52406b704a8256ccdc08821f2f85e93e54293b8044"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-libimobiledevice-glue": {
+      "name": "mingw-w64-x86_64-libimobiledevice-glue",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-libimobiledevice-glue",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libimobiledevice-glue-1.3.2-1-any.pkg.tar.zst",
+      "binary_sha256": "c9d399acc69aa4d2fbff68d676d248127d4599e3a39f866719e3714c84ebe920",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-libimobiledevice-glue-1.3.2-1.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-libplist"
+      ],
+      "licenses": [
+        "LGPL-2.1-or-later"
+      ],
+      "source_sha256": "ee156ff49a69840c1e919d50de5d06d935765882bd24fe74ff496f535f0fcdc3",
+      "source_archive": "sources/mingw-w64-libimobiledevice-glue-1.3.2-1.src.tar.zst",
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/libimobiledevice/libimobiledevice-glue/releases/download/1.3.2/libimobiledevice-glue-1.3.2.tar.bz2",
+          "checksum_algorithm": "sha256",
+          "expected": "6489a3411b874ecd81c87815d863603f518b264a976319725e0ed59935546774",
+          "actual": "6489a3411b874ecd81c87815d863603f518b264a976319725e0ed59935546774"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-libplist": {
+      "name": "mingw-w64-x86_64-libplist",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-libplist",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libplist-2.7.0-4-any.pkg.tar.zst",
+      "binary_sha256": "c3b19655c25506ce3afaa091ca31f3d7c2e115055d516c96666ad7cd701662f1",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-libplist-2.7.0-4.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "licenses": [
+        "GPL-2.0-or-later",
+        "spdx",
+        "LGPL-2.1-or-later"
+      ],
+      "source_sha256": "0170254ac2a3e4fa0c88ec974a4e6d6a1e1b91d3da14d91b9b147a336c09a015",
+      "source_archive": "sources/mingw-w64-libplist-2.7.0-4.src.tar.zst",
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/libimobiledevice/libplist/releases/download/2.7.0/libplist-2.7.0.tar.bz2",
+          "checksum_algorithm": "sha256",
+          "expected": "7ac42301e896b1ebe3c654634780c82baa7cb70df8554e683ff89f7c2643eb8b",
+          "actual": "7ac42301e896b1ebe3c654634780c82baa7cb70df8554e683ff89f7c2643eb8b"
+        },
+        {
+          "source": "003-fix-py-soext.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "c9190d4697bc3d97fa20b66a54f2b9f8fe2527560376e2dae8d168e79cbd272c",
+          "actual": "c9190d4697bc3d97fa20b66a54f2b9f8fe2527560376e2dae8d168e79cbd272c"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-libusbmuxd": {
+      "name": "mingw-w64-x86_64-libusbmuxd",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-libusbmuxd",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libusbmuxd-2.1.1-1-any.pkg.tar.zst",
+      "binary_sha256": "77bd766f3073291aaa908ff58ca1ea6d892722520bcf176a2474071467cc7105",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-libusbmuxd-2.1.1-1.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-libimobiledevice-glue",
+        "mingw-w64-x86_64-libplist"
+      ],
+      "licenses": [
+        "LGPL-2.1-or-later"
+      ],
+      "source_sha256": "d5d11d66e65e3926892b9f1301b8c75a4472f68184f86b21874026bcd4c28797",
+      "source_archive": "sources/mingw-w64-libusbmuxd-2.1.1-1.src.tar.zst",
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/libimobiledevice/libusbmuxd/releases/download/2.1.1/libusbmuxd-2.1.1.tar.bz2",
+          "checksum_algorithm": "sha256",
+          "expected": "5546f1aba1c3d1812c2b47d976312d00547d1044b84b6a461323c621f396efce",
+          "actual": "5546f1aba1c3d1812c2b47d976312d00547d1044b84b6a461323c621f396efce"
+        },
+        {
+          "source": "001-no-static-linking.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "220963007a583a4b0c5ae886fca57b5b68c52d74bfa275cfa44f2fbcda371406",
+          "actual": "220963007a583a4b0c5ae886fca57b5b68c52d74bfa275cfa44f2fbcda371406"
+        },
+        {
+          "source": "002-export-symbols.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "d079b3f8e0ebb0019c9d9d33b20c7a8a9f907a1bce38018e4837ed3befffbad2",
+          "actual": "d079b3f8e0ebb0019c9d9d33b20c7a8a9f907a1bce38018e4837ed3befffbad2"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-libzip": {
+      "name": "mingw-w64-x86_64-libzip",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-libzip",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-libzip-1.11.4-1-any.pkg.tar.zst",
+      "binary_sha256": "88bc2924fd68582da182c8aef9151d31c4ed466b8eca1a80de2fe4ee271bd4fb",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-libzip-1.11.4-1.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-bzip2",
+        "mingw-w64-x86_64-gnutls",
+        "mingw-w64-x86_64-nettle",
+        "mingw-w64-x86_64-xz",
+        "mingw-w64-x86_64-zlib",
+        "mingw-w64-x86_64-zstd"
+      ],
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "source_sha256": "e4954ab9cffe14befd55fa31eacd2171f5e5df7eba976f02a5f953490c7e6051",
+      "source_archive": null,
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://libzip.org/download/libzip-1.11.4.tar.xz",
+          "checksum_algorithm": "sha512",
+          "expected": "dc7929ed7a0f43e793041fc3f0639649233d4ecbe59f90b0275582b51d2951e240ce5182220fb14ade7dcccc08dab90fda22c87dc7365fec4fe70ee4f14eaa37",
+          "actual": "dc7929ed7a0f43e793041fc3f0639649233d4ecbe59f90b0275582b51d2951e240ce5182220fb14ade7dcccc08dab90fda22c87dc7365fec4fe70ee4f14eaa37"
+        },
+        {
+          "source": "0001-libzip-pkgconfig-add-cflags-private.patch",
+          "checksum_algorithm": "sha512",
+          "expected": "5426b438300441c5fd36d1497f9a8a453f773a5ebd4e0affe90dc3933d84ec1f0f168e27b2c3b62587927f88c0c5cae3fc7bc6aee00d98116098d585ceeb7716",
+          "actual": "5426b438300441c5fd36d1497f9a8a453f773a5ebd4e0affe90dc3933d84ec1f0f168e27b2c3b62587927f88c0c5cae3fc7bc6aee00d98116098d585ceeb7716"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-openssl": {
+      "name": "mingw-w64-x86_64-openssl",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-openssl",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-openssl-3.6.4-1-any.pkg.tar.zst",
+      "binary_sha256": "d613ab4e1b5af9e95cde16895765e1be53ab05657d8d51ff2707d4e99c29c55b",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-openssl-3.6.4-1.src.tar.zst",
+      "dependencies": [],
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "source_sha256": "b60a8978d0e45f433ee8db7825d9ba90cc38956c89ab52055c05546f421942f9",
+      "source_archive": null,
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/openssl/openssl/releases/download/openssl-3.6.4/openssl-3.6.4.tar.gz",
+          "checksum_algorithm": "sha256",
+          "expected": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef",
+          "actual": "9bffaa1ad1e07b354c21bd3324ec02fa15579f45a7d0494b3e74bc449b7333ef"
+        },
+        {
+          "source": "https://github.com/openssl/openssl/releases/download/openssl-3.6.4/openssl-3.6.4.tar.gz.asc",
+          "checksum_algorithm": "sha256",
+          "expected": "SKIP",
+          "actual": "2f957d2a61971714d256a6ed58a1336a687ee19859538514763f880aa89877de"
+        },
+        {
+          "source": "002-relocation.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "3e9a8abb6ff5fb7bdb450742fb7bd85513a4abbe85594228620379bcac7c02ef",
+          "actual": "3e9a8abb6ff5fb7bdb450742fb7bd85513a4abbe85594228620379bcac7c02ef"
+        },
+        {
+          "source": "004-arch-suffix.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "6a686ef69c2b196fb1420389ccd0db84582fd288942560d5eba963c11ce8595a",
+          "actual": "6a686ef69c2b196fb1420389ccd0db84582fd288942560d5eba963c11ce8595a"
+        },
+        {
+          "source": "pathtools.c",
+          "checksum_algorithm": "sha256",
+          "expected": "ebf471173f5ee9c4416c10a78760cea8afaf1a4a6e653977321e8547ce7bf3c0",
+          "actual": "ebf471173f5ee9c4416c10a78760cea8afaf1a4a6e653977321e8547ce7bf3c0"
+        },
+        {
+          "source": "pathtools.h",
+          "checksum_algorithm": "sha256",
+          "expected": "1585ef1b61cf53a2ca27049c11d49e0834683dfda798f03547761375df482a90",
+          "actual": "1585ef1b61cf53a2ca27049c11d49e0834683dfda798f03547761375df482a90"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-xz": {
+      "name": "mingw-w64-x86_64-xz",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-xz",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-xz-5.8.4-1-any.pkg.tar.zst",
+      "binary_sha256": "2de0f26da60b7ff7aa192a226330d7de6b1099cb9b9f9de4145affb80146bbc8",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-xz-5.8.4-1.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-gettext-runtime"
+      ],
+      "licenses": [
+        "0BSD",
+        "LGPL-2.1-or-later",
+        "GPL-2.0-or-later"
+      ],
+      "source_sha256": "b8acbc56b2bfe08df7bffff423f3bf07ee85dbec4e07416017ab04c8afb9d13e",
+      "source_archive": "sources/mingw-w64-xz-5.8.4-1.src.tar.zst",
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.xz",
+          "checksum_algorithm": "sha256",
+          "expected": "4ce24038fd4221e0d13bc1a2de7a4db56e90b92b3bf75321f6c14be73f65de4b",
+          "actual": "4ce24038fd4221e0d13bc1a2de7a4db56e90b92b3bf75321f6c14be73f65de4b"
+        },
+        {
+          "source": "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.xz.sig",
+          "checksum_algorithm": "sha256",
+          "expected": "SKIP",
+          "actual": "3c592e8c865f28e5ea737749cc13cffae9393f83ce2746c597409e1f58d454b8"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-zlib": {
+      "name": "mingw-w64-x86_64-zlib",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-zlib",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-zlib-1.3.2-2-any.pkg.tar.zst",
+      "binary_sha256": "9e75842a070ba648e986e12424e1c92c9d7d77200e85f6a34eeb600819f2e694",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-zlib-1.3.2-2.src.tar.zst",
+      "dependencies": [],
+      "licenses": [
+        "Zlib"
+      ],
+      "source_sha256": "eef69dea52357e01b272d6fd6dc4d7c0773f71260cb7bcde6047c8c383518db3",
+      "source_archive": null,
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.xz",
+          "checksum_algorithm": "sha256",
+          "expected": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+          "actual": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3"
+        },
+        {
+          "source": "https://github.com/madler/zlib/releases/download/v1.3.2/zlib-1.3.2.tar.xz.asc",
+          "checksum_algorithm": "sha256",
+          "expected": "SKIP",
+          "actual": "03ce710347e2f84fa7ed0a6ae6a93467b08031a3022fc296da40220a83b96667"
+        },
+        {
+          "source": "01-zlib-1.2.11-1-buildsys.mingw.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "b58b353d976d6fdd9a5094e60fa39439d4f14e9bf8be4a8bd475f2cd47f10226",
+          "actual": "b58b353d976d6fdd9a5094e60fa39439d4f14e9bf8be4a8bd475f2cd47f10226"
+        },
+        {
+          "source": "03-dont-put-sodir-into-L.mingw.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "7287d12db57dcf0f66964c861100bf06ebe1ddcb243e7ee0773fcab1b2935596",
+          "actual": "7287d12db57dcf0f66964c861100bf06ebe1ddcb243e7ee0773fcab1b2935596"
+        },
+        {
+          "source": "04-fix-largefile-support.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "8e1cdf8edfc6ac08b0e660ca42a977942a88fab3ff59c01c87ba96500e2c3e63",
+          "actual": "8e1cdf8edfc6ac08b0e660ca42a977942a88fab3ff59c01c87ba96500e2c3e63"
+        },
+        {
+          "source": "07-Add-no-undefined-to-link-to-enable-build-shared-vers.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "fb83292f494f649ea7f1835aa4abea61acc593d7f90625741d42cd99cac0e075",
+          "actual": "fb83292f494f649ea7f1835aa4abea61acc593d7f90625741d42cd99cac0e075"
+        },
+        {
+          "source": "08-Add-bzip2-library-to-pkg-config-file.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "0be98a7e660e7c068856f08b9e92d6c73a6b0d88c3e29a9716140b147f7c23c5",
+          "actual": "0be98a7e660e7c068856f08b9e92d6c73a6b0d88c3e29a9716140b147f7c23c5"
+        },
+        {
+          "source": "https://patch-diff.githubusercontent.com/raw/madler/zlib/pull/1165.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "0774e1368851504115f732f66230ca4a8a9cd60d4ba014502f65cc19b0b4d8bc",
+          "actual": "0774e1368851504115f732f66230ca4a8a9cd60d4ba014502f65cc19b0b4d8bc"
+        }
+      ]
+    },
+    "mingw-w64-x86_64-zstd": {
+      "name": "mingw-w64-x86_64-zstd",
+      "metadata_url": "https://packages.msys2.org/packages/mingw-w64-x86_64-zstd",
+      "binary_url": "https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-zstd-1.5.7-2-any.pkg.tar.zst",
+      "binary_sha256": "1add6705b344664f6aca108c85f79ab5bdd9e1162662bb06a4cf40a34f6e0907",
+      "source_url": "https://mirror.msys2.org/mingw/sources/mingw-w64-zstd-1.5.7-2.src.tar.zst",
+      "dependencies": [
+        "mingw-w64-x86_64-cc-libs"
+      ],
+      "licenses": [
+        "BSD-3-Clause",
+        "GPL-2.0-or-later"
+      ],
+      "source_sha256": "306797282df799e95d550e6d0bb4b0a7b848027b8e13893a24236e060837c217",
+      "source_archive": null,
+      "source_hash_verification": "Computed locally after download from the HTTPS source URL; not a separately published upstream checksum.",
+      "upstream_source_checks": [
+        {
+          "source": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+          "checksum_algorithm": "sha256",
+          "expected": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+          "actual": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3"
+        },
+        {
+          "source": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz.sig",
+          "checksum_algorithm": "sha256",
+          "expected": "SKIP",
+          "actual": "24425933fb954f4608ae9383bc37ad8398e50364c1ec30bbdb5adbfe88209fb1"
+        },
+        {
+          "source": "zstd-1.4.0-fileio-mingw.patch",
+          "checksum_algorithm": "sha256",
+          "expected": "283e584477a8f70c9bea86a500486dd11dfcb59b22690fd94deb44a3f95a6668",
+          "actual": "283e584477a8f70c9bea86a500486dd11dfcb59b22690fd94deb44a3f95a6668"
+        }
+      ]
+    }
+  },
+  "binaries": {
+    "ideviceinstaller.exe": {
+      "package": "mingw-w64-x86_64-ideviceinstaller",
+      "sha256": "f47b16ae9044762e4521b5ebe32579ee1f676f7361b1a6a43ee284cd306337b1",
+      "imports": [
+        "KERNEL32.dll",
+        "libimobiledevice-1.0.dll",
+        "libplist-2.0.dll",
+        "libzip.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "idevice_id.exe": {
+      "package": "mingw-w64-x86_64-libimobiledevice",
+      "sha256": "888d9c1cf17e44c5760c25f3c8e7f3983d667e991e2d0f23ec1f4393b63e751f",
+      "imports": [
+        "KERNEL32.dll",
+        "libimobiledevice-1.0.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "ideviceinfo.exe": {
+      "package": "mingw-w64-x86_64-libimobiledevice",
+      "sha256": "a93b61579ce346ee59334d520c1cfa761dbc4a250a5d15165b6f0c70eae0c0c4",
+      "imports": [
+        "KERNEL32.dll",
+        "libimobiledevice-1.0.dll",
+        "libplist-2.0.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "idevicepair.exe": {
+      "package": "mingw-w64-x86_64-libimobiledevice",
+      "sha256": "dcc64e56e97b2c0900f0b683a125c49f4bcf9dad53b15fa73ed85d3438ed38da",
+      "imports": [
+        "KERNEL32.dll",
+        "SHELL32.dll",
+        "libcrypto-3-x64.dll",
+        "libimobiledevice-1.0.dll",
+        "libplist-2.0.dll",
+        "libusbmuxd-2.0.dll",
+        "msvcrt.dll",
+        "ole32.dll"
+      ]
+    },
+    "plistutil.exe": {
+      "package": "mingw-w64-x86_64-libplist",
+      "sha256": "b759b0a918dd29fc297e6b8b8c1dbcf87ca51ad3c5d51d6dc9629c4d7c609a26",
+      "imports": [
+        "KERNEL32.dll",
+        "libplist-2.0.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "libimobiledevice-1.0.dll": {
+      "package": "mingw-w64-x86_64-libimobiledevice",
+      "sha256": "54dd4d9b03099f3c50d5c910d79d3bbe1ca6cf3f82d1e43d008bebc66b353960",
+      "imports": [
+        "IPHLPAPI.DLL",
+        "KERNEL32.dll",
+        "SHELL32.dll",
+        "WS2_32.dll",
+        "libcrypto-3-x64.dll",
+        "libplist-2.0.dll",
+        "libssl-3-x64.dll",
+        "libusbmuxd-2.0.dll",
+        "msvcrt.dll",
+        "ole32.dll"
+      ]
+    },
+    "libplist-2.0.dll": {
+      "package": "mingw-w64-x86_64-libplist",
+      "sha256": "6b995c4bccdd71f059a835b1880744d42e2345e5fed11f6d6dcc4667487a359d",
+      "imports": [
+        "KERNEL32.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "libzip.dll": {
+      "package": "mingw-w64-x86_64-libzip",
+      "sha256": "67c521647ba161a42325e92cb949ec5913463386d722d97f8ac347349b1837af",
+      "imports": [
+        "ADVAPI32.dll",
+        "KERNEL32.dll",
+        "bcrypt.dll",
+        "libbz2-1.dll",
+        "liblzma-5.dll",
+        "libzstd.dll",
+        "msvcrt.dll",
+        "zlib1.dll"
+      ]
+    },
+    "libcrypto-3-x64.dll": {
+      "package": "mingw-w64-x86_64-openssl",
+      "sha256": "ad397e1391ae38100fa1043d69a3495efa73fd9c2784de0ffc3ede3df1fd092e",
+      "imports": [
+        "ADVAPI32.dll",
+        "CRYPT32.dll",
+        "KERNEL32.dll",
+        "USER32.dll",
+        "WS2_32.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "libusbmuxd-2.0.dll": {
+      "package": "mingw-w64-x86_64-libusbmuxd",
+      "sha256": "18afe6c9c8548cb5890033b105bc0eaf55bf74c7298fc7a6072fdd77cfdaa81e",
+      "imports": [
+        "KERNEL32.dll",
+        "WS2_32.dll",
+        "libimobiledevice-glue-1.0.dll",
+        "libplist-2.0.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "libssl-3-x64.dll": {
+      "package": "mingw-w64-x86_64-openssl",
+      "sha256": "910b31e8f975658a934e726b92c90f71f66d20bc87d8bc758b1b4354e6cb8aa6",
+      "imports": [
+        "KERNEL32.dll",
+        "WS2_32.dll",
+        "libcrypto-3-x64.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "libbz2-1.dll": {
+      "package": "mingw-w64-x86_64-bzip2",
+      "sha256": "a4fbb97c26662d2b8a80bf4597ed3effb69b12048b0cb1eef2c3f211e2e66673",
+      "imports": [
+        "KERNEL32.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "liblzma-5.dll": {
+      "package": "mingw-w64-x86_64-xz",
+      "sha256": "ccb6a179acf35e704b2ffd7f232677982c4856bd1dda1341713a27518cf97ce1",
+      "imports": [
+        "KERNEL32.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "libzstd.dll": {
+      "package": "mingw-w64-x86_64-zstd",
+      "sha256": "b95c223a9548a9ecf51377c962e0bc8f0c51eb0c6f67a296dbc885996f0dd40d",
+      "imports": [
+        "KERNEL32.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "zlib1.dll": {
+      "package": "mingw-w64-x86_64-zlib",
+      "sha256": "93e9243a44c29200eeacaf9658efe2558581770e4b11ca4b500e18e424a6e3b5",
+      "imports": [
+        "KERNEL32.dll",
+        "msvcrt.dll"
+      ]
+    },
+    "libimobiledevice-glue-1.0.dll": {
+      "package": "mingw-w64-x86_64-libimobiledevice-glue",
+      "sha256": "14b497bcde5790d63b23d6d8a6749e1ab78843c1bd65c3fe384c37d4a791cfff",
+      "imports": [
+        "IPHLPAPI.DLL",
+        "KERNEL32.dll",
+        "WS2_32.dll",
+        "libplist-2.0.dll",
+        "msvcrt.dll"
+      ]
+    }
+  },
+  "windows_system_imports": [
+    "ADVAPI32.dll",
+    "CRYPT32.dll",
+    "IPHLPAPI.DLL",
+    "KERNEL32.dll",
+    "SHELL32.dll",
+    "USER32.dll",
+    "WS2_32.dll",
+    "bcrypt.dll",
+    "msvcrt.dll",
+    "ole32.dll"
+  ],
+  "architecture": "Windows x86_64 (MINGW64, native Win32; no MSYS runtime)",
+  "provenance": "Unmodified binaries from official MSYS2 packages. Each package SHA256 verified against its HTTPS packages.msys2.org page before extraction. Only required native executable/DLL import closure is redistributed.",
+  "source_provenance": "MSYS2 corresponding-source archives include upstream source, patches and PKGBUILD. Inner source files verified against the embedded .SRCINFO SHA256/SHA512; detached signature files with SKIP were not signature-verified. Sources for copyleft components are included under sources; other complete source URLs are recorded per package."
+}

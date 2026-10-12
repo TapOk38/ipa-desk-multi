@@ -1,0 +1,35 @@
+IPA Install - bundled command-line components
+
+These native x64 files are unmodified binaries from the official MSYS2 repository.
+PACKAGES.json records download URLs, verified package hashes, binary hashes,
+dependency imports and corresponding source URLs. SHA256SUMS.txt lists every
+redistributed executable and DLL. No Apple driver, service or firmware is bundled.
+
+Licenses and author notices are in licenses/<component>.
+MSYS2 package/build metadata and recipes are in provenance/<component>.
+Complete corresponding source for copyleft components, including MSYS2 patches
+and build recipes, is provided in sources/*.src.tar.zst. Windows tar.exe or
+another zstd-capable archive reader can extract these archives. The PKGBUILD
+describes building with MSYS2 MINGW64. Dependency sources for the permissively
+licensed libraries are available at the exact URLs recorded in PACKAGES.json.
+
+Components:
+- ideviceinstaller 1.1.1: GPL-2.0-or-later.
+- libimobiledevice 1.3.0: LGPL-2.1-or-later library; included command-line tools
+  under GPL-2.0-or-later. See per-file notices in corresponding source.
+- libimobiledevice-glue 1.3.2: LGPL-2.1-or-later.
+- libplist 2.7.0: LGPL-2.1-or-later library / GPL-2.0-or-later utilities.
+- libusbmuxd 2.1.1: LGPL-2.1-or-later.
+- libzip 1.11.4: BSD-3-Clause.
+- OpenSSL 3.6.4: Apache-2.0; MSYS2 path relocation helper is CC0.
+- bzip2 1.0.8: bzip2 license, see licenses/bzip2/LICENSE.
+- liblzma from XZ Utils 5.8.4: 0BSD; XZ source archive also contains GPL/LGPL
+  components. See licenses/xz/COPYING for the detailed allocation.
+- zlib 1.3.2: Zlib.
+- Zstandard 1.5.7: BSD-3-Clause (also available under GPL-2.0-or-later).
+
+The LGPL libraries remain separate replaceable DLL files. This distribution
+imposes no restriction on modifying/replacing them or reverse engineering the
+combined use for debugging those modifications. The IPA Install PowerShell GUI
+launches the separate command-line programs; it does not link these libraries.
+Third-party components are supplied without warranty under their own licenses.

@@ -1,13 +1,15 @@
-Скачивание одного приложения App Store для выбранных Apple ID с сохранением отдельного IPA для каждой учётки.
+# IPA Desk Multi — запуск одним EXE
 
-**[Скачать IPA Desk Multi для Windows](https://github.com/TapOk38/ipa-desk-multi/releases/download/v0.3.0-beta.2/ipa-desk-multi-0.3.0-beta.2-windows.zip)**
+Скачивает приложения из App Store на Windows. Для каждой выбранной учётной записи сохраняется отдельный IPA-файл.
 
-1. Распакуйте ZIP и запустите **Start.cmd**.
-2. Добавьте учётки и укажите ссылку или ID приложения.
-3. Выберите учётки и нажмите **«Скачать IPA»**. При запросе введите код 2FA.
+**[Скачать IPA Desk Multi.exe](https://github.com/TapOk38/ipa-desk-multi/releases/download/v0.3.1-beta.1/IPA-Desk-Multi-0.3.1-beta.1.exe)**
 
-Нужны Windows x64, Windows PowerShell 5.1 и интернет. Компонент для скачивания подготавливается автоматически при первом использовании. IPA сохраняются в папке **Downloads** рядом с программой.
+1. Скачайте EXE и откройте его двойным щелчком.
+2. Нажмите **«Добавить»**, введите Apple ID, пароль и удобное описание. Нажмите **«Сохранить»**.
+3. Вставьте ссылку App Store в поле **«Ссылка или ID»**.
+4. Отметьте учётки и нажмите **«Скачать IPA»**. Введите код подтверждения, если Apple его запросит.
+5. После сообщения **«IPA сохранён»** нажмите **«Открыть папку»**.
 
-В этом выпуске сокращены описание и инструкции, в том числе внутри ZIP. Функции программы сохранены.
+IPA сохраняются в **«Загрузки → IPA Desk Multi»**. Компонент скачивания подготавливается автоматически при первом использовании. Нужны интернет и 64-разрядная Windows с Windows PowerShell 5.1.
 
-[Подробная инструкция](https://github.com/TapOk38/ipa-desk-multi#readme)
+[Полная инструкция](https://github.com/TapOk38/ipa-desk-multi#readme) · [Установка IPA на iPhone с Windows](https://github.com/TapOk38/ipa-desk-multi/tree/main/installer#readme)

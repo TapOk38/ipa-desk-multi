@@ -1,4 +1,4 @@
-#requires -Version 5.1
+﻿#requires -Version 5.1
 param([string]$OfficialArchive='', [string]$WorkRoot=[IO.Path]::GetTempPath())
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot '..\Install-Tools.ps1')
@@ -42,4 +42,3 @@ $failed=$false;try{Ensure-IpaTool -AppRoot (Join-Path $root 'network-fail') | Ou
 Assert $failed 'Download failure is returned without success'
 Assert (@(Get-ChildItem -LiteralPath (Join-Path $root 'network-fail') -Recurse -Directory | Where-Object Name -like '.install-*').Count -eq 0) 'Failed download leaves no working directory'
 Write-Output "$script:checks tool preparation checks passed. No Apple requests."
-

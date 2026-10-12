@@ -1,5 +1,5 @@
 ﻿#requires -Version 5.1
-param([string]$SmokeTestPath, [string]$TestDataRoot)
+param([string]$SmokeTestPath, [string]$TestDataRoot, [string]$OutputRoot)
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -15,6 +15,7 @@ if ($pathKeys.Count -gt 1) {
     [Environment]::SetEnvironmentVariable('Path', $pathValue, 'Process')
 }
 $script:AppRoot = $PSScriptRoot
+$script:OutputRoot = if ($OutputRoot) { [IO.Path]::GetFullPath($OutputRoot) } else { Join-Path $script:AppRoot 'Downloads' }
 $script:DataRoot = if ($TestDataRoot) { [IO.Path]::GetFullPath($TestDataRoot) } elseif ($SmokeTestPath) { Join-Path ([IO.Path]::GetTempPath()) ('ipa-multi-smoke-' + [guid]::NewGuid().ToString('N')) } else { Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'IPA-Desk-Multi' }
 $script:AccountsPath = Join-Path $script:DataRoot 'accounts.json'
 $script:StoreLock = $null
@@ -63,6 +64,14 @@ $root.Controls.Add($list,0,3)
 $actions=[Windows.Forms.FlowLayoutPanel]::new(); $actions.Dock='Fill'; $actions.Padding=[Windows.Forms.Padding]::new(0,6,0,0)
 $start=New-Button $actions 'Скачать IPA' 170; $start.BackColor=[Drawing.Color]::FromArgb(41,94,220); $start.ForeColor=[Drawing.Color]::White
 $stop=New-Button $actions 'Отмена' 110; $stop.Enabled=$false
+$openFolder=New-Button $actions 'Открыть папку' 160
+$openFolder.Add_Click({
+    try {
+        $null=[IO.Directory]::CreateDirectory($script:OutputRoot)
+        $folderProcess=[Diagnostics.ProcessStartInfo]::new(); $folderProcess.FileName=$script:OutputRoot; $folderProcess.UseShellExecute=$true
+        $null=[Diagnostics.Process]::Start($folderProcess)
+    } catch { $null=[Windows.Forms.MessageBox]::Show($form,'Не удалось открыть папку: '+$script:OutputRoot,'Папка загрузок') }
+})
 $root.Controls.Add($actions,0,4)
 $status=[Windows.Forms.Label]::new(); $status.Dock='Fill'; $status.Text='Выберите учётки'; $status.TextAlign='MiddleLeft'; $root.Controls.Add($status,0,5)
 $log=[Windows.Forms.TextBox]::new(); $log.Multiline=$true; $log.ReadOnly=$true; $log.ScrollBars='Vertical'; $log.Dock='Fill'; $log.BorderStyle='None'
@@ -154,7 +163,7 @@ function Start-Next {
     $a=$script:Current.Tag
     $folderName=([regex]::Replace($a.Email,'[^a-zA-Z0-9@._-]','_'))
     if($folderName.Length -gt 70){$folderName=$folderName.Substring(0,70)}
-    $destination=Join-Path (Join-Path (Join-Path $script:AppRoot 'Downloads') $script:AppId) ($folderName+'-'+$a.Id.Substring(0,8))
+    $destination=Join-Path (Join-Path $script:OutputRoot $script:AppId) ($folderName+'-'+$a.Id.Substring(0,8))
     $options=@{AppRoot=$script:AppRoot;DataRoot=(Join-Path $script:DataRoot 'sessions');Email=$a.Email;Description=(Get-AccountDescription $a);Password='';EncryptedPassword=$a.Password;AppId=$script:AppId;OutputFolder=$destination;FileName='';ToolPath=''}
     $script:Bus.Cancel=$false; $script:Bus.Answer=$null; $script:Bus.AnswerReady=$false
     $accountLabel=$a.Email; $accountDescription=Get-AccountDescription $a

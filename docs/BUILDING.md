@@ -1,19 +1,16 @@
-# Сборка и тесты
+# Сборка IPA Desk Multi
 
-Нужны Windows x64 и Windows PowerShell 5.1. Выполняйте команды из корня репозитория:
+Нужна 64-разрядная Windows с Windows PowerShell 5.1 и .NET Framework 4.5 или новее.
 
 ```powershell
-$ps = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
-& $ps -NoProfile -ExecutionPolicy Bypass -File .\tests\Test-Engine.ps1
-& $ps -NoProfile -ExecutionPolicy Bypass -File .\tests\Test-Tools.ps1
-& $ps -NoProfile -ExecutionPolicy Bypass -File .\Build-Release.ps1
+.\Build-Exe.ps1 -Destination .\dist
+.\tests\Test-Exe.ps1 -ExePath .\dist\IPA-Desk-Multi-0.3.1-beta.1.exe -WorkRoot $env:TEMP
+.\tests\Test-Engine.ps1
+.\tests\Test-Tools.ps1
 ```
 
-Тесты используют вымышленные учётки и не подключаются к Apple.
-У `Test-Tools.ps1` есть параметр `-OfficialArchive` для проверки уже скачанного официального ZIP.
+EXE включает интерфейс, код программы и документы о лицензиях. Компонент ipatool-cpp получается при первом скачивании IPA, с проверкой закреплённых контрольных сумм.
 
-Готовый архив создаётся в `dist/`. Сборка включает файлы по заданному списку;
-учётки, скачанные IPA, журналы и папка `tools/` в него не входят.
-Для повторной сборки укажите новую папку через `-Destination`.
+Для старого формата с Start.cmd доступен `Build-Release.ps1`. В этом формате файлы сохраняются в папке Downloads рядом со скриптами. При запуске через EXE — в системной папке «Загрузки → IPA Desk Multi».
 
-Перед выпуском с изменениями программы проверьте скачивание, ввод 2FA, русские пути и отмену на реальной учётке.
+[Сборка IPA Install](../installer/BUILDING.md)

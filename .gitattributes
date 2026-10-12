@@ -1,7 +1,10 @@
 * text=auto
+*.ps1 text eol=lf
+*.cs text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
 *.sh text eol=lf
-gradlew text eol=lf
 *.cmd text eol=crlf
 *.bat text eol=crlf
-*.jar binary
 *.png binary
+installer/tools/** -text

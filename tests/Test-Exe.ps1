@@ -1,0 +1,44 @@
+﻿#requires -Version 5.1
+param([Parameter(Mandatory=$true)][string]$ExePath,[Parameter(Mandatory=$true)][string]$WorkRoot)
+$ErrorActionPreference='Stop'
+$sourceRoot=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$work=Join-Path ([IO.Path]::GetFullPath($WorkRoot)) ('exe-test-'+[guid]::NewGuid().ToString('N'))
+$script:checks=0
+function Assert($Value,[string]$Message){if(-not $Value){throw "FAIL: $Message"};$script:checks++;Write-Output "PASS: $Message"}
+# Exercise Windows quoting, non-ASCII paths, spaces and apostrophes without using a shell.
+$folder=Join-Path $work "Тестовая папка ' один EXE"
+$null=[IO.Directory]::CreateDirectory($folder)
+$exe=Join-Path $folder 'IPA Desk Multi.exe'
+Copy-Item -LiteralPath $ExePath -Destination $exe
+$testRoot=Join-Path $folder 'Профиль проверки'
+$data=Join-Path $testRoot 'accounts'
+$null=[IO.Directory]::CreateDirectory($data)
+. (Join-Path $sourceRoot 'Accounts.ps1')
+$accountsPath=Join-Path $data 'accounts.json'
+Write-Accounts $accountsPath @([pscustomobject]@{Id='00000000000000000000000000000001';Email='test@example.invalid';Description='Тест';Password=(Lock-Password 'fixture-only')})
+$accountHash=(Get-FileHash -LiteralPath $accountsPath -Algorithm SHA256).Hash
+function Run-Smoke {
+    $process=Start-Process -FilePath $exe -ArgumentList @('--smoke-test',('"'+$testRoot+'"')) -WindowStyle Hidden -PassThru
+    if(-not $process.WaitForExit(90000)){$process.Kill();throw 'Launcher smoke test timeout'}
+    Assert ($process.ExitCode -eq 0) 'Single EXE opens and closes the actual WinForms window'
+    Assert (Test-Path -LiteralPath (Join-Path $testRoot 'interface.png')) 'UI screenshot generated'
+    Assert ((Get-FileHash -LiteralPath $accountsPath -Algorithm SHA256).Hash -eq $accountHash) 'Existing account store is preserved'
+}
+Run-Smoke
+$runtime=@(Get-ChildItem -LiteralPath (Join-Path $testRoot 'app') -Directory)[0].FullName
+Assert ((Get-ChildItem -LiteralPath $folder -File).Count -eq 1) 'Launch directory needs only the EXE'
+$expected=@('IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','PRIVACY.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
+foreach($name in $expected){
+    Assert ((Get-FileHash -LiteralPath (Join-Path $runtime $name) -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath (Join-Path $sourceRoot $name) -Algorithm SHA256).Hash) "Embedded file matches source: $name"
+}
+Assert ((@(Get-ChildItem -LiteralPath $runtime -Recurse -File).Count) -eq ($expected.Count+1)) 'Payload contains only the allowed files and extraction lock'
+$ui=Get-Content -LiteralPath (Join-Path $runtime 'IPA-Desk.ps1') -Raw
+Assert ($ui.Contains("Join-Path (Join-Path `$script:OutputRoot `$script:AppId)")) 'Downloads use the requested output directory'
+[IO.File]::WriteAllText((Join-Path $runtime 'IPA-Desk.ps1'),'throw "damaged cached script must not run"')
+Run-Smoke
+Assert ((Get-FileHash -LiteralPath (Join-Path $runtime 'IPA-Desk.ps1') -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath (Join-Path $sourceRoot 'IPA-Desk.ps1') -Algorithm SHA256).Hash) 'Modified cache is restored from embedded payload before execution'
+$bytes=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($bytes,60)
+Assert ([BitConverter]::ToUInt16($bytes,$pe+4) -eq 0x8664) 'Executable targets Windows x64'
+Assert ([BitConverter]::ToUInt16($bytes,$pe+24+68) -eq 2) 'Windows GUI subsystem: no console window'
+Write-Output ("EXE checks passed: "+$script:checks)
+Write-Output ("Screenshot: "+(Join-Path $testRoot 'interface.png'))

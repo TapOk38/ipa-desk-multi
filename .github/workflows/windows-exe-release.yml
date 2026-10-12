@@ -1,0 +1,56 @@
+name: Publish Windows EXE applications
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/windows-exe-release.yml']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and check IPA Desk Multi
+        run: |
+          .\Build-Exe.ps1 -Destination .\dist
+          .\tests\Test-Exe.ps1 -ExePath .\dist\IPA-Desk-Multi-0.3.1-beta.1.exe -WorkRoot $env:RUNNER_TEMP
+          .\tests\Test-Engine.ps1
+          .\tests\Test-Tools.ps1
+      - name: Obtain verified USB dependencies
+        run: .\installer\Prepare-Tools.ps1
+      - name: Build and check IPA Install
+        run: |
+          .\installer\Build-Exe.ps1 -Destination .\dist-install
+          .\installer\Test-Exe.ps1 -ExePath .\dist-install\IPA-Install.exe -TestRoot .\.test-install-exe
+          .\installer\tests\Test-Engine.ps1 -AppRoot .\installer -TestRoot .\.test-install-engine
+          .\installer\tests\Test-Credentials.ps1 -ModulePath .\installer\Credentials.ps1 -TestRoot .\.test-install-credentials
+      - name: Prepare public assets
+        run: |
+          $ErrorActionPreference='Stop'
+          $null=New-Item -ItemType Directory -Path release-assets\multi,release-assets\install
+          Copy-Item -LiteralPath dist\IPA-Desk-Multi-0.3.1-beta.1.exe -Destination release-assets\multi
+          Copy-Item -LiteralPath dist-install\IPA-Install.exe -Destination release-assets\install
+          git archive --format=zip --output=release-assets/windows-source.zip HEAD
+          if($LASTEXITCODE -ne 0){throw 'Source export failed'}
+          Copy-Item -LiteralPath release-assets\windows-source.zip -Destination release-assets\multi
+          Copy-Item -LiteralPath release-assets\windows-source.zip -Destination release-assets\install
+          Compress-Archive -Path installer\tools\sources,installer\tools\licenses,installer\tools\provenance,installer\tools\PACKAGES.json,installer\tools\THIRD-PARTY-NOTICES.txt -DestinationPath release-assets\install\ipa-install-dependency-sources.zip
+          foreach($folder in @('multi','install')){
+            $lines=Get-ChildItem -LiteralPath (Join-Path 'release-assets' $folder) -File | Sort-Object Name | ForEach-Object { (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()+'  '+$_.Name }
+            [IO.File]::WriteAllLines((Join-Path $PWD ('release-assets/'+$folder+'/SHA256SUMS.txt')),$lines,[Text.UTF8Encoding]::new($false))
+          }
+      - name: Publish both releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $ErrorActionPreference='Stop'
+          $multi=@(Get-ChildItem release-assets\multi -File | ForEach-Object FullName)
+          $install=@(Get-ChildItem release-assets\install -File | ForEach-Object FullName)
+          gh release create v0.3.1-beta.1 @multi --target $env:GITHUB_SHA --title 'IPA Desk Multi 0.3.1-beta.1 — EXE' --notes-file RELEASE_NOTES.md --prerelease
+          if($LASTEXITCODE -ne 0){throw 'IPA Desk Multi release failed'}
+          gh release create install-v1.0.0-beta.1 @install --target $env:GITHUB_SHA --title 'IPA Install 1.0.0-beta.1 — Windows' --notes-file installer/RELEASE_NOTES.md --prerelease
+          if($LASTEXITCODE -ne 0){throw 'IPA Install release failed'}
