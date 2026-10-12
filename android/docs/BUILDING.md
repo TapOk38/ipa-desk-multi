@@ -1,6 +1,8 @@
 # Сборка из исходников
 
-Для обычной установки скачайте [готовый APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/android-v0.6.0-beta.1/ipa-usb-0.6.0-beta.1.apk). Инструкция ниже нужна только для самостоятельной сборки.
+**Русский** | [English](BUILDING.en.md)
+
+Инструкция по установке приложения — в [README](../README.md).
 
 Потребуются JDK 17, Android SDK Platform 35 и Build Tools 35.0.0. Укажите пути в `JAVA_HOME` и `ANDROID_HOME`.
 
@@ -41,7 +43,7 @@ chmod +x gradlew
 .\Build-Manual.ps1 -Sdk 'C:\Android\sdk' -Jdk 'C:\Java\jdk-17' -KeyStore 'C:\Keys\release.jks' -KeyAlias 'release'
 ```
 
-Результат: `manual-build/ipa-usb-0.6.0-beta.1.apk`. Скрипт не скачивает JDK и Android SDK.
+Результат: `manual-build/ipa-usb-0.7.0-beta.1.apk`. Скрипт не скачивает JDK и Android SDK.
 
 Для обновления установленного приложения нужен тот же ключ подписи. APK, подписанный другим ключом, не установится поверх опубликованной версии.
 

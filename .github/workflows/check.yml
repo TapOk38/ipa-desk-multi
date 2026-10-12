@@ -14,5 +14,13 @@ jobs:
         run: .\tests\Test-Engine.ps1
       - name: Pinned component preparation (offline fixtures)
         run: .\tests\Test-Tools.ps1
+      - name: Downloader localization
+        run: .\tests\Test-Localization.ps1
+      - name: Installer workflow regression
+        run: .\installer\tests\Test-Engine.ps1 -AppRoot .\installer -TestRoot (Join-Path $PWD '.test-installer-engine')
+      - name: Installer credential protection
+        run: .\installer\tests\Test-Credentials.ps1 -ModulePath .\installer\Credentials.ps1 -TestRoot (Join-Path $PWD '.test-installer-credentials')
+      - name: Installer localization
+        run: .\installer\tests\Test-Localization.ps1 -TestRoot (Join-Path $env:RUNNER_TEMP 'installer-language')
       - name: Build portable ZIP
         run: .\Build-Release.ps1

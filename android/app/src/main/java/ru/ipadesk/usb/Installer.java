@@ -43,42 +43,42 @@ final class Installer implements Closeable {
     }
     private NSObject value(String key) throws IOException { return request("GetValue", "Key", key).objectForKey("Value"); }
     private String string(String key) throws IOException {
-        NSObject v = value(key); if (!(v instanceof NSString)) throw new IOException("iPhone не сообщил " + key + ".");
+        NSObject v = value(key); if (!(v instanceof NSString)) throw new IOException(L10n.t(L10n.Key.MISSING_VALUE, key));
         return ((NSString)v).getContent();
     }
     void connect() throws Exception {
-        listener.log("Подключение iPhone…");
+        listener.log(L10n.t(L10n.Key.CONNECTING_IPHONE));
         mux.start();
         Mux.Channel transport = mux.connect(62078);
         lockdown = new Plists.Channel(transport.input, transport.output);
-        if (!"com.apple.mobile.lockdown".equals(Plists.str(request("QueryType"), "Type"))) throw new IOException("Неизвестный ответ iPhone.");
+        if (!"com.apple.mobile.lockdown".equals(Plists.str(request("QueryType"), "Type"))) throw new IOException(L10n.t(L10n.Key.UNKNOWN_REPLY));
         String udid = string("UniqueDeviceID");
         ios = string("ProductVersion"); String model = string("ProductType");
         listener.device(model + " • iOS " + ios);
         listener.log(model + " • iOS " + ios);
         try { pair = store.load(udid); }
-        catch (Exception e) { listener.log("Повторное подтверждение доверия."); pair = null; }
+        catch (Exception e) { listener.log(L10n.t(L10n.Key.TRUST_AGAIN)); pair = null; }
         if (pair != null) {
-            try { session(transport); listener.log("iPhone подключён."); return; }
+            try { session(transport); listener.log(L10n.t(L10n.Key.CONNECTED_LOG)); return; }
             catch (DeviceError e) {
                 if (!Arrays.asList("InvalidHostID", "InvalidPairRecord", "MissingPairRecord").contains(e.code)) throw e;
                 store.remove(udid); pair = null;
             }
         }
         NSObject key = value("DevicePublicKey");
-        if (!(key instanceof NSData)) throw new IOException("iPhone не передал ключ для подтверждения доверия.");
+        if (!(key instanceof NSData)) throw new IOException(L10n.t(L10n.Key.TRUST_KEY_MISSING));
         String buid = context.getSharedPreferences("usb", 0).getString("buid", null);
         if (buid == null) {
             buid = UUID.randomUUID().toString().toUpperCase(Locale.ROOT);
             context.getSharedPreferences("usb", 0).edit().putString("buid", buid).apply();
         }
         pair = Pairing.create(((NSData)key).bytes(), buid);
-        listener.log("Разблокируйте iPhone и нажмите «Доверять».");
+        listener.log(L10n.t(L10n.Key.TRUST_PROMPT));
         long deadline = Mux.now() + 120000;
         transport.timeout(15000);
         while (true) {
-            if (closed || Thread.currentThread().isInterrupted()) throw new IOException("Операция остановлена.");
-            if (Mux.now() > deadline) throw new IOException("Доверие не подтверждено. Нажмите «Подключить» ещё раз.");
+            if (closed || Thread.currentThread().isInterrupted()) throw new IOException(L10n.t(L10n.Key.CANCELLED));
+            if (Mux.now() > deadline) throw new IOException(L10n.t(L10n.Key.TRUST_TIMEOUT));
             try {
                 NSDictionary response = request("Pair", "PairRecord", pair.publicRecord(), "ProtocolVersion", "2",
                     "PairingOptions", Plists.dict("ExtendedPairingErrors", true));
@@ -91,14 +91,14 @@ final class Installer implements Closeable {
         }
         store.save(udid, pair);
         transport.timeout(30000); session(transport);
-        listener.log("iPhone подключён.");
+        listener.log(L10n.t(L10n.Key.CONNECTED_LOG));
     }
     private void session(Mux.Channel transport) throws IOException {
         NSDictionary response = request("StartSession", "HostID", pair.hostId, "SystemBUID", pair.systemBuid);
-        if (Plists.str(response, "SessionID").isEmpty()) throw new IOException("iPhone не открыл сессию.");
+        if (Plists.str(response, "SessionID").isEmpty()) throw new IOException(L10n.t(L10n.Key.SESSION_FAILED));
         if (Plists.yes(response, "EnableSessionSSL")) {
             transport.timeout(15000);
-            listener.log("Защищённое соединение…");
+            listener.log(L10n.t(L10n.Key.SECURING));
             listener.diagnostic("lockdown TLS begin");
             pair.tls(lockdown);
             listener.diagnostic("lockdown TLS complete");
@@ -116,18 +116,18 @@ final class Installer implements Closeable {
     }
     void install(Ipa ipa) throws Exception {
         if (!ipa.minimum.isEmpty() && Ipa.compareVersions(ios, ipa.minimum) < 0)
-            throw new IOException("Приложению требуется iOS " + ipa.minimum + " или новее.");
+            throw new IOException(L10n.t(L10n.Key.IOS_REQUIRED, ipa.minimum));
         String remote = "PublicStaging/ipa-usb-" + UUID.randomUUID() + ".ipa";
         Afc afc = new Afc(service("com.apple.afc", 30000));
         boolean submitted = false, complete = false, failedByDevice = false;
         try {
             afc.mkdir("PublicStaging");
-            listener.log("Передача IPA…");
-            afc.upload(remote, ipa.file, n -> listener.progress("Передача IPA", (int)(100 * n / Math.max(1, ipa.file.length()))));
+            listener.log(L10n.t(L10n.Key.TRANSFERRING_LOG));
+            afc.upload(remote, ipa.file, n -> listener.progress(L10n.t(L10n.Key.TRANSFERRING), (int)(100 * n / Math.max(1, ipa.file.length()))));
             Plists.Channel install = service("com.apple.mobile.installation_proxy", 90000);
-            if (closed || Thread.currentThread().isInterrupted()) throw new IOException("Операция остановлена.");
+            if (closed || Thread.currentThread().isInterrupted()) throw new IOException(L10n.t(L10n.Key.CANCELLED));
             listener.installing();
-            listener.log("Установка…");
+            listener.log(L10n.t(L10n.Key.INSTALLING_LOG));
             submitted = true;
             install.send(Plists.dict("Command", "Install", "PackagePath", remote, "ClientOptions", ipa.options()));
             long deadline = Mux.now() + 15 * 60000;
@@ -136,10 +136,10 @@ final class Installer implements Closeable {
                 if (!Plists.str(response, "Error").isEmpty()) failedByDevice = true;
                 String status = installStatus(response);
                 int percent = (int)Plists.number(response, "PercentComplete", -1);
-                listener.progress("Установка", percent);
-                if (status.equals("Complete")) { complete = true; listener.log("Приложение установлено."); return; }
+                listener.progress(L10n.t(L10n.Key.INSTALLING), percent);
+                if (status.equals("Complete")) { complete = true; listener.log(L10n.t(L10n.Key.INSTALLED_LOG)); return; }
             }
-            throw new IOException("Время ожидания установки истекло.");
+            throw new IOException(L10n.t(L10n.Key.INSTALL_TIMEOUT));
         } finally {
             // Never remove an archive while installation_proxy might still be using it.
             if (!submitted || complete || failedByDevice) {
@@ -148,7 +148,7 @@ final class Installer implements Closeable {
                     listener.diagnostic("staging cleanup " + (removed ? "removed" : "already absent"));
                 } catch (Afc.Status e) { listener.diagnostic("staging cleanup failed afcStatus=" + e.code); }
                 catch (IOException e) { listener.diagnostic("staging cleanup unconfirmed type=" + e.getClass().getSimpleName()); }
-            } else listener.log("Результат установки не подтверждён. Проверьте приложение на iPhone.");
+            } else listener.log(L10n.t(L10n.Key.INSTALL_UNCONFIRMED));
             for (Mux.Channel channel : serviceChannels) {
                 try { channel.close(); }
                 catch (IOException e) { listener.diagnostic("service channel close failed"); }
@@ -158,9 +158,9 @@ final class Installer implements Closeable {
     }
     static String installStatus(NSDictionary response) throws IOException {
         String error = Plists.str(response, "Error");
-        if (!error.isEmpty()) throw new IOException("iPhone отклонил установку: " + error + ". " + Plists.str(response, "ErrorDescription"));
+        if (!error.isEmpty()) throw new IOException(L10n.t(L10n.Key.INSTALL_REJECTED, error, Plists.str(response, "ErrorDescription")));
         String status = Plists.str(response, "Status");
-        if (status.isEmpty()) throw new IOException("iPhone не сообщил статус установки.");
+        if (status.isEmpty()) throw new IOException(L10n.t(L10n.Key.INSTALL_STATUS_MISSING));
         return status;
     }
     public void close() { closed = true; try { mux.close(); } catch (IOException ignored) {} }

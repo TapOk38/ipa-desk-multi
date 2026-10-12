@@ -1,4 +1,5 @@
 ﻿#requires -Version 5.1
+. (Join-Path $PSScriptRoot 'Localization.ps1')
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
@@ -30,7 +31,7 @@ function Send-InstallerEvent([string]$Kind, $Data) {
     $script:InstallerBus.Events.Enqueue([pscustomobject]@{ Kind = $Kind; Data = $Data })
 }
 function Test-InstallerCancel {
-    if ($script:InstallerBus.Cancel) { throw [OperationCanceledException]::new('Операция отменена.') }
+    if ($script:InstallerBus.Cancel) { throw [OperationCanceledException]::new((Get-InstallerText 'Операция отменена.')) }
 }
 function ConvertTo-InstallerArgument([AllowEmptyString()][string]$Value) {
     '"' + [regex]::Replace([regex]::Replace($Value, '(\\*)"', '$1$1\"'), '(\\+)$', '$1$1') + '"'
@@ -38,7 +39,7 @@ function ConvertTo-InstallerArgument([AllowEmptyString()][string]$Value) {
 function Invoke-InstallerNative([string]$Tool, [string[]]$Arguments, [int]$TimeoutSeconds = 30, [string]$WorkingDirectory = '') {
     Test-InstallerCancel
     $exe = Join-Path $script:InstallerToolRoot ($Tool + '.exe')
-    if (-not [IO.File]::Exists($exe)) { throw 'Не найдены компоненты установки. Закройте программу и запустите IPA-Install.exe повторно.' }
+    if (-not [IO.File]::Exists($exe)) { throw (Get-InstallerText 'Не найдены компоненты установки. Закройте программу и запустите IPA-Install.exe повторно.') }
     if ($script:InstallerOptions.ContainsKey('NativeTimeoutSeconds')) {
         $TimeoutSeconds = [Math]::Min($TimeoutSeconds, [Math]::Max(1, [int]$script:InstallerOptions.NativeTimeoutSeconds))
     }
@@ -57,8 +58,8 @@ function Invoke-InstallerNative([string]$Tool, [string[]]$Arguments, [int]$Timeo
     $process.StartInfo = $start
     $started = $false
     try {
-        try { $started = $process.Start() } catch { throw 'Не удалось запустить файлы установки. Распакуйте архив программы полностью.' }
-        if (-not $started) { throw 'Не удалось запустить файлы установки.' }
+        try { $started = $process.Start() } catch { throw (Get-InstallerText 'Не удалось запустить файлы установки. Закройте программу и запустите IPA-Install.exe повторно.') }
+        if (-not $started) { throw (Get-InstallerText 'Не удалось запустить файлы установки.') }
         $process.StandardInput.Close()
         $stdout = $process.StandardOutput.ReadToEndAsync()
         $stderr = $process.StandardError.ReadToEndAsync()
@@ -66,8 +67,8 @@ function Invoke-InstallerNative([string]$Tool, [string[]]$Arguments, [int]$Timeo
         while (-not $process.WaitForExit(100)) {
             Test-InstallerCancel
             if ($watch.Elapsed.TotalSeconds -ge $TimeoutSeconds) {
-                if ($script:InstallerStarted) { throw 'Время ожидания истекло. Проверьте установку на iPhone.' }
-                throw 'iPhone не отвечает. Разблокируйте его и проверьте USB-подключение.'
+                if ($script:InstallerStarted) { throw (Get-InstallerText 'Время ожидания истекло. Проверьте установку на iPhone.') }
+                throw (Get-InstallerText 'iPhone не отвечает. Разблокируйте его и проверьте USB-подключение.')
             }
         }
         Test-InstallerCancel
@@ -75,7 +76,7 @@ function Invoke-InstallerNative([string]$Tool, [string[]]$Arguments, [int]$Timeo
         $err = $stderr.GetAwaiter().GetResult()
         $result = [pscustomobject]@{ ExitCode = $process.ExitCode; Stdout = $out; Stderr = $err; Text = $out + "`n" + $err }
         if ($process.ExitCode -eq -1073741515 -or $process.ExitCode -eq -1073741701) {
-            throw 'Не удалось загрузить компоненты установки. Распакуйте архив программы полностью.'
+            throw (Get-InstallerText 'Не удалось загрузить компоненты установки. Закройте программу и запустите IPA-Install.exe повторно.')
         }
         return $result
     } finally {
@@ -89,12 +90,12 @@ function Test-InstallerDeviceId([string]$Id) { return $Id -match '^(?:[a-fA-F0-9
 function Get-InstallerUsbIds {
     $result = Invoke-InstallerNative 'idevice_id' @('-l') 20
     if ($result.ExitCode -ne 0 -or $result.Text -match '(?im)^\s*ERROR\b') {
-        throw 'Не удалось обнаружить iPhone. Проверьте USB-кабель и наличие Apple Devices на компьютере.'
+        throw (Get-InstallerText 'Не удалось обнаружить iPhone. Проверьте USB-кабель и наличие Apple Devices на компьютере.')
     }
     foreach ($line in ($result.Stdout -split '[\r\n]+')) {
         $id = $line.Trim()
         if (-not $id) { continue }
-        if (-not (Test-InstallerDeviceId $id)) { throw 'Не удалось прочитать список iPhone. Проверьте USB-подключение.' }
+        if (-not (Test-InstallerDeviceId $id)) { throw (Get-InstallerText 'Не удалось прочитать список iPhone. Проверьте USB-подключение.') }
         $id
     }
 }
@@ -136,7 +137,7 @@ function Get-InstallerDeviceInfo([string]$DeviceId, [switch]$Disambiguate) {
     if ($null -eq (ConvertTo-InstallerVersionParts $version)) { $version = '' }
     if (-not $name) { $name = 'iPhone' }
     $model = if ($productType -and $script:InstallerModels.ContainsKey($productType)) { $script:InstallerModels[$productType] } elseif ($productType) { $productType } else { 'iPhone' }
-    $display = $model + ' • ' + $(if ($version) { 'iOS ' + $version } else { 'iOS неизвестна' })
+    $display = $model + ' • ' + $(if ($version) { 'iOS ' + $version } else { (Get-InstallerText 'iOS неизвестна') })
     if ($Disambiguate) { $display += ' (' + $DeviceId.Substring($DeviceId.Length - 6) + ')' }
     return [pscustomobject]@{ Id=$DeviceId; Name=$name; ProductType=$productType; ModelName=$model; ProductVersion=$version; DisplayName=$display }
 }
@@ -166,10 +167,10 @@ function Get-InstallerPairState($Result, [string]$DeviceId) {
 }
 function Throw-InstallerPairError([string]$State) {
     switch ($State) {
-        'denied' { throw 'На iPhone отклонено доверие компьютеру. Подключите его заново и нажмите «Доверять».' }
-        'locked' { throw 'Разблокируйте iPhone и повторите установку.' }
-        'disconnected' { throw 'Не удалось подключиться к iPhone. Проверьте USB-кабель и повторите установку.' }
-        default { throw 'Не удалось подтвердить доверие iPhone. Разблокируйте его и повторите установку.' }
+        'denied' { throw (Get-InstallerText 'На iPhone отклонено доверие компьютеру. Подключите его заново и нажмите «Доверять».') }
+        'locked' { throw (Get-InstallerText 'Разблокируйте iPhone и повторите установку.') }
+        'disconnected' { throw (Get-InstallerText 'Не удалось подключиться к iPhone. Проверьте USB-кабель и повторите установку.') }
+        default { throw (Get-InstallerText 'Не удалось подтвердить доверие iPhone. Разблокируйте его и повторите установку.') }
     }
 }
 function Confirm-InstallerPairing([string]$DeviceId) {
@@ -177,14 +178,14 @@ function Confirm-InstallerPairing([string]$DeviceId) {
     $state = Get-InstallerPairState $result $DeviceId
     if ($state -eq 'ready') { return }
     if ($state -ne 'missing' -and $state -ne 'pending') { Throw-InstallerPairError $state }
-    Send-InstallerEvent 'status' 'Разблокируйте iPhone и нажмите «Доверять».'
+    Send-InstallerEvent 'status' (Get-InstallerText 'Разблокируйте iPhone и нажмите «Доверять».')
     $limit = 120
     if ($script:InstallerOptions.ContainsKey('PairingTimeoutSeconds')) { $limit = [Math]::Max(1, [int]$script:InstallerOptions.PairingTimeoutSeconds) }
     $watch = [Diagnostics.Stopwatch]::StartNew()
     while ($true) {
         Test-InstallerCancel
         $remaining = $limit - $watch.Elapsed.TotalSeconds
-        if ($remaining -le 0) { throw 'Доверие не подтверждено. Нажмите «Доверять» на iPhone и повторите установку.' }
+        if ($remaining -le 0) { throw (Get-InstallerText 'Доверие не подтверждено. Нажмите «Доверять» на iPhone и повторите установку.') }
         $timeout = [Math]::Max(1, [Math]::Min(30, [int][Math]::Ceiling($remaining)))
         $result = Invoke-InstallerNative 'idevicepair' @('-u', $DeviceId, 'pair') $timeout
         $state = Get-InstallerPairState $result $DeviceId
@@ -228,7 +229,7 @@ function Get-InstallerPlistString($Dictionary, [string]$Key) {
 }
 function New-InstallerWorkspace {
     $script:InstallerTempRoot = Join-Path $script:InstallerAppRoot ('.work-' + [guid]::NewGuid().ToString('N'))
-    try { $null = [IO.Directory]::CreateDirectory($script:InstallerTempRoot) } catch { throw 'Не удалось создать временные файлы. Переместите программу в доступную для записи папку.' }
+    try { $null = [IO.Directory]::CreateDirectory($script:InstallerTempRoot) } catch { throw (Get-InstallerText 'Не удалось создать временные файлы. Переместите программу в доступную для записи папку.') }
 }
 function Copy-InstallerIpa([string]$Source) {
     $sourceStream = $null
@@ -241,7 +242,7 @@ function Copy-InstallerIpa([string]$Source) {
             Test-InstallerCancel
             $destination.Write($buffer, 0, $count)
         }
-    } catch [OperationCanceledException] { throw } catch { throw 'Не удалось подготовить IPA. Проверьте доступ к файлу и свободное место на диске.' }
+    } catch [OperationCanceledException] { throw } catch { throw (Get-InstallerText 'Не удалось подготовить IPA. Проверьте доступ к файлу и свободное место на диске.') }
     finally { if ($destination) { $destination.Dispose() }; if ($sourceStream) { $sourceStream.Dispose() } }
 }
 function Get-InstallerStreamHash([IO.Stream]$Stream) {
@@ -258,8 +259,8 @@ function Get-InstallerStreamHash([IO.Stream]$Stream) {
     } finally { $hash.Dispose() }
 }
 function Read-InstallerIpa([string]$IpaPath, [switch]$Stage) {
-    if ([string]::IsNullOrWhiteSpace($IpaPath) -or -not [IO.File]::Exists($IpaPath)) { throw 'Выберите существующий файл IPA.' }
-    if ([IO.Path]::GetExtension($IpaPath) -ine '.ipa') { throw 'Выберите файл с расширением .ipa.' }
+    if ([string]::IsNullOrWhiteSpace($IpaPath) -or -not [IO.File]::Exists($IpaPath)) { throw (Get-InstallerText 'Выберите существующий файл IPA.') }
+    if ([IO.Path]::GetExtension($IpaPath) -ine '.ipa') { throw (Get-InstallerText 'Выберите файл с расширением .ipa.') }
     $readPath = $IpaPath
     if ($Stage) {
         if (-not $script:InstallerTempRoot) { New-InstallerWorkspace }
@@ -291,7 +292,7 @@ function Read-InstallerIpa([string]$IpaPath, [switch]$Stage) {
         $archive.Dispose()
         $archive = $null
         $credentialKey = Get-InstallerStreamHash $fileStream
-    } catch [OperationCanceledException] { throw } catch { throw 'В файле IPA не найдено корректное приложение.' }
+    } catch [OperationCanceledException] { throw } catch { throw (Get-InstallerText 'В файле IPA не найдено корректное приложение.') }
     finally { if ($memory) { $memory.Dispose() }; if ($entryStream) { $entryStream.Dispose() }; if ($archive) { $archive.Dispose() }; if ($fileStream) { $fileStream.Dispose() } }
     Test-InstallerCancel
     try {
@@ -319,18 +320,18 @@ function Read-InstallerIpa([string]$IpaPath, [switch]$Stage) {
         $minimum = Get-InstallerPlistString $dict 'MinimumOSVersion'
         if ($null -eq (ConvertTo-InstallerVersionParts $minimum)) { $minimum = '' }
         return [pscustomobject]@{ BundleId=$bundleId; Name=$name; MinimumOSVersion=$minimum; CredentialKey=$credentialKey }
-    } catch [OperationCanceledException] { throw } catch { throw 'Не удалось прочитать сведения о приложении в IPA.' }
+    } catch [OperationCanceledException] { throw } catch { throw (Get-InstallerText 'Не удалось прочитать сведения о приложении в IPA.') }
 }
 function Get-InstallerFailure([string]$Text) {
-    if ($Text -match '(?i)ApplicationVerificationFailed|BundleVerificationFailed|A valid provisioning profile|provisioning profile|0xe8008015|0xe8008016|0xe8008018|0xe800801c|0xe8008029|0xe8008001') { return 'iPhone отклонил подпись или разрешение на установку этого IPA.' }
-    if ($Text -match '(?i)DeviceOSVersionTooLow|MinimumOSVersion|not supported.*version|requires.*iOS') { return 'Для этого IPA требуется другая версия iOS.' }
-    if ($Text -match '(?i)DeviceFamilyNotSupported|Architecture.*Unsupported|IncompatibleArchitecture') { return 'Это приложение несовместимо с выбранным iPhone.' }
-    if ($Text -match '(?i)NoSpace|not enough.*space|disk.*full|InsufficientStorage') { return 'На iPhone недостаточно свободного места.' }
-    if ($Text -match '(?i)DeviceLocked|PasswordProtected|passcode|lockdownd|pairing|trust') { return 'Разблокируйте iPhone, нажмите «Доверять» и повторите установку.' }
-    if ($Text -match '(?i)Device removed|No device found|connection|AFC.*error|could not connect') { return 'Соединение с iPhone прервано. Проверьте USB-кабель и результат установки на телефоне.' }
+    if ($Text -match '(?i)ApplicationVerificationFailed|BundleVerificationFailed|A valid provisioning profile|provisioning profile|0xe8008015|0xe8008016|0xe8008018|0xe800801c|0xe8008029|0xe8008001') { return (Get-InstallerText 'iPhone отклонил подпись или разрешение на установку этого IPA.') }
+    if ($Text -match '(?i)DeviceOSVersionTooLow|MinimumOSVersion|not supported.*version|requires.*iOS') { return (Get-InstallerText 'Для этого IPA требуется другая версия iOS.') }
+    if ($Text -match '(?i)DeviceFamilyNotSupported|Architecture.*Unsupported|IncompatibleArchitecture') { return (Get-InstallerText 'Это приложение несовместимо с выбранным iPhone.') }
+    if ($Text -match '(?i)NoSpace|not enough.*space|disk.*full|InsufficientStorage') { return (Get-InstallerText 'На iPhone недостаточно свободного места.') }
+    if ($Text -match '(?i)DeviceLocked|PasswordProtected|passcode|lockdownd|pairing|trust') { return (Get-InstallerText 'Разблокируйте iPhone, нажмите «Доверять» и повторите установку.') }
+    if ($Text -match '(?i)Device removed|No device found|connection|AFC.*error|could not connect') { return (Get-InstallerText 'Соединение с iPhone прервано. Проверьте USB-кабель и результат установки на телефоне.') }
     $match = [regex]::Match($Text, 'Got error\s+"([A-Za-z0-9_\-]{1,80})"')
-    if ($match.Success) { return 'iPhone отклонил установку: ' + $match.Groups[1].Value + '.' }
-    return 'Установка не подтверждена. Проверьте сообщение на iPhone и совместимость IPA.'
+    if ($match.Success) { return (Get-InstallerText 'iPhone отклонил установку: ') + $match.Groups[1].Value + '.' }
+    return (Get-InstallerText 'Установка не подтверждена. Проверьте сообщение на iPhone и совместимость IPA.')
 }
 function Test-InstallerInstalled([string]$DeviceId, [string]$BundleId) {
     $result = Invoke-InstallerNative 'ideviceinstaller' @('-u', $DeviceId, '-l', '-o', 'xml') 120
@@ -356,7 +357,7 @@ function Remove-InstallerWorkspace {
             if ([IO.File]::Exists($file)) { [IO.File]::Delete($file) }
         }
         [IO.Directory]::Delete($resolved, $false)
-    } catch { Send-InstallerEvent 'status' ('Не удалось удалить временную копию IPA: ' + $script:InstallerTempRoot) }
+    } catch { Send-InstallerEvent 'status' ((Get-InstallerText 'Не удалось удалить временную копию IPA: ') + $script:InstallerTempRoot) }
 }
 function Invoke-InstallerWorkflow([hashtable]$Options, $Bus) {
     $script:InstallerOptions = $Options
@@ -364,6 +365,7 @@ function Invoke-InstallerWorkflow([hashtable]$Options, $Bus) {
     $script:InstallerTempRoot = $null
     $script:InstallerStarted = $false
     try {
+        if ($Options.ContainsKey('Language')) { Set-InstallerLanguage ([string]$Options.Language) }
         $script:InstallerAppRoot = [IO.Path]::GetFullPath($Options.AppRoot).TrimEnd('\', '/')
         $script:InstallerToolRoot = if ($Options.ContainsKey('ToolRoot')) { [IO.Path]::GetFullPath($Options.ToolRoot) } else { Join-Path $script:InstallerAppRoot 'tools' }
         Test-InstallerCancel
@@ -377,22 +379,22 @@ function Invoke-InstallerWorkflow([hashtable]$Options, $Bus) {
             Send-InstallerEvent 'ipa' $app
             return
         }
-        if ($Options.Action -ne 'install') { throw 'Неизвестное действие.' }
+        if ($Options.Action -ne 'install') { throw (Get-InstallerText 'Неизвестное действие.') }
         $deviceId = [string]$Options.DeviceId
-        if (-not (Test-InstallerDeviceId $deviceId)) { throw 'Подключите iPhone по USB и нажмите «Обновить».' }
-        Send-InstallerEvent 'status' 'Проверка IPA…'
+        if (-not (Test-InstallerDeviceId $deviceId)) { throw (Get-InstallerText 'Подключите iPhone по USB и нажмите «Обновить».') }
+        Send-InstallerEvent 'status' (Get-InstallerText 'Проверка IPA…')
         $app = Read-InstallerIpa ([string]$Options.IpaPath) -Stage
         $attached = @(Get-InstallerUsbIds)
-        if ($attached -notcontains $deviceId) { throw 'iPhone отключён. Проверьте USB-кабель и нажмите «Обновить».' }
+        if ($attached -notcontains $deviceId) { throw (Get-InstallerText 'iPhone отключён. Проверьте USB-кабель и нажмите «Обновить».') }
         Confirm-InstallerPairing $deviceId
         $device = Get-InstallerDeviceInfo $deviceId -Disambiguate:($attached.Count -gt 1)
         Send-InstallerEvent 'deviceinfo' $device
         $comparison = Compare-InstallerIOSVersion $device.ProductVersion $app.MinimumOSVersion
         if ($null -ne $comparison -and $comparison -lt 0) {
-            throw ('Для приложения нужна iOS ' + $app.MinimumOSVersion + ' или новее. На iPhone установлена iOS ' + $device.ProductVersion + '.')
+            throw (Get-InstallerText 'Для приложения нужна iOS {0} или новее. На iPhone установлена iOS {1}.' @($app.MinimumOSVersion, $device.ProductVersion))
         }
         Test-InstallerCancel
-        Send-InstallerEvent 'status' 'Установка…'
+        Send-InstallerEvent 'status' (Get-InstallerText 'Установка…')
         $script:InstallerStarted = $true
         # The relative ASCII name avoids ANSI argv limitations of native Windows tools.
         # ProcessStartInfo sets the working directory through the Unicode Windows API.
@@ -400,10 +402,10 @@ function Invoke-InstallerWorkflow([hashtable]$Options, $Bus) {
         if ($result.ExitCode -ne 0 -or $result.Text -match '(?im)^\s*ERROR\b' -or $result.Stdout -notmatch '(?m)(?:^|[\r\n])Install:\s*Complete(?:\s*\(100%\))?\s*(?:[\r\n]|$)') {
             throw (Get-InstallerFailure $result.Text)
         }
-        if (-not (Test-InstallerInstalled $deviceId $app.BundleId)) { throw 'iPhone сообщил об установке, но приложение не найдено в списке. Проверьте результат на телефоне.' }
+        if (-not (Test-InstallerInstalled $deviceId $app.BundleId)) { throw (Get-InstallerText 'iPhone сообщил об установке, но приложение не найдено в списке. Проверьте результат на телефоне.') }
         Send-InstallerEvent 'done' ([pscustomobject]@{ Name=$app.Name; DeviceId=$deviceId; BundleId=$app.BundleId; MinimumOSVersion=$app.MinimumOSVersion; CredentialKey=$app.CredentialKey })
     } catch [OperationCanceledException] {
-        $message = if ($script:InstallerStarted) { 'Ожидание остановлено. Проверьте установку на iPhone.' } else { 'Операция отменена.' }
+        $message = if ($script:InstallerStarted) { (Get-InstallerText 'Ожидание остановлено. Проверьте установку на iPhone.') } else { (Get-InstallerText 'Операция отменена.') }
         Send-InstallerEvent 'cancelled' $message
     } catch {
         Send-InstallerEvent 'error' $_.Exception.Message

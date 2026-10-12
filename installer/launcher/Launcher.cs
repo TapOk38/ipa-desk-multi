@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -11,14 +12,16 @@ using System.Threading;
 using System.Windows.Forms;
 
 [assembly: AssemblyTitle("IPA Install")]
-[assembly: AssemblyDescription("Установка IPA на iPhone через USB")]
+[assembly: AssemblyDescription("Install IPA apps on iPhone via USB")]
 [assembly: AssemblyProduct("IPA Install")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0-beta.1")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyInformationalVersion("1.1.0-beta.1")]
 
 internal static class Launcher
 {
+    private static bool russian = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
+    private static string Text(string ru, string en) { return russian ? ru : en; }
 
     [STAThread]
     private static int Main(string[] args)
@@ -30,15 +33,28 @@ internal static class Launcher
             if (args.Length != 0)
             {
                 if (args.Length != 2 || args[0] != "--smoke-test")
-                    throw new ArgumentException("Неизвестные параметры запуска.");
+                    throw new ArgumentException(Text("Неизвестные параметры запуска.", "Unknown launch arguments."));
                 testRoot = Path.GetFullPath(args[1]);
             }
             dataRoot = testRoot ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "IPA-Install");
+            if (testRoot == null)
+            {
+                try
+                {
+                    string languagePath = Path.Combine(dataRoot, "language.txt");
+                    if (File.Exists(languagePath) && new FileInfo(languagePath).Length <= 16)
+                    {
+                        string saved = File.ReadAllText(languagePath).Trim();
+                        if (saved == "ru" || saved == "en") russian = saved == "ru";
+                    }
+                }
+                catch { }
+            }
             Directory.CreateDirectory(dataRoot);
             string runtimeRoot = Path.Combine(dataRoot, "app", PayloadInfo.Sha256.Substring(0, 32));
             ExtractPayload(runtimeRoot);
             string powershell = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"System32\WindowsPowerShell\v1.0\powershell.exe");
-            if (!File.Exists(powershell)) throw new FileNotFoundException("В Windows не найден Windows PowerShell.");
+            if (!File.Exists(powershell)) throw new FileNotFoundException(Text("В Windows не найден Windows PowerShell.", "Windows PowerShell was not found."));
             NormalizePathEnvironment();
             var start = new ProcessStartInfo(powershell);
             start.Arguments = "-NoLogo -NoProfile -NonInteractive -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File " + Quote(Path.Combine(runtimeRoot, "IPA-Install.ps1"));
@@ -64,16 +80,16 @@ internal static class Launcher
                 {
                     process.Kill();
                     process.WaitForExit();
-                    throw new TimeoutException("Проверка запуска превысила 60 секунд.");
+                    throw new TimeoutException(Text("Проверка запуска превысила 60 секунд.", "The startup check exceeded 60 seconds."));
                 }
                 process.WaitForExit();
                 string error = errors.GetAwaiter().GetResult();
                 output.GetAwaiter().GetResult();
-                if (process.ExitCode != 0) throw new InvalidOperationException("Ошибка запуска программы.\r\n" + error);
+                if (process.ExitCode != 0) throw new InvalidOperationException(Text("Ошибка запуска программы.\r\n", "Could not start the program.\r\n") + error);
             }
             if (testRoot != null)
             {
-                if (!File.Exists(screenshot)) throw new InvalidOperationException("Окно приложения не прошло проверку запуска.");
+                if (!File.Exists(screenshot)) throw new InvalidOperationException(Text("Окно приложения не прошло проверку запуска.", "The application window failed the startup check."));
                 File.WriteAllText(Path.Combine(testRoot, "smoke-result.txt"), "OK\r\nRuntime: " + runtimeRoot, Encoding.UTF8);
             }
             return 0;
@@ -92,7 +108,7 @@ internal static class Launcher
             }
             catch { log = null; }
             if (testRoot == null)
-                MessageBox.Show("Не удалось запустить IPA Install.\r\n" + error.Message + (log == null ? "" : "\r\n\r\nЖурнал: " + log), "IPA Install", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Text("Не удалось запустить IPA Install.\r\n", "Could not start IPA Install.\r\n") + error.Message + (log == null ? "" : Text("\r\n\r\nЖурнал: ", "\r\n\r\nLog: ") + log), "IPA Install", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         }
     }
@@ -146,7 +162,7 @@ internal static class Launcher
         using (gate)
         using (var payload = Assembly.GetExecutingAssembly().GetManifestResourceStream("IPA.Payload.zip"))
         {
-            if (payload == null || Hash(payload) != PayloadInfo.Sha256) throw new InvalidDataException("Повреждён файл программы. Скачайте EXE повторно.");
+            if (payload == null || Hash(payload) != PayloadInfo.Sha256) throw new InvalidDataException(Text("Повреждён файл программы. Скачайте EXE повторно.", "The program file is damaged. Download the EXE again."));
             payload.Position = 0;
             using (var zip = new ZipArchive(payload, ZipArchiveMode.Read))
             {
@@ -154,7 +170,7 @@ internal static class Launcher
                 {
                     string destination = Path.GetFullPath(Path.Combine(root, entry.FullName));
                     if (!destination.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || entry.FullName.EndsWith("/"))
-                        throw new InvalidDataException("Недопустимый путь внутри пакета.");
+                        throw new InvalidDataException(Text("Недопустимый путь внутри пакета.", "Invalid path inside the package."));
                     string expected;
                     using (var source = entry.Open()) expected = Hash(source);
                     if (File.Exists(destination))

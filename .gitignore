@@ -8,6 +8,8 @@ release-assets/
 **/.build/
 **/.downloads/
 **/build-*/
+!android/build-tools/
+!android/build-tools/*.java
 *.ipa
 *.exe
 *.dll

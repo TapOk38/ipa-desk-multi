@@ -1,5 +1,6 @@
 ﻿#requires -Version 5.1
 param([string]$ArchivePath)
+. (Join-Path $PSScriptRoot 'Localization.ps1')
 # Fixed release and hashes, never execute downloaded PowerShell or select 'latest'.
 function Get-IpaToolSpec {
     return @{
@@ -11,19 +12,19 @@ function Get-IpaToolSpec {
     }
 }
 function Test-ToolCancellation([scriptblock]$Check) {
-    if ($Check -and (& $Check)) { throw [OperationCanceledException]::new('Подготовка компонента отменена.') }
+    if ($Check -and (& $Check)) { throw [OperationCanceledException]::new((Get-IpaText 'Подготовка компонента отменена.')) }
 }
 function Receive-PinnedTool([string]$Url,[string]$Destination,[scriptblock]$Cancelled) {
     Add-Type -AssemblyName System.Net.Http
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     $client=[Net.Http.HttpClient]::new(); $client.Timeout=[TimeSpan]::FromMinutes(5)
-    $client.DefaultRequestHeaders.UserAgent.ParseAdd('IPA-Desk-Multi/0.3.0-beta.1')
+    $client.DefaultRequestHeaders.UserAgent.ParseAdd('IPA-Desk-Multi/0.4.0-beta.1')
     $cts=[Threading.CancellationTokenSource]::new(); $response=$null; $inputStream=$null; $outputStream=$null
     try {
         $request=$client.GetAsync($Url,[Net.Http.HttpCompletionOption]::ResponseHeadersRead,$cts.Token)
         while(-not $request.IsCompleted){Test-ToolCancellation $Cancelled; Start-Sleep -Milliseconds 100}
         $response=$request.GetAwaiter().GetResult(); $null=$response.EnsureSuccessStatusCode()
-        if($response.Content.Headers.ContentLength -gt 40MB){throw 'Слишком большой архив компонента.'}
+        if($response.Content.Headers.ContentLength -gt 40MB){throw (Get-IpaText 'Слишком большой архив компонента.')}
         $inputStream=$response.Content.ReadAsStreamAsync().GetAwaiter().GetResult()
         $outputStream=[IO.File]::Open($Destination,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
         $buffer=New-Object byte[] 65536; $total=0L; $watch=[Diagnostics.Stopwatch]::StartNew()
@@ -32,11 +33,11 @@ function Receive-PinnedTool([string]$Url,[string]$Destination,[scriptblock]$Canc
             $read=$inputStream.ReadAsync($buffer,0,$buffer.Length,$cts.Token)
             while(-not $read.IsCompleted){
                 Test-ToolCancellation $Cancelled
-                if($watch.Elapsed.TotalMinutes -gt 5){throw 'Превышено время загрузки компонента.'}
+                if($watch.Elapsed.TotalMinutes -gt 5){throw (Get-IpaText 'Превышено время загрузки компонента.')}
                 Start-Sleep -Milliseconds 100
             }
             $count=$read.GetAwaiter().GetResult(); if($count -eq 0){break}
-            $total+=$count; if($total -gt 40MB){throw 'Слишком большой архив компонента.'}
+            $total+=$count; if($total -gt 40MB){throw (Get-IpaText 'Слишком большой архив компонента.')}
             $outputStream.Write($buffer,0,$count)
         }
     } finally {
@@ -53,7 +54,7 @@ function Ensure-IpaTool([string]$AppRoot,[string]$LocalArchive='',[scriptblock]$
     $folder=Join-Path $AppRoot ('tools\cpp-'+$spec.Version)
     $exe=Join-Path $folder 'ipatool-cpp.exe'
     if([IO.File]::Exists($exe)){
-        if((Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw 'Компонент IPATool повреждён или имеет другую версию. Удалите только tools\cpp-1.0.9 и повторите запуск.'}
+        if((Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw (Get-IpaText 'Компонент IPATool повреждён или имеет другую версию. Удалите только tools\cpp-1.0.9 и повторите запуск.')}
         return $exe
     }
     $null=[IO.Directory]::CreateDirectory($folder)
@@ -62,7 +63,7 @@ function Ensure-IpaTool([string]$AppRoot,[string]$LocalArchive='',[scriptblock]$
         $lock=[IO.File]::Open((Join-Path $folder '.install.lock'),[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
         # Recheck after obtaining the lock; another process may have finished.
         if([IO.File]::Exists($exe)){
-            if((Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw 'Неверная контрольная сумма IPATool.'}
+            if((Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw (Get-IpaText 'Неверная контрольная сумма IPATool.')}
             return $exe
         }
         $work=Join-Path $folder ('.install-'+[guid]::NewGuid().ToString('N'))
@@ -71,15 +72,15 @@ function Ensure-IpaTool([string]$AppRoot,[string]$LocalArchive='',[scriptblock]$
         if($LocalArchive){[IO.File]::Copy([IO.Path]::GetFullPath($LocalArchive),$archive,$false)}
         else {Receive-PinnedTool $spec.Url $archive $Cancelled}
         Test-ToolCancellation $Cancelled
-        if((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $spec.ArchiveSha256){throw 'Контрольная сумма архива IPATool не совпала. Компонент не установлен.'}
+        if((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $spec.ArchiveSha256){throw (Get-IpaText 'Контрольная сумма архива IPATool не совпала. Компонент не установлен.')}
         $zip=[IO.Compression.ZipFile]::OpenRead($archive)
         try {
             $entries=@($zip.Entries | Where-Object {$_.FullName -ceq $spec.Entry})
-            if($entries.Count -ne 1 -or $entries[0].Length -gt 80MB){throw 'Неверное содержимое архива IPATool.'}
+            if($entries.Count -ne 1 -or $entries[0].Length -gt 80MB){throw (Get-IpaText 'Неверное содержимое архива IPATool.')}
             # Extract one exact member to our own filename, never arbitrary ZIP paths.
             [IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0],$unpacked,$false)
         } finally {$zip.Dispose()}
-        if((Get-FileHash -LiteralPath $unpacked -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw 'Контрольная сумма IPATool не совпала. Компонент не установлен.'}
+        if((Get-FileHash -LiteralPath $unpacked -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw (Get-IpaText 'Контрольная сумма IPATool не совпала. Компонент не установлен.')}
         Test-ToolCancellation $Cancelled
         [IO.File]::Move($unpacked,$exe)
         return $exe

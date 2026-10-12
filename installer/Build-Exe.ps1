@@ -8,7 +8,7 @@ $null=[IO.Directory]::CreateDirectory($Destination)
 $work=Join-Path $PSScriptRoot ('.build/'+[guid]::NewGuid().ToString('N'))
 $null=[IO.Directory]::CreateDirectory($work)
 $files=[Collections.Generic.List[string]]::new()
-foreach($name in @('IPA-Install.ps1','Engine.ps1','Credentials.ps1','AccountWindows.ps1')){$files.Add($name)}
+foreach($name in @('IPA-Install.ps1','Engine.ps1','Credentials.ps1','AccountWindows.ps1','Localization.ps1','PRIVACY.md','PRIVACY.en.md')){$files.Add($name)}
 # Include only pinned executables and DLLs, plus their notices and corresponding sources.
 foreach($line in [IO.File]::ReadAllLines((Join-Path $PSScriptRoot 'tools/SHA256SUMS.txt'))){
     if($line -notmatch '^([a-fA-F0-9]{64})\s+([a-zA-Z0-9_.-]+\.(?:exe|dll))$'){throw 'Invalid tool checksum entry'}

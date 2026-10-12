@@ -9,7 +9,7 @@ $work=Join-Path $Destination ('build-'+[guid]::NewGuid().ToString('N'))
 $null=[IO.Directory]::CreateDirectory($work)
 $archive=Join-Path $work 'payload.zip'
 # Explicit allowlist: no accounts, sessions, downloads, external binaries or test fixtures.
-$files=@('IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','PRIVACY.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
+$files=@('IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','PRIVACY.md','PRIVACY.en.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
 $zip=[IO.Compression.ZipFile]::Open($archive,[IO.Compression.ZipArchiveMode]::Create)
 try {
     foreach($name in $files){
@@ -25,10 +25,10 @@ $hash=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvaria
 $generated=Join-Path $work 'PayloadInfo.cs'
 [IO.File]::WriteAllText($generated,('internal static class PayloadInfo { internal const string Sha256 = "'+$hash+'"; }'),[Text.UTF8Encoding]::new($false))
 $compiler=Join-Path $env:SystemRoot 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-$exe=Join-Path $Destination 'IPA-Desk-Multi-0.3.1-beta.1.exe'
+$exe=Join-Path $Destination 'IPA-Desk-Multi-0.4.0-beta.1.exe'
 & $compiler /nologo /target:winexe /platform:x64 /optimize+ /codepage:65001 "/out:$exe" "/win32manifest:$PSScriptRoot\launcher\app.manifest" "/resource:$archive,IPA.Payload.zip" /reference:System.Windows.Forms.dll /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll (Join-Path $PSScriptRoot 'launcher\Launcher.cs') $generated
 if($LASTEXITCODE -ne 0){throw 'EXE compilation failed'}
-$manifest=[ordered]@{Version='0.3.1-beta.1';Exe=[IO.Path]::GetFileName($exe);SHA256=(Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash;PayloadSHA256=$hash;Files=$files}
+$manifest=[ordered]@{Version='0.4.0-beta.1';Exe=[IO.Path]::GetFileName($exe);SHA256=(Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash;PayloadSHA256=$hash;Files=$files}
 $manifest | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath (Join-Path $Destination 'Build-result.json') -Encoding UTF8
 Write-Output $exe
 Get-FileHash -LiteralPath $exe -Algorithm SHA256

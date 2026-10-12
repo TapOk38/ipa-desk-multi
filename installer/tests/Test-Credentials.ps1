@@ -13,6 +13,7 @@ $null = [IO.Directory]::CreateDirectory($TestRoot)
 $store = Join-Path $TestRoot 'data/accounts.dat'
 $shim = Join-Path $PSScriptRoot 'CredentialProtection-TestDouble.ps1'
 . $ModulePath
+Set-InstallerLanguage 'ru'
 $script:Checks = 0
 function Assert($Condition, [string]$Description) {
     if (-not $Condition) { throw ('FAIL: ' + $Description) }

@@ -39,10 +39,10 @@ if ($TestsOnly) { return }
 [xml]$manifest = Get-Content "$PSScriptRoot\app\src\main\AndroidManifest.xml" -Raw
 $ns = 'http://schemas.android.com/apk/res/android'
 $manifest.manifest.SetAttribute('package', 'ru.ipadesk.usb.prototype')
-$manifest.manifest.SetAttribute('versionCode', $ns, '8') | Out-Null
-$manifest.manifest.SetAttribute('versionName', $ns, '0.6.0-beta.1') | Out-Null
+$manifest.manifest.SetAttribute('versionCode', $ns, '9') | Out-Null
+$manifest.manifest.SetAttribute('versionName', $ns, '0.7.0-beta.1') | Out-Null
 $manifest.manifest.application.activity.SetAttribute('name', $ns, 'ru.ipadesk.usb.MainActivity') | Out-Null
-$manifest.manifest.application.SetAttribute('label', $ns, 'Установка IPA') | Out-Null
+$manifest.manifest.application.SetAttribute('label', $ns, 'IPA USB') | Out-Null
 $sdkElement = $manifest.CreateElement('uses-sdk')
 $sdkElement.SetAttribute('minSdkVersion', $ns, '26') | Out-Null
 $sdkElement.SetAttribute('targetSdkVersion', $ns, '35') | Out-Null
@@ -50,12 +50,13 @@ $manifest.manifest.AppendChild($sdkElement) | Out-Null
 $manifest.Save("$buildRoot\AndroidManifest.xml")
 & "$bt\aapt2.exe" link -I $androidJar --manifest "$buildRoot\AndroidManifest.xml" -o "$buildRoot\aapt-output.apk"
 $aaptExit = $LASTEXITCODE
-& "$Jdk\bin\javac.exe" -d "$buildRoot" "$PSScriptRoot\build-tools\RecoverManifest.java"
+& "$Jdk\bin\javac.exe" -d "$buildRoot" "$PSScriptRoot\build-tools\RecoverManifest.java" "$PSScriptRoot\build-tools\VerifyApk.java"
 if ($LASTEXITCODE -ne 0) { throw 'Build helper compilation failed' }
-& "$Jdk\bin\java.exe" -cp "$buildRoot" RecoverManifest "$buildRoot\aapt-output.apk" "$buildRoot\unsigned.apk"
+& "$Jdk\bin\java.exe" -cp "$buildRoot" RecoverManifest "$buildRoot\aapt-output.apk" "$buildRoot\manifest.apk"
 if ($LASTEXITCODE -ne 0) { throw "Resource linking failed ($aaptExit); binary manifest is incomplete" }
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression
 $allJar = "$buildRoot\program.jar"
 $file = [IO.File]::Open($allJar,[IO.FileMode]::Create)
 $archive = [IO.Compression.ZipArchive]::new($file,[IO.Compression.ZipArchiveMode]::Create)
@@ -81,8 +82,16 @@ try {
 } finally { $archive.Dispose(); $file.Dispose() }
 & "$Jdk\bin\java.exe" -Xmx2048m -cp "$bt\lib\d8.jar" com.android.tools.r8.D8 --release --min-api 26 --lib $androidJar --output $dex $allJar
 if ($LASTEXITCODE -ne 0) { throw 'DEX compilation failed' }
-$apk = [IO.Compression.ZipFile]::Open("$buildRoot\unsigned.apk",[IO.Compression.ZipArchiveMode]::Update)
+# Do not update a Java-created ZIP in place: .NET may retain the manifest's
+# data-descriptor flag while overwriting its descriptor. Write every entry to
+# a fresh archive so local headers and the central directory agree.
+$manifestArchive = [IO.Compression.ZipFile]::OpenRead("$buildRoot\manifest.apk")
+$apkStream = [IO.File]::Open("$buildRoot\unsigned.apk",[IO.FileMode]::Create)
+$apk = [IO.Compression.ZipArchive]::new($apkStream,[IO.Compression.ZipArchiveMode]::Create)
 try {
+    $src = $manifestArchive.GetEntry('AndroidManifest.xml').Open()
+    $dst = $apk.CreateEntry('AndroidManifest.xml').Open()
+    try { $src.CopyTo($dst) } finally { $src.Dispose(); $dst.Dispose() }
     foreach ($d in Get-ChildItem $dex -Filter '*.dex') {
         [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($apk,$d.FullName,$d.Name) | Out-Null
     }
@@ -104,16 +113,14 @@ try {
             [IO.Compression.ZipFileExtensions]::CreateEntryFromFile($apk,$license.FullName,"assets/licenses/$($license.Name)") | Out-Null
         }
     }
-} finally { $apk.Dispose() }
+} finally { $apk.Dispose(); $apkStream.Dispose(); $manifestArchive.Dispose() }
 # All entries are DEFLATED, with no native libraries or app resources. There are
 # no uncompressed entries requiring zipalign. Keep packaging entirely in managed code.
-$alignmentCheck = [IO.Compression.ZipFile]::OpenRead("$buildRoot\unsigned.apk")
-try {
-    if (-not $alignmentCheck.GetEntry('AndroidManifest.xml') -or -not $alignmentCheck.GetEntry('classes.dex')) { throw 'Incomplete APK' }
-} finally { $alignmentCheck.Dispose() }
+& "$Jdk\bin\java.exe" -cp "$buildRoot" VerifyApk "$buildRoot\unsigned.apk"
+if ($LASTEXITCODE -ne 0) { throw 'APK ZIP structure verification failed' }
 $key = (Resolve-Path -LiteralPath $KeyStore).Path
-& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" sign --ks $key --ks-key-alias $KeyAlias --ks-pass env:IPA_USB_STORE_PASSWORD --key-pass env:IPA_USB_KEY_PASSWORD --out "$buildRoot\ipa-usb-0.6.0-beta.1.apk" "$buildRoot\unsigned.apk"
+& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" sign --ks $key --ks-key-alias $KeyAlias --ks-pass env:IPA_USB_STORE_PASSWORD --key-pass env:IPA_USB_KEY_PASSWORD --out "$buildRoot\ipa-usb-0.7.0-beta.1.apk" "$buildRoot\unsigned.apk"
 if ($LASTEXITCODE -ne 0) { throw 'APK signing failed' }
-& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" verify --verbose --print-certs "$buildRoot\ipa-usb-0.6.0-beta.1.apk"
+& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" verify --verbose --print-certs "$buildRoot\ipa-usb-0.7.0-beta.1.apk"
 if ($LASTEXITCODE -ne 0) { throw 'APK verification failed' }
-Get-FileHash "$buildRoot\ipa-usb-0.6.0-beta.1.apk" -Algorithm SHA256
+Get-FileHash "$buildRoot\ipa-usb-0.7.0-beta.1.apk" -Algorithm SHA256

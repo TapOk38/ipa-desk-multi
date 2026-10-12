@@ -29,9 +29,9 @@ final class UsbWire implements PacketIO {
             }
             if (face != null) break;
         }
-        if (face == null) throw new IOException("USB: интерфейс iPhone недоступен. Разблокируйте iPhone и переподключите кабель.");
+        if (face == null) throw new IOException(L10n.t(L10n.Key.USB_INTERFACE_UNAVAILABLE));
         connection = manager.openDevice(device);
-        if (connection == null) throw new IOException("USB: не удалось открыть устройство.");
+        if (connection == null) throw new IOException(L10n.t(L10n.Key.USB_OPEN_FAILED));
         intf = face;
         UsbEndpoint input = null, output = null;
         for (int i = 0; i < intf.getEndpointCount(); i++) {
@@ -42,32 +42,32 @@ final class UsbWire implements PacketIO {
         }
         in = input; out = output;
         try {
-            if (in == null || out == null) throw new IOException("USB: отсутствуют каналы передачи.");
+            if (in == null || out == null) throw new IOException(L10n.t(L10n.Key.USB_NO_ENDPOINTS));
             byte[] current = new byte[1];
             int got = connection.controlTransfer(0x80, 8, 0, 0, current, 1, 2000);
             if ((got != 1 || (current[0] & 255) != chosen.getId()) && !connection.setConfiguration(chosen))
-                throw new IOException("USB: не удалось выбрать конфигурацию iPhone.");
-            if (!connection.claimInterface(intf, true)) throw new IOException("USB: интерфейс занят.");
+                throw new IOException(L10n.t(L10n.Key.USB_CONFIGURATION_FAILED));
+            if (!connection.claimInterface(intf, true)) throw new IOException(L10n.t(L10n.Key.USB_BUSY));
         } catch (IOException e) { connection.close(); throw e; }
     }
     public int read(byte[] buffer) throws IOException {
-        if (closed || Thread.currentThread().isInterrupted()) throw new IOException("Операция остановлена.");
+        if (closed || Thread.currentThread().isInterrupted()) throw new IOException(L10n.t(L10n.Key.CANCELLED));
         int count = connection.bulkTransfer(in, buffer, buffer.length, 500);
-        if (closed) throw new IOException("USB: соединение закрыто.");
+        if (closed) throw new IOException(L10n.t(L10n.Key.USB_CLOSED));
         // Android reports both timeout and disconnect as -1; Mux supplies an overall deadline.
         return Math.max(0, count);
     }
     public void write(byte[] packet) throws IOException {
-        if (closed || Thread.currentThread().isInterrupted()) throw new IOException("Операция остановлена.");
+        if (closed || Thread.currentThread().isInterrupted()) throw new IOException(L10n.t(L10n.Key.CANCELLED));
         int offset = 0;
         while (offset < packet.length) {
             int n = connection.bulkTransfer(out, packet, offset, Math.min(16384, packet.length - offset), 5000);
-            if (n <= 0) throw new IOException("USB: ошибка отправки. Проверьте кабель.");
+            if (n <= 0) throw new IOException(L10n.t(L10n.Key.USB_WRITE_FAILED));
             offset += n;
         }
         if (packet.length % out.getMaxPacketSize() == 0) {
             if (connection.bulkTransfer(out, new byte[0], 0, 2000) < 0)
-                throw new IOException("USB: ошибка завершения пакета.");
+                throw new IOException(L10n.t(L10n.Key.USB_PACKET_FAILED));
         }
     }
     public void close() {

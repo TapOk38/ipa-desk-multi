@@ -37,7 +37,7 @@ final class Pairing {
         try (PEMParser parser = new PEMParser(new StringReader(new String(devicePublicKey, StandardCharsets.US_ASCII)))) {
             Object parsed = parser.readObject();
             if (parsed instanceof SubjectPublicKeyInfo) device = new JcaPEMKeyConverter().setProvider(BC).getPublicKey((SubjectPublicKeyInfo)parsed);
-            else throw new IOException("Неверный DevicePublicKey от iPhone.");
+            else throw new IOException(L10n.t(L10n.Key.PAIR_BAD_KEY));
         }
         X509Certificate rootCertificate = certificate(root.getPublic(), root.getPrivate(), true);
         return new Pairing(UUID.randomUUID().toString().toUpperCase(Locale.ROOT), buid,

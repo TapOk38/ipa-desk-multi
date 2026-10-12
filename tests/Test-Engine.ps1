@@ -6,6 +6,7 @@ $null=[IO.Directory]::CreateDirectory($test)
 $environment=[Environment]::GetEnvironmentVariables(); $names=@($environment.Keys | Where-Object {$_ -ieq 'PATH'})
 if($names.Count -gt 1){$v=$environment[$names[0]];foreach($n in $names){[Environment]::SetEnvironmentVariable($n,$null,'Process')};[Environment]::SetEnvironmentVariable('Path',$v,'Process')}
 . (Join-Path $root 'Accounts.ps1')
+Set-IpaLanguage 'ru'
 $script:Count=0
 function Assert($Condition,[string]$Message){if(-not $Condition){throw "FAIL: $Message"};$script:Count++;Write-Output "PASS: $Message"}
 Assert ((Resolve-AppId 'https://apps.apple.com/ru/app/example/id6746845077?l=ru') -eq '6746845077') 'App Store URL resolves exactly'
@@ -31,11 +32,11 @@ $unicodeToolFolder=Join-Path $test 'Программа с кириллицей'
 $null=[IO.Directory]::CreateDirectory($unicodeToolFolder)
 Copy-Item -LiteralPath $fake -Destination $unicodeToolFolder
 $fake=Join-Path $unicodeToolFolder 'fake.exe'
-function Run-Case([string]$Scenario,[bool]$Cancel=$false,[string]$Email='test@example.invalid',[string]$FolderPrefix='', [string]$Description='', [string]$EnginePath=(Join-Path $root 'Engine.ps1')){
+function Run-Case([string]$Scenario,[bool]$Cancel=$false,[string]$Email='test@example.invalid',[string]$FolderPrefix='', [string]$Description='', [string]$EnginePath=(Join-Path $root 'Engine.ps1'), [string]$Language='ru'){
     $env:IPA_DESK_TEST_SCENARIO=$Scenario
     $folder=Join-Path $test ($FolderPrefix+[guid]::NewGuid().ToString('N'))
     $null=[IO.Directory]::CreateDirectory($folder);[IO.File]::WriteAllText((Join-Path $folder ('app-101_'+$Email+'.ipa')),'existing')
-    $options=@{AppRoot=$root;DataRoot=(Join-Path $test 'sessions');Email=$Email;Description=$Description;EncryptedPassword=$cipher;Password='';AppId='101';OutputFolder=$folder;FileName='';ToolPath=$fake}
+    $options=@{AppRoot=$root;DataRoot=(Join-Path $test 'sessions');Language=$Language;Email=$Email;Description=$Description;EncryptedPassword=$cipher;Password='';AppId='101';OutputFolder=$folder;FileName='';ToolPath=$fake}
     $bus=[hashtable]::Synchronized(@{Events=[Collections.Concurrent.ConcurrentQueue[object]]::new();Cancel=$false;Answer=$null;AnswerReady=$false})
     $events=[Collections.Generic.List[object]]::new();$runner=[PowerShell]::Create()
     $null=$runner.AddScript('param($Path,$Options,$Bus); . $Path; function Resolve-CppTool { return $script:Options.ToolPath }; Invoke-Workflow $Options $Bus').AddArgument($EnginePath).AddArgument($options).AddArgument($bus)
@@ -99,5 +100,11 @@ try{
     Assert (@($downloads | Where-Object {$_.output -match '[^\x00-\x7f]' -or [IO.Path]::IsPathRooted($_.output)}).Count -eq 0) 'v3 native downloads receive only relative ASCII filenames'
     Assert (@($downloads | Where-Object {$_.cwd -eq $unicode.Folder}).Count -eq 1) 'Unicode destination reaches actual child process through WorkingDirectory'
     Assert ([Environment]::CurrentDirectory -ceq $initialDirectory) 'Parent working directory is unchanged'
+    $english=Run-Case 'happy' -Language 'en'
+    Assert (@($english.Events | Where-Object Kind -eq done).Count -eq 1) 'English worker completes the 2FA and download workflow'
+    Assert (@($english.Events | Where-Object { $_.Kind -eq 'code' -and $_.Data -like 'Enter the code for *' }).Count -eq 1) 'English 2FA prompt reaches the UI event queue'
+    Assert (@($english.Events | Where-Object { $_.Kind -eq 'status' -and $_.Data -eq 'Downloading IPA…' }).Count -eq 1) 'English download status reaches the UI event queue'
+    $englishError=Run-Case 'license' -Language 'en'
+    Assert (@($englishError.Events | Where-Object { $_.Kind -eq 'error' -and $_.Data -like 'Download failed. Apple did not confirm a license*' }).Count -eq 1) 'English application error reaches the UI event queue'
     Write-Output "$script:Count checks passed; real DPAPI, simulated Apple responses."
 }finally{$env:IPA_DESK_TEST_SCENARIO=$null;$env:IPA_DESK_TEST_AUDIT=$null;$env:IPA_DESK_TEST_DOWNLOAD_AUDIT=$null}

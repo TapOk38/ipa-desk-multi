@@ -17,7 +17,7 @@ final class Afc {
     static byte[] path(String path) { return (path + "\0").getBytes(StandardCharsets.UTF_8); }
     static class Status extends IOException {
         final long code;
-        Status(long code) { super("AFC: ошибка " + code); this.code = code; }
+        Status(long code) { super(L10n.t(L10n.Key.AFC_ERROR, code)); this.code = code; }
     }
     static final class Reply {
         final long op; final byte[] data;
@@ -32,16 +32,16 @@ final class Afc {
         byte[] magic = new byte[8]; response.get(magic);
         long entire = response.getLong(), first = response.getLong(), responseId = response.getLong(), op = response.getLong();
         if (!Arrays.equals(magic, MAGIC) || entire < 40 || entire > 1024 * 1024 || first < 40 || first > entire || responseId != id)
-            throw new IOException("AFC: неверный ответ устройства.");
+            throw new IOException(L10n.t(L10n.Key.AFC_BAD_REPLY));
         byte[] data = Plists.exact(in, (int)entire - 40);
         if (op == 1) {
-            if (data.length != 8) throw new IOException("AFC: неполный статус.");
+            if (data.length != 8) throw new IOException(L10n.t(L10n.Key.AFC_SHORT_STATUS));
             long code = le(data).getLong(); if (code != 0) throw new Status(code);
         }
         return new Reply(op, data);
     }
     private void status(long op, byte[] header, byte[] payload) throws IOException {
-        if (request(op, header, payload).op != 1) throw new IOException("AFC: отсутствует подтверждение операции.");
+        if (request(op, header, payload).op != 1) throw new IOException(L10n.t(L10n.Key.AFC_NO_ACK));
     }
     void mkdir(String remote) throws IOException {
         try { status(9, path(remote), new byte[0]); } catch (Status e) { if (e.code != 16) throw e; }
@@ -58,18 +58,18 @@ final class Afc {
         byte[] name = path(remote);
         byte[] open = ByteBuffer.allocate(8 + name.length).order(ByteOrder.LITTLE_ENDIAN).putLong(3).put(name).array();
         Reply reply = request(13, open, new byte[0]);
-        if (reply.op != 14 || reply.data.length != 8) throw new IOException("AFC: не удалось открыть файл.");
+        if (reply.op != 14 || reply.data.length != 8) throw new IOException(L10n.t(L10n.Key.AFC_OPEN_FAILED));
         byte[] handle = reply.data;
         long size = file.length(), total = 0;
         IOException failed = null;
         try (InputStream source = new FileInputStream(file)) {
             byte[] chunk = new byte[65536]; int n;
             while ((n = source.read(chunk)) != -1) {
-                if (Thread.currentThread().isInterrupted()) throw new IOException("Передача остановлена.");
+                if (Thread.currentThread().isInterrupted()) throw new IOException(L10n.t(L10n.Key.TRANSFER_STOPPED));
                 status(16, handle, n == chunk.length ? chunk : Arrays.copyOf(chunk, n));
                 total += n; progress.accept(total);
             }
-            if (total != size) throw new IOException("Размер IPA изменился во время передачи.");
+            if (total != size) throw new IOException(L10n.t(L10n.Key.IPA_SIZE_CHANGED));
         } catch (IOException e) { failed = e; throw e; }
         finally {
             try { status(20, handle, new byte[0]); }

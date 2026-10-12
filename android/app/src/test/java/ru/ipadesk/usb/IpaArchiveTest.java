@@ -55,11 +55,11 @@ public class IpaArchiveTest {
     @Test public void rejectsDuplicateFilesEvenWhenContentsAreIdentical() throws Exception {
         File f = archive(Zip64Mode.AsNeeded, new String[] {ROOT + "FreshKeys"}, new byte[][] {{1, 2, 3}});
         IOException e = assertThrows(IOException.class, () -> Ipa.open(f));
-        assertTrue(e.getMessage().contains("повторяются имена файлов"));
+        assertEquals(L10n.t(L10n.Key.IPA_DUPLICATE), e.getMessage());
     }
     @Test public void rejectsDuplicateInfoPlist() throws Exception {
         File f = archive(Zip64Mode.AsNeeded, new String[] {ROOT + "Info.plist"}, new byte[][] {EMPTY});
-        assertTrue(assertThrows(IOException.class, () -> Ipa.open(f)).getMessage().contains("повторяются"));
+        assertEquals(L10n.t(L10n.Key.IPA_DUPLICATE), assertThrows(IOException.class, () -> Ipa.open(f)).getMessage());
     }
     @Test public void rejectsDirectoryWithHiddenContents() throws Exception {
         File f = archive(Zip64Mode.AsNeeded, new String[] {ROOT}, new byte[][] {{42}});

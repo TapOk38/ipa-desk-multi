@@ -78,7 +78,7 @@ public class MuxTest {
     @Test public void rejectsResetDuringConnect() throws Exception {
         Peer p=new Peer();p.reset=true;List<String> trace=new ArrayList<>();Mux m=new Mux(p,trace::add);m.start();
         IOException failure=assertThrows(IOException.class,()->m.connect(62078));
-        assertTrue(failure.getMessage().contains("отклонил открытие"));
+        assertEquals(L10n.t(L10n.Key.MUX_CHANNEL_REJECTED, 62078), failure.getMessage());
         assertTrue(String.join("\n",trace).contains("phase=connecting"));
     }
     @Test public void resetAfterOpenSurvivesTraceLimitWithoutLoggingPayload() throws Exception {
@@ -88,7 +88,7 @@ public class MuxTest {
         assertTrue(String.join("\n",trace).contains("further packet metadata omitted"));
         p.tcp(62078,1,1,30001,4,0,"private-reset-text".getBytes("UTF-8"));
         IOException failure=assertThrows(IOException.class,()->c.input.read());
-        assertTrue(failure.getMessage().contains("прервал обмен"));
+        assertEquals(L10n.t(L10n.Key.MUX_CHANNEL_RESET, 62078), failure.getMessage());
         String text=String.join("\n",trace);
         assertTrue(text.contains("mux reset port=62078 phase=open"));
         assertFalse(text.contains("private-reset-text"));

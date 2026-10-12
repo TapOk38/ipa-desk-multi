@@ -1,5 +1,7 @@
 # Сборка IPA Install
 
+**Русский** | [English](BUILDING.en.md)
+
 Нужна 64-разрядная Windows с Windows PowerShell 5.1 и .NET Framework 4.5 или новее.
 
 Из корня репозитория:

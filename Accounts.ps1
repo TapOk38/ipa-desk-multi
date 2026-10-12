@@ -1,4 +1,5 @@
 ﻿Add-Type -AssemblyName System.Security
+. (Join-Path $PSScriptRoot 'Localization.ps1')
 function Get-AccountDescription($Account) {
     if ($Account.PSObject.Properties['Description']) { return [string]$Account.Description }
     return ''
@@ -8,7 +9,7 @@ function Resolve-AppId([string]$Value) {
     if ($value -match '^[1-9][0-9]{0,17}$') { return $value }
     $uri = $null
     if ([Uri]::TryCreate($value, [UriKind]::Absolute, [ref]$uri) -and $uri.Scheme -eq 'https' -and $uri.Host -eq 'apps.apple.com' -and $uri.AbsolutePath -match '/id([1-9][0-9]{0,17})/?$') { return $Matches[1] }
-    throw 'Введите App Store ID или ссылку https://apps.apple.com/…/id123456789.'
+    throw (Get-IpaText 'Введите App Store ID или ссылку https://apps.apple.com/…/id123456789.')
 }
 function Lock-Password([string]$Value) {
     $bytes = [Text.Encoding]::UTF8.GetBytes($Value)
@@ -20,7 +21,7 @@ function Unlock-Password([string]$Value) {
     try {
         $bytes = [Security.Cryptography.ProtectedData]::Unprotect([Convert]::FromBase64String($Value), [Text.Encoding]::UTF8.GetBytes('IPA-Desk-Multi/accounts/v1'), [Security.Cryptography.DataProtectionScope]::CurrentUser)
         return [Text.Encoding]::UTF8.GetString($bytes)
-    } catch { throw 'Не удалось открыть пароль. Измените учётку и сохраните пароль заново под текущим пользователем Windows.' }
+    } catch { throw (Get-IpaText 'Не удалось открыть пароль. Измените учётку и сохраните пароль заново под текущим пользователем Windows.') }
     finally { if ($bytes) { [Array]::Clear($bytes, 0, $bytes.Length) } }
 }
 function Read-Accounts([string]$Path) {
@@ -35,7 +36,7 @@ function Read-Accounts([string]$Path) {
             $seen[$a.Email.ToLowerInvariant()] = $true; $ids[$a.Id] = $true
         }
         return $data.Accounts
-    } catch { throw 'Не удалось прочитать сохранённые учётки. Файл accounts.json не изменён.' }
+    } catch { throw (Get-IpaText 'Не удалось прочитать сохранённые учётки. Файл accounts.json не изменён.') }
 }
 function Write-Accounts([string]$Path, [object[]]$Accounts) {
     $null = [IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($Path))

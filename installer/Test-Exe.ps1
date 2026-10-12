@@ -18,7 +18,7 @@ function Smoke {
 Smoke
 $runtime=@(Get-ChildItem -LiteralPath (Join-Path $profile 'app') -Directory)[0].FullName
 Assert ((@(Get-ChildItem -LiteralPath $folder -File).Count) -eq 1) 'No adjacent scripts or DLLs are required'
-foreach($name in @('IPA-Install.ps1','Engine.ps1','Credentials.ps1','AccountWindows.ps1')){
+foreach($name in @('IPA-Install.ps1','Engine.ps1','Credentials.ps1','AccountWindows.ps1','Localization.ps1')){
     Assert ((Get-FileHash -LiteralPath (Join-Path $runtime $name)).Hash -eq (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot $name)).Hash) "Embedded script matches source: $name"
 }
 foreach($line in [IO.File]::ReadAllLines((Join-Path $runtime 'tools/SHA256SUMS.txt'))){

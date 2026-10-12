@@ -1,0 +1,145 @@
+﻿#requires -Version 5.1
+# Keys are the original Russian UI strings. Keep external tool output unchanged.
+if (-not (Get-Variable -Name IpaLanguage -Scope Script -ErrorAction SilentlyContinue)) {
+    $script:IpaLanguage = if ([Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq 'ru') { 'ru' } else { 'en' }
+}
+$script:IpaEnglish = @{
+    '; остановлено' = '; stopped'
+    '. Проверьте доверенное устройство именно этого Apple ID.' = '. Check a trusted device for this Apple ID.'
+    '[скрыто]' = '[hidden]'
+    '{0} из {1}: {2}' = '{0} of {1}: {2}'
+    '$1://[скрыто]@' = '$1://[hidden]@'
+    'В архиве отсутствует Payload/*.app/Info.plist. Результат не похож на IPA.' = 'The archive has no Payload/*.app/Info.plist. It is not a valid IPA.'
+    'В очереди' = 'Queued'
+    'Введите 6 цифр.' = 'Enter a six-digit code.'
+    'Введите код для ' = 'Enter the code for '
+    'Введите пароль Apple ID для входа.' = 'Enter your Apple ID password to sign in.'
+    'Введите пароль.' = 'Enter a password.'
+    'Введите App Store ID или ссылку https://apps.apple.com/…/id123456789.' = 'Enter an App Store ID or a link such as https://apps.apple.com/…/id123456789.'
+    'Введите Apple ID в виде адреса электронной почты.' = 'Enter your Apple ID email address.'
+    'Введите Apple ID в виде email.' = 'Enter your Apple ID email address.'
+    'Вход в Apple ID: ' = 'Signing in to Apple ID: '
+    'Вход выполнен.' = 'Signed in.'
+    'Вход не выполнен. ' = 'Sign-in failed. '
+    'Вход…' = 'Signing in…'
+    'Выберите учётки' = 'Select accounts'
+    'Выбрать все' = 'Select all'
+    'Выгрузка IPA' = 'Download IPA'
+    'Выгрузка IPA — учётки' = 'IPA Desk Multi'
+    'Готово: {0}; ошибок: {1}{2}' = 'Completed: {0}; errors: {1}{2}'
+    'Добавить' = 'Add'
+    'Добавить учётку' = 'Add account'
+    'Загрузка компонента IPATool с GitHub…' = 'Downloading IPATool from GitHub…'
+    'Загрузка не выполнена. ' = 'Download failed. '
+    'Загрузка IPA…' = 'Downloading IPA…'
+    'Загрузчик не смог обработать символы в пути. Переместите папку программы в путь с латинскими буквами и повторите загрузку.' = 'The downloader could not process characters in the path. Move the program to a path using Latin letters and retry.'
+    'Запустите Start.cmd.' = 'Launch Start.cmd.'
+    'Изменить' = 'Edit'
+    'Изменить учётку' = 'Edit account'
+    'Код' = 'Code'
+    'Код подтверждения' = 'Verification code'
+    'Компонент входа пока не поддерживает пароль, начинающийся с дефиса.' = 'The sign-in component does not support passwords starting with a hyphen.'
+    'Компонент IPATool повреждён или имеет другую версию. Удалите только tools\cpp-1.0.9 и повторите запуск.' = 'IPATool is damaged or has an unexpected version. Delete only tools\cpp-1.0.9 and try again.'
+    'Контрольная сумма архива IPATool не совпала. Компонент не установлен.' = 'The IPATool archive checksum does not match. The component was not installed.'
+    'Контрольная сумма IPATool не совпала. Компонент не установлен.' = 'The IPATool checksum does not match. The component was not installed.'
+    'Не выполнено' = 'Not completed'
+    'Не удалось запустить обработку учётки.' = 'Could not start processing the account.'
+    'Не удалось запустить IPATool.' = 'Could not start IPATool.'
+    'Не удалось открыть локальную сессию средствами Windows. Запустите приложение под тем же пользователем Windows, под которым оно использовалось ранее. Подробности восстановления — в README.md.' = 'Windows could not open the saved session. Run the app under the Windows user account used previously.'
+    'Не удалось открыть папку: ' = 'Could not open folder: '
+    'Не удалось открыть пароль. Измените учётку и сохраните пароль заново под текущим пользователем Windows.' = 'Could not decrypt the password. Edit the account and save the password again under the current Windows user.'
+    'Не удалось открыть учётки. Закройте другое окно IPA-Desk Multi, если оно открыто.' = 'Could not open accounts. Close any other IPA Desk Multi window and try again.'
+    'Не удалось подтвердить код 2FA. Получите новый код и повторите запуск.' = 'The verification code was not accepted. Get a new code and try again.'
+    'Не удалось прочитать сохранённые учётки. Файл accounts.json не изменён.' = 'Could not read saved accounts. The accounts.json file was not changed.'
+    'Не удалось сохранить изменения.' = 'Could not save changes.'
+    'Не удалось сохранить учётку.' = 'Could not save the account.'
+    'Не удалось удалить временные данные входа.' = 'Could not remove temporary sign-in data.'
+    'Не удалось удалить незавершённую загрузку.' = 'Could not remove the incomplete download.'
+    'Не удалось удалить учётку.' = 'Could not delete the account.'
+    'Неверная контрольная сумма IPATool.' = 'The IPATool checksum does not match.'
+    'Неверное содержимое архива IPATool.' = 'Unexpected IPATool archive contents.'
+    'Недопустимый путь временной сессии.' = 'Invalid temporary session path.'
+    'Некорректный ключ сессии.' = 'Invalid session key.'
+    'Неожиданный запрос. Очередь остановлена.' = 'Unexpected request. The queue has stopped.'
+    'Нужен шестизначный код Apple.' = 'A six-digit Apple verification code is required.'
+    'Обработка учётки завершилась без результата.' = 'Account processing ended without a result.'
+    'Операция отменена.' = 'Operation cancelled.'
+    'Описание' = 'Description'
+    'Остановить' = 'Stop'
+    'Остановка…' = 'Stopping…'
+    'Открыть папку' = 'Open folder'
+    'Отмена' = 'Cancel'
+    'Отменено' = 'Cancelled'
+    'Отметьте учётки галочками.' = 'Select accounts using the checkboxes.'
+    'Ошибка' = 'Error'
+    'Ошибка — см. журнал' = 'Error — see log'
+    'Ошибка запуска' = 'Could not start'
+    'Ошибка: ' = 'Error: '
+    'Папка загрузок' = 'Downloads folder'
+    'Пароль' = 'Password'
+    'Пароль Apple ID не введён.' = 'No Apple ID password was entered.'
+    'Подготовка компонента отменена.' = 'Component setup cancelled.'
+    'Подготовка IPATool…' = 'Preparing IPATool…'
+    'Превышено время загрузки компонента.' = 'Component download timed out.'
+    'Превышено время ожидания. Проверьте интернет и повторите запуск.' = 'The request timed out. Check your internet connection and try again.'
+    'Приложение' = 'Application'
+    'Проверка IPA…' = 'Checking IPA…'
+    'Продолжить' = 'Continue'
+    'Пустой пароль — оставить сохранённый.' = 'Leave blank to keep the saved password.'
+    'Путь сессии содержит ссылку.' = 'The session path contains a link.'
+    'Результат' = 'Result'
+    'Сессия содержит ссылку.' = 'The session contains a link.'
+    'Сессия Apple истекла. Повторите запуск для этой учётки.' = 'The Apple session has expired. Try this account again.'
+    'Скачать IPA' = 'Download IPA'
+    'Слишком большой архив компонента.' = 'The component archive is too large.'
+    'Слишком длинный путь. Переместите папку программы ближе к корню диска.' = 'The path is too long. Move the program closer to the root of the drive.'
+    'Снять выбор' = 'Deselect all'
+    'Сохранён: ' = 'Saved: '
+    'Сохранить' = 'Save'
+    'Ссылка или ID' = 'App link or ID'
+    'Требуется код подтверждения для ' = 'A verification code is required for '
+    'У выбранного приложения нет корректного App Store ID.' = 'The selected app does not have a valid App Store ID.'
+    'Удалить' = 'Delete'
+    'Учётка' = 'Account'
+    'Учётки' = 'Accounts'
+    'Эта версия IPATool не принимает пароль, начинающийся с дефиса. Вход остановлен до отправки данных.' = 'This IPATool version does not support passwords starting with a hyphen. No sign-in data was sent.'
+    'Эта учётка уже добавлена.' = 'This account has already been added.'
+    'Apple не подтвердила лицензию на это приложение. Проверьте его в App Store под выбранным Apple ID.' = 'Apple did not confirm a license for this app. Check the app in the App Store using the selected Apple ID.'
+    'Apple подтвердил другой Apple ID. Работа остановлена; список и загрузка для этого аккаунта не выполнялись.' = 'Apple returned a different Apple ID. Processing stopped before listing or downloading apps.'
+    'IPA сохранён' = 'IPA saved'
+    'IPATool не подтвердил успешное выполнение.' = 'IPATool did not confirm success.'
+    'IPATool не создал IPA-файл.' = 'IPATool did not create an IPA file.'
+    'Не удалось сохранить язык интерфейса.' = 'Could not save the interface language.'
+}
+function Get-IpaText([string]$Key) {
+    if ($script:IpaLanguage -eq 'en' -and $script:IpaEnglish.ContainsKey($Key)) { return $script:IpaEnglish[$Key] }
+    return $Key
+}
+function Set-IpaLanguage([ValidateSet('ru','en')][string]$Language) { $script:IpaLanguage = $Language }
+function Get-IpaLanguage { return $script:IpaLanguage }
+function Initialize-IpaLanguage([string]$DataRoot, [string]$Override = '') {
+    if ($Override -in @('ru','en')) { Set-IpaLanguage $Override; return }
+    $script:IpaLanguage = if ([Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq 'ru') { 'ru' } else { 'en' }
+    try {
+        $saved = [IO.File]::ReadAllText((Join-Path $DataRoot 'language.txt')).Trim()
+        if ($saved -in @('ru','en')) { Set-IpaLanguage $saved }
+    } catch { } # Missing or malformed preference never prevents opening accounts.
+}
+function Save-IpaLanguage([string]$DataRoot, [ValidateSet('ru','en')][string]$Language) {
+    $null = [IO.Directory]::CreateDirectory($DataRoot)
+    $path = Join-Path $DataRoot 'language.txt'
+    $temporary = $path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
+    try {
+        [IO.File]::WriteAllText($temporary, $Language, [Text.UTF8Encoding]::new($false))
+        if ([IO.File]::Exists($path)) { [IO.File]::Replace($temporary, $path, [NullString]::Value) }
+        else { [IO.File]::Move($temporary, $path) }
+    } finally { if ([IO.File]::Exists($temporary)) { [IO.File]::Delete($temporary) } }
+    Set-IpaLanguage $Language
+}
+function Convert-IpaDisplayText([string]$Text) {
+    if ($script:IpaEnglish.ContainsKey($Text)) { return Get-IpaText $Text }
+    foreach ($key in $script:IpaEnglish.Keys) {
+        if ($script:IpaEnglish[$key] -ceq $Text) { return Get-IpaText $key }
+    }
+    return $Text
+}

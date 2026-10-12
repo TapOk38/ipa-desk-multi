@@ -1,4 +1,5 @@
 ﻿Add-Type -AssemblyName System.IO.Compression.FileSystem
+. (Join-Path $PSScriptRoot 'Localization.ps1')
 if (-not ('IpaDeskMetadata' -as [type])) { Add-Type -Path (Join-Path $PSScriptRoot 'Metadata.cs') -ReferencedAssemblies 'System.dll','System.Core.dll','System.Xml.dll' }
 function Get-IpaMetadata([string]$Path) {
     $zip=[IO.Compression.ZipFile]::OpenRead($Path)
@@ -39,7 +40,7 @@ function Get-IpaFileStem([string]$Path,[string]$AppId,[string]$Email,[string]$De
         if($descriptionPart.Length -gt 12 -and $descriptionPart.Length -ge $name.Length){$descriptionPart=$descriptionPart.Substring(0,$descriptionPart.Length-1)}
         elseif($name.Length -gt 12){$name=$name.Substring(0,$name.Length-1)}
         elseif($descriptionPart.Length -gt 12){$descriptionPart=$descriptionPart.Substring(0,$descriptionPart.Length-1)}
-        else{throw 'Слишком длинный путь. Переместите папку программы ближе к корню диска.'}
+        else{throw (Get-IpaText 'Слишком длинный путь. Переместите папку программы ближе к корню диска.')}
     }
     $stem=$name+$middle
     if($descriptionPart){$stem+='_'+$descriptionPart}

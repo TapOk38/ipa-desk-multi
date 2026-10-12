@@ -43,11 +43,11 @@ function Initialize-LocalSession {
             [Array]::Clear($key, 0, $key.Length)
         }
         $key = Unprotect-SessionKey ([IO.File]::ReadAllBytes($keyPath)) $entropy
-        if ($key.Length -ne 32) { throw 'Некорректный ключ сессии.' }
+        if ($key.Length -ne 32) { throw (Get-IpaText 'Некорректный ключ сессии.') }
         $script:Options.Passphrase = [Convert]::ToBase64String($key)
         $script:Secrets.Add($script:Options.Passphrase)
     } catch {
-        throw 'Не удалось открыть локальную сессию средствами Windows. Запустите приложение под тем же пользователем Windows, под которым оно использовалось ранее. Подробности восстановления — в README.md.'
+        throw (Get-IpaText 'Не удалось открыть локальную сессию средствами Windows. Запустите приложение под тем же пользователем Windows, под которым оно использовалось ранее. Подробности восстановления — в README.md.')
     } finally { if ($key) { [Array]::Clear($key, 0, $key.Length) } }
     # Each workflow gets fresh credentials and cookies; concurrent runs stay independent.
     $script:SessionRunParent = Join-Path $dataRoot 'runs'
@@ -70,25 +70,25 @@ function Remove-LocalSession {
         $root = [IO.Path]::GetFullPath($script:SessionRunRoot)
         $parent = [IO.Path]::GetFullPath($script:SessionRunParent)
         if ([IO.Path]::GetDirectoryName($root) -ne $parent -or [IO.Path]::GetFileName($root) -notmatch '^[a-f0-9]{32}$') {
-            throw 'Недопустимый путь временной сессии.'
+            throw (Get-IpaText 'Недопустимый путь временной сессии.')
         }
         # Do not follow directory links during recursive cleanup.
         $ancestor = Get-Item -LiteralPath $root -Force
         while ($ancestor) {
-            if ($ancestor.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Путь сессии содержит ссылку.' }
+            if ($ancestor.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw (Get-IpaText 'Путь сессии содержит ссылку.') }
             $ancestor = $ancestor.Parent
         }
         $pending = [Collections.Generic.Stack[string]]::new()
         $pending.Push($root)
         while ($pending.Count) {
             foreach ($item in @(Get-ChildItem -LiteralPath $pending.Pop() -Force)) {
-                if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Сессия содержит ссылку.' }
+                if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw (Get-IpaText 'Сессия содержит ссылку.') }
                 if ($item.PSIsContainer) { $pending.Push($item.FullName) }
             }
         }
         Remove-Item -LiteralPath $root -Recurse -Force
     } catch {
-        Send-Event 'log' 'Не удалось удалить временные данные входа.'
+        Send-Event 'log' (Get-IpaText 'Не удалось удалить временные данные входа.')
     }
 }
 
@@ -97,7 +97,7 @@ function Send-Event([string]$Kind, $Data) {
     $script:Bus.Events.Enqueue([pscustomobject]@{ Kind = $Kind; Data = $Data })
 }
 function Test-Cancel {
-    if ($script:Bus.Cancel) { throw [OperationCanceledException]::new('Операция отменена.') }
+    if ($script:Bus.Cancel) { throw [OperationCanceledException]::new((Get-IpaText 'Операция отменена.')) }
 }
 function Request-Answer([string]$Kind, $Data) {
     $script:Bus.Answer = $null
@@ -108,12 +108,12 @@ function Request-Answer([string]$Kind, $Data) {
     return $script:Bus.Answer
 }
 function Protect-Text([string]$Text) {
-    $Text = [regex]::Replace($Text, '(?i)(https?|socks5h?)://[^\s/]*@', '$1://[скрыто]@')
+    $Text = [regex]::Replace($Text, '(?i)(https?|socks5h?)://[^\s/]*@', (Get-IpaText '$1://[скрыто]@'))
     foreach ($secret in $script:Secrets) {
         if (-not [string]::IsNullOrEmpty($secret)) {
-            $Text = $Text.Replace($secret, '[скрыто]')
+            $Text = $Text.Replace($secret, (Get-IpaText '[скрыто]'))
             $escaped = ConvertTo-Json -InputObject $secret -Compress
-            if ($escaped.Length -gt 2) { $Text = $Text.Replace($escaped.Substring(1, $escaped.Length - 2), '[скрыто]') }
+            if ($escaped.Length -gt 2) { $Text = $Text.Replace($escaped.Substring(1, $escaped.Length - 2), (Get-IpaText '[скрыто]')) }
         }
     }
     return $Text
@@ -144,7 +144,7 @@ function Invoke-Native([string]$Executable, [string[]]$Arguments, [int]$TimeoutS
     $process.StartInfo = $start
     $started = $false
     try {
-        if (-not $process.Start()) { throw 'Не удалось запустить IPATool.' }
+        if (-not $process.Start()) { throw (Get-IpaText 'Не удалось запустить IPATool.') }
         $started = $true
         $process.StandardInput.Close()
         $stdout = $process.StandardOutput.ReadToEndAsync()
@@ -152,7 +152,7 @@ function Invoke-Native([string]$Executable, [string[]]$Arguments, [int]$TimeoutS
         $watch = [Diagnostics.Stopwatch]::StartNew()
         while (-not $process.WaitForExit(100)) {
             Test-Cancel
-            if ($watch.Elapsed.TotalSeconds -gt $TimeoutSeconds) { throw 'Превышено время ожидания. Проверьте интернет и повторите запуск.' }
+            if ($watch.Elapsed.TotalSeconds -gt $TimeoutSeconds) { throw (Get-IpaText 'Превышено время ожидания. Проверьте интернет и повторите запуск.') }
         }
         Test-Cancel
         $output = $stdout.GetAwaiter().GetResult() + "`n" + $stderr.GetAwaiter().GetResult()
@@ -174,12 +174,12 @@ function Get-Field($Record, [string]$Name) {
     return $null
 }
 function Get-ErrorText($Result) {
-    if ($Result.Text -match '(?i)Cannot convert character sequence|Illegal byte sequence') { return 'Загрузчик не смог обработать символы в пути. Переместите папку программы в путь с латинскими буквами и повторите загрузку.' }
-    if ($Result.Text -match '(?i)you must purchase this app first') { return 'Apple не подтвердила лицензию на это приложение. Проверьте его в App Store под выбранным Apple ID.' }
-    if ($Result.Text -match '(?i)session expired|password token expired') { return 'Сессия Apple истекла. Повторите запуск для этой учётки.' }
+    if ($Result.Text -match '(?i)Cannot convert character sequence|Illegal byte sequence') { return (Get-IpaText 'Загрузчик не смог обработать символы в пути. Переместите папку программы в путь с латинскими буквами и повторите загрузку.') }
+    if ($Result.Text -match '(?i)you must purchase this app first') { return (Get-IpaText 'Apple не подтвердила лицензию на это приложение. Проверьте его в App Store под выбранным Apple ID.') }
+    if ($Result.Text -match '(?i)session expired|password token expired') { return (Get-IpaText 'Сессия Apple истекла. Повторите запуск для этой учётки.') }
     $errors = @(Read-Records $Result.Text | ForEach-Object { Get-Field $_ 'error' } | Where-Object { $_ })
     $message = if ($errors.Count) { $errors[-1] } else { (($Result.Text -split '\r?\n' | Where-Object { $_ -notmatch '^PROGRESS:\d+\s*$' }) -join "`n").Trim() }
-    if (-not $message) { $message = 'IPATool не подтвердил успешное выполнение.' }
+    if (-not $message) { $message = (Get-IpaText 'IPATool не подтвердил успешное выполнение.') }
     $message = Protect-Text $message
     if ($message.Length -gt 1600) { $message = $message.Substring(0, 1600) }
     return $message
@@ -192,7 +192,7 @@ function Get-ChildEnvironment {
     $childEnvironment['HTTPS_PROXY'] = ''
     $childEnvironment['ALL_PROXY'] = ''
     $childEnvironment['NO_PROXY'] = '*'
-    $childEnvironment['GODEBUG'] = 'http2client=0' 
+    $childEnvironment['GODEBUG'] = 'http2client=0'
     $childEnvironment['IPATOOL_AUTH_MODE'] = 'cpp'
     $childEnvironment['IPATOOL_NATIVE_AUTH_DIAGNOSTIC'] = ''
     return $childEnvironment
@@ -218,39 +218,39 @@ function Test-AuthCodeRequired($Result) {
 }
 function Resolve-CppTool {
     $candidate=Join-Path $script:Options.AppRoot 'tools\cpp-1.0.9\ipatool-cpp.exe'
-    if(-not [IO.File]::Exists($candidate)){Send-Event 'status' 'Загрузка компонента IPATool с GitHub…'}
+    if(-not [IO.File]::Exists($candidate)){Send-Event 'status' (Get-IpaText 'Загрузка компонента IPATool с GitHub…')}
     return Ensure-IpaTool -AppRoot $script:Options.AppRoot -Cancelled { $script:Bus.Cancel }
 }
 function Connect-Apple {
     if (-not $script:Options.Password) {
-        $script:Options.Password = [string](Request-Answer 'password' 'Введите пароль Apple ID для входа.')
-        if (-not $script:Options.Password) { throw 'Пароль Apple ID не введён.' }
+        $script:Options.Password = [string](Request-Answer 'password' (Get-IpaText 'Введите пароль Apple ID для входа.'))
+        if (-not $script:Options.Password) { throw (Get-IpaText 'Пароль Apple ID не введён.') }
         $script:Secrets.Add($script:Options.Password)
     }
-    if ($script:Options.Password.StartsWith('-')) { throw 'Эта версия IPATool не принимает пароль, начинающийся с дефиса. Вход остановлен до отправки данных.' }
+    if ($script:Options.Password.StartsWith('-')) { throw (Get-IpaText 'Эта версия IPATool не принимает пароль, начинающийся с дефиса. Вход остановлен до отправки данных.') }
     $code = ''
     for ($attempt = 0; $attempt -lt 4; $attempt++) {
-        Send-Event 'status' ('Вход в Apple ID: ' + $script:Options.Email + '…')
+        Send-Event 'status' ((Get-IpaText 'Вход в Apple ID: ') + $script:Options.Email + '…')
         $arguments = @('auth', 'login', '--email', $script:Options.Email, '--password', $script:Options.Password)
         if ($code) { $arguments += @('--auth-code', $code) }
         $login = Invoke-Cpp $arguments 900
         $success = Get-SuccessRecord $login
         if ($success -and (Get-Field $success 'email') -eq $script:Options.Email) {
-            Send-Event 'log' 'Вход выполнен.'
+            Send-Event 'log' (Get-IpaText 'Вход выполнен.')
             return
         }
-        if ($success) { throw 'Apple подтвердил другой Apple ID. Работа остановлена; список и загрузка для этого аккаунта не выполнялись.' }
+        if ($success) { throw (Get-IpaText 'Apple подтвердил другой Apple ID. Работа остановлена; список и загрузка для этого аккаунта не выполнялись.') }
         if (Test-AuthCodeRequired $login) {
             if ($attempt -ge 3) { break }
-            Send-Event 'log' ('Требуется код подтверждения для ' + $script:Options.Email + '.')
-            $code = [string](Request-Answer 'code' ('Введите код для ' + $script:Options.Email + '. Проверьте доверенное устройство именно этого Apple ID.'))
-            if ($code -notmatch '^\d{6}$') { throw 'Нужен шестизначный код Apple.' }
+            Send-Event 'log' ((Get-IpaText 'Требуется код подтверждения для ') + $script:Options.Email + '.')
+            $code = [string](Request-Answer 'code' ((Get-IpaText 'Введите код для ') + $script:Options.Email + (Get-IpaText '. Проверьте доверенное устройство именно этого Apple ID.')))
+            if ($code -notmatch '^\d{6}$') { throw (Get-IpaText 'Нужен шестизначный код Apple.') }
             $script:Secrets.Add($code)
             continue
         }
-        throw ('Вход не выполнен. ' + (Get-ErrorText $login))
+        throw ((Get-IpaText 'Вход не выполнен. ') + (Get-ErrorText $login))
     }
-    throw 'Не удалось подтвердить код 2FA. Получите новый код и повторите запуск.'
+    throw (Get-IpaText 'Не удалось подтвердить код 2FA. Получите новый код и повторите запуск.')
 }
 function Get-SafeFileStem([string]$Name) {
     $stem = [regex]::Replace($Name, '[\x00-\x1f<>:"/\\|?*]', '_').Trim().TrimEnd('.')
@@ -260,14 +260,15 @@ function Get-SafeFileStem([string]$Name) {
     return $stem
 }
 function Test-IpaArchive([string]$Path) {
-    if (-not [IO.File]::Exists($Path) -or ([IO.FileInfo]$Path).Length -eq 0) { throw 'IPATool не создал IPA-файл.' }
+    if (-not [IO.File]::Exists($Path) -or ([IO.FileInfo]$Path).Length -eq 0) { throw (Get-IpaText 'IPATool не создал IPA-файл.') }
     $zip = [IO.Compression.ZipFile]::OpenRead($Path)
     try {
         $valid = @($zip.Entries | Where-Object { $_.FullName -match '^Payload/[^/]+\.app/Info\.plist$' })
-        if (-not $valid.Count) { throw 'В архиве отсутствует Payload/*.app/Info.plist. Результат не похож на IPA.' }
+        if (-not $valid.Count) { throw (Get-IpaText 'В архиве отсутствует Payload/*.app/Info.plist. Результат не похож на IPA.') }
     } finally { $zip.Dispose() }
 }
 function Invoke-Workflow($Options, $Bus) {
+    if ($Options.ContainsKey('Language')) { Set-IpaLanguage $Options.Language }
     $script:Options = $Options
     $script:Bus = $Bus
     $script:Secrets = [Collections.Generic.List[string]]::new()
@@ -282,14 +283,14 @@ function Invoke-Workflow($Options, $Bus) {
         $Options.AppId = Resolve-AppId $Options.AppId
         if ($Options.ContainsKey('EncryptedPassword')) { $Options.Password = Unlock-Password $Options.EncryptedPassword }
         $script:Secrets.Add([string]$Options.Password)
-        if ($Options.Email -notmatch '^\S+@\S+\.\S+$') { throw 'Введите Apple ID в виде адреса электронной почты.' }
+        if ($Options.Email -notmatch '^\S+@\S+\.\S+$') { throw (Get-IpaText 'Введите Apple ID в виде адреса электронной почты.') }
         $destination = [IO.Path]::GetFullPath($Options.OutputFolder)
         $null = [IO.Directory]::CreateDirectory($destination)
         $script:NativeWorkDirectory = $destination
         $probe = Join-Path $destination ([guid]::NewGuid().ToString('N') + '.write-test')
         [IO.File]::WriteAllText($probe, '')
         [IO.File]::Delete($probe)
-        Send-Event 'status' 'Подготовка IPATool…'
+        Send-Event 'status' (Get-IpaText 'Подготовка IPATool…')
         $script:CppExe = Resolve-CppTool
         Initialize-LocalSession
         Connect-Apple
@@ -298,13 +299,13 @@ function Invoke-Workflow($Options, $Bus) {
         # The unique ASCII basename avoids narrow-path encoding failures in C++.
         # WorkingDirectory is per process; do not change the GUI's global directory.
         $arguments = @('download', '--output', [IO.Path]::GetFileName($partial))
-        if ($app.Id -notmatch '^[1-9]\d{0,17}$') { throw 'У выбранного приложения нет корректного App Store ID.' }
+        if ($app.Id -notmatch '^[1-9]\d{0,17}$') { throw (Get-IpaText 'У выбранного приложения нет корректного App Store ID.') }
         $arguments += @('--app-id', $app.Id, '--purchase')
-        Send-Event 'status' 'Загрузка IPA…'
+        Send-Event 'status' (Get-IpaText 'Загрузка IPA…')
         $result = Invoke-Cpp $arguments 7200
-        if (-not (Get-SuccessRecord $result)) { throw ('Загрузка не выполнена. ' + (Get-ErrorText $result)) }
+        if (-not (Get-SuccessRecord $result)) { throw ((Get-IpaText 'Загрузка не выполнена. ') + (Get-ErrorText $result)) }
         Test-Cancel
-        Send-Event 'status' 'Проверка IPA…'
+        Send-Event 'status' (Get-IpaText 'Проверка IPA…')
         Test-IpaArchive $partial
         $hash = (Get-FileHash -LiteralPath $partial -Algorithm SHA256).Hash
         Test-Cancel
@@ -318,7 +319,7 @@ function Invoke-Workflow($Options, $Bus) {
         Send-Event 'done' ([pscustomobject]@{ Path = $final; Bytes = $size; Sha256 = $hash })
     } catch {
         if ($Bus.Cancel -or $_.Exception -is [OperationCanceledException]) {
-            Send-Event 'cancelled' 'Операция отменена.'
+            Send-Event 'cancelled' (Get-IpaText 'Операция отменена.')
         } else {
             Send-Event 'error' (Protect-Text $_.Exception.Message)
         }
@@ -328,7 +329,7 @@ function Invoke-Workflow($Options, $Bus) {
             # Both names belong to this operation's unique generated basename.
             foreach ($pendingFile in @($partial, ($partial + '.tmp'))) {
                 if ([IO.File]::Exists($pendingFile)) {
-                    try { [IO.File]::Delete($pendingFile) } catch { Send-Event 'log' 'Не удалось удалить незавершённую загрузку.' }
+                    try { [IO.File]::Delete($pendingFile) } catch { Send-Event 'log' (Get-IpaText 'Не удалось удалить незавершённую загрузку.') }
                 }
             }
         }

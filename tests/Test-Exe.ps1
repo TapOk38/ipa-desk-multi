@@ -14,6 +14,8 @@ $testRoot=Join-Path $folder 'Профиль проверки'
 $data=Join-Path $testRoot 'accounts'
 $null=[IO.Directory]::CreateDirectory($data)
 . (Join-Path $sourceRoot 'Accounts.ps1')
+Set-IpaLanguage 'ru'
+Save-IpaLanguage $data 'ru'
 $accountsPath=Join-Path $data 'accounts.json'
 Write-Accounts $accountsPath @([pscustomobject]@{Id='00000000000000000000000000000001';Email='test@example.invalid';Description='Тест';Password=(Lock-Password 'fixture-only')})
 $accountHash=(Get-FileHash -LiteralPath $accountsPath -Algorithm SHA256).Hash
@@ -22,12 +24,16 @@ function Run-Smoke {
     if(-not $process.WaitForExit(90000)){$process.Kill();throw 'Launcher smoke test timeout'}
     Assert ($process.ExitCode -eq 0) 'Single EXE opens and closes the actual WinForms window'
     Assert (Test-Path -LiteralPath (Join-Path $testRoot 'interface.png')) 'UI screenshot generated'
+    $state=Get-Content -LiteralPath (Join-Path $testRoot 'interface.png.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    $language=[IO.File]::ReadAllText((Join-Path $data 'language.txt')).Trim()
+    Assert ($state.Language -eq $language -and $state.Download -ceq $(if($language -eq 'ru'){'Скачать IPA'}else{'Download IPA'})) 'Actual UI respects the saved language'
+    Assert ($state.SwitchVerified -and $state.LanguageDisabledWhileBusy) 'Live switching updates controls and is disabled during work'
     Assert ((Get-FileHash -LiteralPath $accountsPath -Algorithm SHA256).Hash -eq $accountHash) 'Existing account store is preserved'
 }
 Run-Smoke
 $runtime=@(Get-ChildItem -LiteralPath (Join-Path $testRoot 'app') -Directory)[0].FullName
 Assert ((Get-ChildItem -LiteralPath $folder -File).Count -eq 1) 'Launch directory needs only the EXE'
-$expected=@('IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','PRIVACY.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
+$expected=@('IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','PRIVACY.md','PRIVACY.en.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
 foreach($name in $expected){
     Assert ((Get-FileHash -LiteralPath (Join-Path $runtime $name) -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath (Join-Path $sourceRoot $name) -Algorithm SHA256).Hash) "Embedded file matches source: $name"
 }
@@ -37,6 +43,11 @@ Assert ($ui.Contains("Join-Path (Join-Path `$script:OutputRoot `$script:AppId)")
 [IO.File]::WriteAllText((Join-Path $runtime 'IPA-Desk.ps1'),'throw "damaged cached script must not run"')
 Run-Smoke
 Assert ((Get-FileHash -LiteralPath (Join-Path $runtime 'IPA-Desk.ps1') -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath (Join-Path $sourceRoot 'IPA-Desk.ps1') -Algorithm SHA256).Hash) 'Modified cache is restored from embedded payload before execution'
+Copy-Item -LiteralPath (Join-Path $testRoot 'interface.png') -Destination (Join-Path $testRoot 'interface-ru.png')
+Save-IpaLanguage $data 'en'
+Run-Smoke
+Assert ([IO.File]::ReadAllText((Join-Path $data 'language.txt')).Trim() -eq 'en') 'Saved English language survives an EXE restart'
+Copy-Item -LiteralPath (Join-Path $testRoot 'interface.png') -Destination (Join-Path $testRoot 'interface-en.png')
 $bytes=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($bytes,60)
 Assert ([BitConverter]::ToUInt16($bytes,$pe+4) -eq 0x8664) 'Executable targets Windows x64'
 Assert ([BitConverter]::ToUInt16($bytes,$pe+24+68) -eq 2) 'Windows GUI subsystem: no console window'

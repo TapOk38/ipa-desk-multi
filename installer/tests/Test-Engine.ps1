@@ -58,14 +58,14 @@ function Assert($Condition, [string]$Description) {
     $script:Checks++
     Write-Output ('PASS: ' + $Description)
 }
-function Invoke-Case([string]$Scenario, [string]$Action = 'install', [string]$IpaPath = $goodIpa, [string]$DeviceId = $firstId, [switch]$Cancel, [int]$Timeout = 8, [int]$PairingTimeout = 4) {
+function Invoke-Case([string]$Scenario, [string]$Action = 'install', [string]$IpaPath = $goodIpa, [string]$DeviceId = $firstId, [switch]$Cancel, [int]$Timeout = 8, [int]$PairingTimeout = 4, [ValidateSet('ru','en')][string]$Language = 'ru') {
     $env:IPA_INSTALL_TEST_SCENARIO = $Scenario
     $caseRoot = Join-Path $TestRoot ($Scenario + '-' + [guid]::NewGuid().ToString('N'))
     $null = [IO.Directory]::CreateDirectory($caseRoot)
     $callLog = Join-Path $caseRoot 'native-calls.jsonl'
     $env:IPA_INSTALL_TEST_LOG = $callLog
     $env:IPA_INSTALL_TEST_EXPECTED_SHA256 = if ([IO.File]::Exists($IpaPath)) { (Get-FileHash -LiteralPath $IpaPath -Algorithm SHA256).Hash } else { $sourceHash }
-    $options = @{ AppRoot=$caseRoot; Action=$Action; IpaPath=$IpaPath; DeviceId=$DeviceId; ToolRoot=$toolRoot; NativeTimeoutSeconds=$Timeout; PairingTimeoutSeconds=$PairingTimeout }
+    $options = @{ AppRoot=$caseRoot; Action=$Action; IpaPath=$IpaPath; DeviceId=$DeviceId; ToolRoot=$toolRoot; NativeTimeoutSeconds=$Timeout; PairingTimeoutSeconds=$PairingTimeout; Language=$Language }
     $bus = [hashtable]::Synchronized(@{ Events=[Collections.Concurrent.ConcurrentQueue[object]]::new(); Cancel=$false })
     $events = [Collections.Generic.List[object]]::new()
     $runner = [PowerShell]::Create()
@@ -99,6 +99,11 @@ function Assert-Failed($Case, [string]$Description) {
 function Install-Calls($Case) { return @($Case.Calls | Where-Object { $_.tool -eq 'ideviceinstaller' -and $_.arguments -contains '-i' }) }
 function Pair-Calls($Case) { return @($Case.Calls | Where-Object { $_.tool -eq 'idevicepair' -and $_.arguments -contains 'pair' }) }
 try {
+    $english = Invoke-Case 'happy' -Language 'en'
+    Assert (@($english.Events | Where-Object Kind -eq 'done').Count -eq 1) 'English language preserves successful installation'
+    Assert (@($english.Events | Where-Object { $_.Kind -eq 'status' -and $_.Data -eq 'Installing…' }).Count -eq 1) 'Worker runspace uses the selected English language'
+    $englishInvalid = Invoke-Case 'happy' -IpaPath $badIpa -Language 'en'
+    Assert (@($englishInvalid.Events | Where-Object { $_.Kind -eq 'error' -and $_.Data -eq 'No valid app was found in the IPA file.' }).Count -eq 1) 'Worker translates IPA validation errors to English'
     $none = Invoke-Case 'none' 'devices'
     $empty = @($none.Events | Where-Object Kind -eq 'devices')
     Assert ($empty.Count -eq 1 -and @($empty[0].Data).Count -eq 0) 'No USB devices produces an empty device list'

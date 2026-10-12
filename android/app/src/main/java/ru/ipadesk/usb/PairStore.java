@@ -31,9 +31,9 @@ final class PairStore {
     Pairing load(String device) throws Exception {
         File f = file(device); if (!f.exists()) return null;
         try (DataInputStream in = new DataInputStream(new FileInputStream(f))) {
-            if (in.readInt() != 0x49504131) throw new IOException("Неверный формат записи доверия.");
+            if (in.readInt() != 0x49504131) throw new IOException(L10n.t(L10n.Key.PAIR_FORMAT_INVALID));
             byte[] nonce = Plists.exact(in, 12); int size = in.readInt();
-            if (size < 16 || size > 65536) throw new IOException("Повреждена запись доверия.");
+            if (size < 16 || size > 65536) throw new IOException(L10n.t(L10n.Key.PAIR_RECORD_DAMAGED));
             Cipher c = Cipher.getInstance("AES/GCM/NoPadding"); c.init(Cipher.DECRYPT_MODE, key(), new GCMParameterSpec(128, nonce));
             c.updateAAD(device.getBytes(StandardCharsets.UTF_8));
             return Pairing.restore(Plists.parse(c.doFinal(Plists.exact(in, size))));

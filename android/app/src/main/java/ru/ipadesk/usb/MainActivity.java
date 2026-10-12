@@ -23,8 +23,11 @@ public final class MainActivity extends Activity implements Installer.Listener {
     private final StringBuilder journal = new StringBuilder();
     private final StringBuilder usbJournal = new StringBuilder();
     private UsbManager usb;
-    private TextView fileLabel, deviceLabel, status, logView;
+    private TextView heading, fileLabel, deviceLabel, status, logView;
     private Button pick, connect, install, stop, save;
+    private Spinner language;
+    private L10n.Key statusKey = L10n.Key.READY, deviceKey = L10n.Key.DISCONNECTED;
+    private String deviceInfo = "";
     private ProgressBar progress;
     private ScrollView logScroll;
     private Ipa ipa;
@@ -43,25 +46,27 @@ public final class MainActivity extends Activity implements Installer.Listener {
                 waitingPermission = false;
                 captureUsb("permission");
                 if (usb.hasPermission(device)) runConnection(false);
-                else { status.setText("Доступ USB не разрешён"); log("Доступ USB не разрешён."); refreshButtons(); }
+                else { setStatus(L10n.Key.USB_DENIED); log(L10n.t(L10n.Key.USB_DENIED_LOG)); refreshButtons(); }
             } else if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
                 captureUsb("attached");
                 if (!busy && !waitingPermission && device != null && device.getVendorId() == 0x05ac)
-                    log("Устройство Apple подключено. Нажмите «Подключить».");
+                    log(L10n.t(L10n.Key.APPLE_ATTACHED));
             } else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(intent.getAction())) {
                 captureUsb("detached");
                 if (device != null && activeDevice != null && activeDevice.getDeviceId() == device.getDeviceId()) {
                     activeDevice = null; waitingPermission = false; connectionVerified = false;
                     if (!installing) cancelled = true;
                     if (engine != null) engine.close();
-                    deviceLabel.setText("iPhone не подключён");
-                    log("USB отключён."); refreshButtons();
+                    setDevice(L10n.Key.DISCONNECTED);
+                    log(L10n.t(L10n.Key.USB_DETACHED)); refreshButtons();
                 }
             }
         }
     };
     @Override public void onCreate(Bundle saved) {
         super.onCreate(saved);
+        L10n.setLanguage(L10n.resolve(getSharedPreferences("ui", 0).getString("language", null),
+            getResources().getConfiguration().getLocales().get(0)));
         usb = (UsbManager)getSystemService(USB_SERVICE);
         getWindow().setStatusBarColor(Color.rgb(245,247,252));
         getWindow().setNavigationBarColor(Color.rgb(245,247,252));
@@ -75,7 +80,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
         // IPA cache is disposable, never part of backups.
         File[] stale = getCacheDir().listFiles((dir, name) -> name.startsWith("selected-") && name.endsWith(".ipa"));
         if (stale != null) for (File f : stale) f.delete();
-        log("IPA USB 0.6.0-beta.1 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
+        log("IPA USB 0.7.0-beta.1 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
         refreshButtons();
     }
     private int dp(int value) { return (int)(value * getResources().getDisplayMetrics().density + 0.5f); }
@@ -99,22 +104,30 @@ public final class MainActivity extends Activity implements Installer.Listener {
             view.setPadding(dp(18) + insets.getSystemWindowInsetLeft(), dp(14) + insets.getSystemWindowInsetTop(),
                 dp(18) + insets.getSystemWindowInsetRight(), dp(12) + insets.getSystemWindowInsetBottom()); return insets;
         });
-        TextView heading = text("Установка IPA", 28, Color.rgb(20,40,70)); heading.setTypeface(null, Typeface.BOLD); root.addView(heading);
-        fileLabel = text("IPA не выбран", 15, Color.DKGRAY); fileLabel.setMaxLines(2); root.addView(fileLabel);
-        LinearLayout choose = row(root); pick = button("Выбрать IPA", choose); connect = button("Подключить", choose);
-        deviceLabel = text("iPhone не подключён", 16, Color.rgb(20,40,70)); root.addView(deviceLabel);
-        LinearLayout actions = row(root); install = button("Установить", actions); stop = button("Остановить", actions);
+        LinearLayout top = row(root);
+        heading = text(L10n.t(L10n.Key.TITLE), 28, Color.rgb(20,40,70)); heading.setTypeface(null, Typeface.BOLD);
+        heading.setMaxLines(1); heading.setAutoSizeTextTypeUniformWithConfiguration(18, 28, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
+        top.addView(heading, new LinearLayout.LayoutParams(0, dp(48), 1));
+        language = new Spinner(this);
+        ArrayAdapter<String> languages = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new String[]{"RU", "EN"});
+        languages.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        language.setAdapter(languages); language.setSelection("ru".equals(L10n.language()) ? 0 : 1);
+        top.addView(language, new LinearLayout.LayoutParams(dp(82), dp(48)));
+        fileLabel = text(L10n.t(L10n.Key.IPA_NOT_SELECTED), 15, Color.DKGRAY); fileLabel.setMaxLines(2); root.addView(fileLabel);
+        LinearLayout choose = row(root); pick = button(L10n.t(L10n.Key.SELECT_IPA), choose); connect = button(L10n.t(L10n.Key.CONNECT), choose);
+        deviceLabel = text(L10n.t(L10n.Key.DISCONNECTED), 16, Color.rgb(20,40,70)); root.addView(deviceLabel);
+        LinearLayout actions = row(root); install = button(L10n.t(L10n.Key.INSTALL), actions); stop = button(L10n.t(L10n.Key.STOP), actions);
         int[][] buttonStates = new int[][] { new int[] { -android.R.attr.state_enabled }, new int[0] };
         install.setBackgroundTintList(new android.content.res.ColorStateList(buttonStates,
             new int[] { Color.rgb(222,225,232), Color.rgb(40,90,225) }));
         install.setTextColor(new android.content.res.ColorStateList(buttonStates,
             new int[] { Color.rgb(135,140,150), Color.WHITE }));
-        status = text("Готово к проверке", 15, Color.DKGRAY); root.addView(status);
+        status = text(L10n.t(L10n.Key.READY), 15, Color.DKGRAY); root.addView(status);
         progress = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal); progress.setMax(100); root.addView(progress);
         logScroll = new ScrollView(this); logScroll.setFillViewport(true); logScroll.setBackgroundColor(Color.rgb(20,30,48));
         logView = text("", 13, Color.rgb(220,230,245)); logView.setTypeface(Typeface.MONOSPACE); logView.setTextIsSelectable(true); logView.setPadding(dp(10), dp(8), dp(10), dp(8));
         logScroll.addView(logView); root.addView(logScroll, new LinearLayout.LayoutParams(-1, 0, 1));
-        LinearLayout bottom = row(root); save = button("Сохранить журнал", bottom);
+        LinearLayout bottom = row(root); save = button(L10n.t(L10n.Key.SAVE_LOG), bottom);
         pick.setOnClickListener(v -> {
             Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE);
             startActivityForResult(i, PICK_IPA);
@@ -128,26 +141,51 @@ public final class MainActivity extends Activity implements Installer.Listener {
             if (installing) return;
             cancelled = true;
             if (engine != null) { connectionVerified = false; engine.close(); }
-            status.setText("Остановка…"); stop.setEnabled(false);
+            setStatus(L10n.Key.STOPPING); stop.setEnabled(false);
         });
         save.setOnClickListener(v -> startActivityForResult(new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain")
             .addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE, "IPA-USB-log.txt"), SAVE_LOG));
+        language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selected = position == 0 ? "ru" : "en";
+                if (selected.equals(L10n.language())) return;
+                if (busy || waitingPermission) { language.setSelection("ru".equals(L10n.language()) ? 0 : 1); return; }
+                L10n.setLanguage(selected);
+                getSharedPreferences("ui", 0).edit().putString("language", selected).apply();
+                // Update views in place: do not recreate the activity, IPA cache or paired USB session.
+                applyLanguage();
+            }
+        });
+        applyLanguage();
+    }
+    private void setStatus(L10n.Key key) { statusKey = key; status.setText(L10n.t(key)); }
+    private void setDevice(L10n.Key key) { deviceKey = key; deviceLabel.setText(L10n.t(key)); }
+    private void applyLanguage() {
+        setTitle(L10n.t(L10n.Key.TITLE)); heading.setText(L10n.t(L10n.Key.TITLE));
+        language.setContentDescription(L10n.t(L10n.Key.LANGUAGE));
+        pick.setText(L10n.t(L10n.Key.SELECT_IPA)); connect.setText(L10n.t(L10n.Key.CONNECT));
+        install.setText(L10n.t(L10n.Key.INSTALL)); stop.setText(L10n.t(L10n.Key.STOP)); save.setText(L10n.t(L10n.Key.SAVE_LOG));
+        fileLabel.setText(ipa == null ? L10n.t(L10n.Key.IPA_NOT_SELECTED) : ipa.title + " " + ipa.version);
+        deviceLabel.setText(deviceKey == null ? deviceInfo : L10n.t(deviceKey));
+        if (statusKey != null) status.setText(L10n.t(statusKey));
     }
     private void refreshButtons() {
         pick.setEnabled(!busy && !waitingPermission); connect.setEnabled(!busy && !waitingPermission);
         install.setEnabled(!busy && !waitingPermission && connectionVerified && ipa != null && activeDevice != null && usb.hasPermission(activeDevice));
         stop.setEnabled(busy && !installing && !cancelled); save.setEnabled(!busy);
+        language.setEnabled(!busy && !waitingPermission);
     }
     private void requestConnection() {
         if (connectionVerified && activeDevice != null && engine != null) {
             for (UsbDevice d : captureUsb("connected-check")) {
                 if (d.getDeviceId() == activeDevice.getDeviceId() && usb.hasPermission(d)) {
-                    status.setText("iPhone подключён"); return;
+                    setStatus(L10n.Key.CONNECTED); return;
                 }
             }
         }
         connectionVerified = false; activeDevice = null;
-        deviceLabel.setText("iPhone не подключён");
+        setDevice(L10n.Key.DISCONNECTED);
         List<UsbDevice> devices = new ArrayList<>();
         UsbDiscovery discovery = new UsbDiscovery();
         for (UsbDevice d : captureUsb("connect")) {
@@ -157,27 +195,27 @@ public final class MainActivity extends Activity implements Installer.Listener {
         }
         switch (discovery.state()) {
             case EMPTY:
-                status.setText("USB-устройства не обнаружены");
-                log("Android не видит ни одного USB-устройства. Сохраните журнал для проверки соединения.");
+                setStatus(L10n.Key.NO_USB);
+                log(L10n.t(L10n.Key.NO_USB_HELP));
                 refreshButtons(); return;
             case OTHER:
-                status.setText("iPhone не обнаружен");
-                log("Android видит USB-устройства, но среди них нет устройства Apple. Сохраните журнал.");
+                setStatus(L10n.Key.NO_IPHONE);
+                log(L10n.t(L10n.Key.NO_APPLE_HELP));
                 refreshButtons(); return;
             case APPLE_NO_MUX:
-                deviceLabel.setText("Устройство Apple обнаружено");
-                status.setText("Интерфейс iPhone недоступен");
-                log("Устройство Apple найдено, но USB-интерфейс для установки недоступен. Сохраните журнал.");
+                setDevice(L10n.Key.APPLE_FOUND);
+                setStatus(L10n.Key.NO_INTERFACE);
+                log(L10n.t(L10n.Key.NO_INTERFACE_HELP));
                 refreshButtons(); return;
             case MULTIPLE:
-                status.setText("Подключено несколько устройств Apple");
-                log("Оставьте подключённым один iPhone."); refreshButtons(); return;
+                setStatus(L10n.Key.MULTIPLE_APPLE);
+                log(L10n.t(L10n.Key.ONE_IPHONE)); refreshButtons(); return;
             default: break;
         }
         activeDevice = devices.get(0);
         if (usb.hasPermission(activeDevice)) runConnection(false);
         else {
-            waitingPermission = true; status.setText("Разрешите доступ USB"); refreshButtons();
+            waitingPermission = true; setStatus(L10n.Key.USB_ALLOW); refreshButtons();
             int flags = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
             // Mutable is required so UsbManager can append the result and device extras.
             PendingIntent pending = PendingIntent.getBroadcast(this, 0, new Intent(USB_PERMISSION).setPackage(getPackageName()), flags);
@@ -239,7 +277,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
                 activeDevice = null; connectionVerified = false; waitingPermission = false;
                 if (!installing) cancelled = true;
                 if (engine != null) engine.close();
-                deviceLabel.setText("iPhone не подключён");
+                setDevice(L10n.Key.DISCONNECTED);
             }
         }
         refreshButtons();
@@ -255,10 +293,10 @@ public final class MainActivity extends Activity implements Installer.Listener {
     }
     private void runConnection(boolean shouldInstall) {
         UsbDevice device = activeDevice;
-        if (shouldInstall && (!connectionVerified || engine == null)) { log("Сначала подключите iPhone."); return; }
+        if (shouldInstall && (!connectionVerified || engine == null)) { log(L10n.t(L10n.Key.CONNECT_FIRST)); return; }
         connectionVerified = false;
-        if (device == null || !usb.hasPermission(device)) { log("Сначала подключите iPhone."); refreshButtons(); return; }
-        begin(); status.setText(shouldInstall ? "Подготовка установки…" : "Подключение…");
+        if (device == null || !usb.hasPermission(device)) { log(L10n.t(L10n.Key.CONNECT_FIRST)); refreshButtons(); return; }
+        begin(); setStatus(shouldInstall ? L10n.Key.PREPARING : L10n.Key.CONNECTING);
         task = worker.submit(() -> {
             boolean success = false;
             try {
@@ -268,13 +306,13 @@ public final class MainActivity extends Activity implements Installer.Listener {
                     UsbWire wire = new UsbWire(usb, device);
                     engine = new Installer(getApplicationContext(), wire, this);
                 }
-                if (cancelled) throw new IOException("Операция остановлена.");
+                if (cancelled) throw new IOException(L10n.t(L10n.Key.CANCELLED));
                 if (shouldInstall) engine.install(ipa); else engine.connect();
                 success = true;
                 ui(() -> {
                     if (cancelled || activeDevice == null || activeDevice.getDeviceId() != device.getDeviceId()) return;
                     connectionVerified = true;
-                    status.setText(shouldInstall ? "Приложение установлено" : "iPhone подключён");
+                    setStatus(shouldInstall ? L10n.Key.INSTALLED : L10n.Key.CONNECTED);
                     progress.setProgress(shouldInstall ? 100 : 0);
                 });
             } catch (Exception e) { failure(e); }
@@ -292,38 +330,38 @@ public final class MainActivity extends Activity implements Installer.Listener {
         Uri uri = data.getData();
         if (request == SAVE_LOG) {
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
-                if (out == null) throw new IOException("Не удалось открыть файл.");
+                if (out == null) throw new IOException(L10n.t(L10n.Key.OPEN_FILE_FAILED));
                 captureUsb("export");
-                out.write((journal.toString() + "\n--- USB diagnostics (IPA USB 0.6.0-beta.1) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
-                Toast.makeText(this, "Журнал сохранён", Toast.LENGTH_SHORT).show();
+                out.write((journal.toString() + "\n--- USB diagnostics (IPA USB 0.7.0-beta.1) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
+                Toast.makeText(this, L10n.t(L10n.Key.LOG_SAVED), Toast.LENGTH_SHORT).show();
             } catch (Exception e) { failure(e); }
         } else if (request == PICK_IPA) {
             // A failed new selection must not silently leave the previous IPA installable.
             if (ipa != null) ipa.file.delete();
-            ipa = null; fileLabel.setText("IPA не выбран");
-            begin(); status.setText("Проверка IPA…");
+            ipa = null; fileLabel.setText(L10n.t(L10n.Key.IPA_NOT_SELECTED));
+            begin(); setStatus(L10n.Key.CHECKING_IPA);
             task = worker.submit(() -> {
                 File cache = new File(getCacheDir(), "selected-" + UUID.randomUUID() + ".ipa");
                 try {
-                    String name = "Приложение.ipa";
+                    String name = L10n.t(L10n.Key.DEFAULT_FILE);
                     try (Cursor c = getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
                         if (c != null && c.moveToFirst()) name = c.getString(0);
                     }
-                    log("Файл: " + name);
+                    log(L10n.t(L10n.Key.FILE_SELECTED, name));
                     try (InputStream in = getContentResolver().openInputStream(uri); OutputStream out = new FileOutputStream(cache)) {
-                        if (in == null) throw new IOException("Не удалось прочитать IPA.");
+                        if (in == null) throw new IOException(L10n.t(L10n.Key.IPA_READ_FAILED));
                         byte[] chunk = new byte[65536]; int n;
                         while ((n = in.read(chunk)) != -1) {
-                            if (cancelled || Thread.currentThread().isInterrupted()) throw new IOException("Операция остановлена.");
+                            if (cancelled || Thread.currentThread().isInterrupted()) throw new IOException(L10n.t(L10n.Key.CANCELLED));
                             out.write(chunk, 0, n);
                         }
                     }
                     Ipa selected = Ipa.open(cache);
-                    if (cancelled || Thread.currentThread().isInterrupted() || destroyed) throw new IOException("Операция остановлена.");
+                    if (cancelled || Thread.currentThread().isInterrupted() || destroyed) throw new IOException(L10n.t(L10n.Key.CANCELLED));
                     ui(() -> {
                         ipa = selected;
                         fileLabel.setText(selected.title + " " + selected.version);
-                        status.setText("IPA выбран");
+                        setStatus(L10n.Key.IPA_SELECTED);
                     });
                 } catch (Exception e) {
                     cache.delete(); failure(e);
@@ -351,28 +389,28 @@ public final class MainActivity extends Activity implements Installer.Listener {
             logView.setText(journal.toString()); logScroll.post(() -> logScroll.fullScroll(View.FOCUS_DOWN));
         });
     }
-    public void device(String description) { ui(() -> deviceLabel.setText(description)); }
+    public void device(String description) { ui(() -> { deviceKey = null; deviceInfo = description; deviceLabel.setText(description); }); }
     private int lastProgress = -2; private String lastStage = "";
     public void progress(String stage, int value) {
         if (value == lastProgress && stage.equals(lastStage)) return;
         lastProgress = value; lastStage = stage;
-        ui(() -> { status.setText(stage + (value >= 0 ? " " + value + "%" : "…")); progress.setIndeterminate(value < 0); if (value >= 0) progress.setProgress(value); });
+        ui(() -> { statusKey = null; status.setText(stage + (value >= 0 ? " " + value + "%" : "…")); progress.setIndeterminate(value < 0); if (value >= 0) progress.setProgress(value); });
     }
     public void installing() { installing = true; ui(this::refreshButtons); }
     private void failure(Exception e) {
         String message = e.getMessage(); if (message == null || message.isEmpty()) message = e.getClass().getSimpleName();
-        if (cancelled || e instanceof InterruptedException) message = "Операция остановлена.";
+        if (cancelled || e instanceof InterruptedException) message = L10n.t(L10n.Key.CANCELLED);
         if (e instanceof Installer.DeviceError) {
             String code = ((Installer.DeviceError)e).code;
-            if (code.equals("UserDeniedPairing")) message = "На iPhone не разрешено доверие. Переподключите его и нажмите «Доверять».";
-            else if (code.equals("PasswordProtected")) message = "Разблокируйте iPhone и повторите подключение.";
+            if (code.equals("UserDeniedPairing")) message = L10n.t(L10n.Key.TRUST_DENIED);
+            else if (code.equals("PasswordProtected")) message = L10n.t(L10n.Key.UNLOCK_RETRY);
             else message = "iPhone: " + code;
         }
         log(message);
-        ui(() -> status.setText(cancelled ? "Остановлено" : "Не удалось завершить — см. журнал"));
+        ui(() -> setStatus(cancelled ? L10n.Key.STOPPED : L10n.Key.FAILED));
     }
     @Override public void onBackPressed() {
-        if (busy) { Toast.makeText(this, "Дождитесь завершения или остановите передачу", Toast.LENGTH_SHORT).show(); return; }
+        if (busy) { Toast.makeText(this, L10n.t(L10n.Key.WAIT_OR_STOP), Toast.LENGTH_SHORT).show(); return; }
         super.onBackPressed();
     }
     @Override protected void onDestroy() {

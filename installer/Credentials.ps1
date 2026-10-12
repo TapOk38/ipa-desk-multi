@@ -1,4 +1,5 @@
 ﻿#requires -Version 5.1
+. (Join-Path $PSScriptRoot 'Localization.ps1')
 Add-Type -AssemblyName System.Security
 
 function Get-InstallerCredentialStorePath([string]$StorePath) {
@@ -104,7 +105,7 @@ function Get-InstallerCredential {
             }
             return $null
         }
-    } catch { throw [InvalidOperationException]::new('Не удалось прочитать сохранённые учётные данные.') }
+    } catch { throw [InvalidOperationException]::new((Get-InstallerText 'Не удалось прочитать сохранённые учётные данные.')) }
 }
 
 function Set-InstallerCredential {
@@ -124,7 +125,7 @@ function Set-InstallerCredential {
             $entries += [pscustomobject]@{ Key = $Key; AppleId = $AppleId.Trim(); Password = $Password }
             Write-InstallerCredentialStore $storeFile ([pscustomobject]@{ Version = 1; Entries = $entries })
         }
-    } catch { throw [InvalidOperationException]::new('Не удалось сохранить учётные данные.') }
+    } catch { throw [InvalidOperationException]::new((Get-InstallerText 'Не удалось сохранить учётные данные.')) }
 }
 
 function Remove-InstallerCredential {
@@ -137,5 +138,5 @@ function Remove-InstallerCredential {
             $entries = @($database.Entries | Where-Object { -not [string]::Equals($_.Key, $Key, [StringComparison]::Ordinal) })
             if ($entries.Count -ne $database.Entries.Count) { Write-InstallerCredentialStore $storeFile ([pscustomobject]@{ Version = 1; Entries = $entries }) }
         }
-    } catch { throw [InvalidOperationException]::new('Не удалось удалить учётные данные.') }
+    } catch { throw [InvalidOperationException]::new((Get-InstallerText 'Не удалось удалить учётные данные.')) }
 }

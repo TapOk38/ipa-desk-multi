@@ -30,8 +30,8 @@ public final class Mux implements Closeable {
     static long u32(int n) { return Integer.toUnsignedLong(n); }
     static long delta(long a, long b) { return (a - b) & 0xffffffffL; }
     private void check(long deadline) throws IOException {
-        if (closed || Thread.currentThread().isInterrupted()) throw new IOException("Операция остановлена.");
-        if (now() > deadline) throw new IOException("iPhone не ответил вовремя. Разблокируйте его и проверьте USB-подключение.");
+        if (closed || Thread.currentThread().isInterrupted()) throw new IOException(L10n.t(L10n.Key.CANCELLED));
+        if (now() > deadline) throw new IOException(L10n.t(L10n.Key.PHONE_TIMEOUT));
     }
     public void start() throws IOException {
         trace("start");
@@ -54,16 +54,16 @@ public final class Mux implements Closeable {
         while (used < 8 || used < be(buffer).getInt(4)) {
             if (used >= 8) {
                 int length = be(buffer).getInt(4);
-                if (length < 8 || length > 65536) throw new IOException("USB mux: неверная длина пакета " + length);
+                if (length < 8 || length > 65536) throw new IOException(L10n.t(L10n.Key.MUX_BAD_LENGTH_VALUE, length));
             }
             check(until);
             int n = wire.read(usbRead);
             if (n == 0) continue;
-            if (used + n > buffer.length) throw new IOException("USB mux: переполнение буфера.");
+            if (used + n > buffer.length) throw new IOException(L10n.t(L10n.Key.MUX_OVERFLOW));
             System.arraycopy(usbRead, 0, buffer, used, n); used += n;
         }
         int length = be(buffer).getInt(4);
-        if (length < 8 || length > 65536) throw new IOException("USB mux: неверная длина пакета.");
+        if (length < 8 || length > 65536) throw new IOException(L10n.t(L10n.Key.MUX_BAD_LENGTH));
         byte[] packet = Arrays.copyOf(buffer, length);
         System.arraycopy(buffer, length, buffer, 0, used - length); used -= length;
         ByteBuffer b = be(packet);
@@ -73,17 +73,17 @@ public final class Mux implements Closeable {
         // Their header must not be interpreted as v1 before the version reply arrives.
         if (version == 0 && protocol != 0) { trace("discard before version"); return; }
         int header = version >= 2 ? 16 : 8;
-        if (length < header) throw new IOException("USB mux: неполный заголовок.");
+        if (length < header) throw new IOException(L10n.t(L10n.Key.MUX_SHORT_HEADER));
         if (version >= 2) { b.getInt(); b.getShort(); rx = b.getShort() & 65535; }
         if (protocol == 0) {
             if (version != 0) { trace("discard duplicate version"); return; }
-            if (length < header + 12) throw new IOException("USB mux: неверный ответ версии.");
+            if (length < header + 12) throw new IOException(L10n.t(L10n.Key.MUX_BAD_VERSION));
             version = b.getInt();
-            if (version != 1 && version != 2) throw new IOException("USB mux: версия " + version + " не поддерживается.");
+            if (version != 1 && version != 2) throw new IOException(L10n.t(L10n.Key.MUX_UNSUPPORTED_VERSION, version));
             trace("negotiated version=" + version);
             if (version == 2) { tx = 0; rx = 65535; send(2, new byte[]{7}); }
         } else if (protocol == 6) {
-            if (length < header + 20) throw new IOException("USB mux: неполный TCP-пакет.");
+            if (length < header + 20) throw new IOException(L10n.t(L10n.Key.MUX_SHORT_TCP));
             int source = b.getShort() & 65535, dest = b.getShort() & 65535;
             long seq = u32(b.getInt()), ack = u32(b.getInt());
             int offsetByte = b.get() & 255, flags = b.get() & 255;
@@ -103,7 +103,7 @@ public final class Mux implements Closeable {
         }
     }
     public Channel connect(int port) throws IOException {
-        if (version == 0 || port < 1 || port > 65535) throw new IOException("USB mux: неверный порт.");
+        if (version == 0 || port < 1 || port > 65535) throw new IOException(L10n.t(L10n.Key.MUX_BAD_PORT));
         Channel channel = new Channel(nextPort++, port);
         channels.put(channel.localPort, channel);
         channel.tcp(2, new byte[0]);
@@ -125,7 +125,7 @@ public final class Mux implements Closeable {
         public void timeout(int milliseconds) { timeoutMillis = milliseconds; }
         private void checkError() throws IOException {
             if (failure != null) throw failure;
-            if (ended || closed) throw new IOException("Соединение с iPhone закрыто.");
+            if (ended || closed) throw new IOException(L10n.t(L10n.Key.CONNECTION_CLOSED));
         }
         private void tcp(int flags, byte[] payload) throws IOException {
             ByteBuffer b = ByteBuffer.allocate(20 + payload.length).order(ByteOrder.BIG_ENDIAN);
@@ -140,13 +140,12 @@ public final class Mux implements Closeable {
                 // The RST payload may contain arbitrary device text; do not log it.
                 diagnostics.accept("mux reset port=" + port + " phase=" + (connected ? "open" : "connecting")
                     + " seq=" + remoteSeq + " ack=" + ack + " sent=" + seq + " payload=" + payload.length);
-                failure = new IOException(connected ? "iPhone прервал обмен по каналу " + port + ". Сохраните журнал."
-                    : "iPhone отклонил открытие канала " + port + ". Сохраните журнал.");
+                failure = new IOException(L10n.t(connected ? L10n.Key.MUX_CHANNEL_RESET : L10n.Key.MUX_CHANNEL_REJECTED, port));
                 return;
             }
             peerWindow = window;
             if (!connected) {
-                if ((flags & 0x12) != 0x12 || ack != 1) throw new IOException("USB mux: некорректное подтверждение подключения.");
+                if ((flags & 0x12) != 0x12 || ack != 1) throw new IOException(L10n.t(L10n.Key.MUX_BAD_ACK));
                 seq = 1; peerAck = ack; received = (remoteSeq + 1) & 0xffffffffL; connected = true;
                 tcp(16, new byte[0]); return;
             }
@@ -155,11 +154,11 @@ public final class Mux implements Closeable {
             }
             if (payload.length > 0) {
                 if (remoteSeq == received) {
-                    if (queuedBytes + payload.length > 262144) throw new IOException("USB mux: входной буфер заполнен.");
+                    if (queuedBytes + payload.length > 262144) throw new IOException(L10n.t(L10n.Key.MUX_BUFFER_FULL));
                     queued.add(payload); queuedBytes += payload.length;
                     received = (received + payload.length) & 0xffffffffL;
                 } else if (delta(received, remoteSeq) < payload.length) {
-                    throw new IOException("USB mux: нарушен порядок данных.");
+                    throw new IOException(L10n.t(L10n.Key.MUX_OUT_OF_ORDER));
                 }
                 tcp(16, new byte[0]);
             }

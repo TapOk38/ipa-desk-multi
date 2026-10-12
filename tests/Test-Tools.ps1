@@ -2,6 +2,7 @@
 param([string]$OfficialArchive='', [string]$WorkRoot=[IO.Path]::GetTempPath())
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot '..\Install-Tools.ps1')
+Set-IpaLanguage 'ru'
 $root=Join-Path $WorkRoot ('ipa-tools-test-'+[guid]::NewGuid().ToString('N'))
 $null=[IO.Directory]::CreateDirectory($root)
 $script:checks=0

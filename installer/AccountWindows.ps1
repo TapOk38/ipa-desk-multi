@@ -1,8 +1,9 @@
 ﻿#requires -Version 5.1
+. (Join-Path $PSScriptRoot 'Localization.ps1')
 
 function New-InstallerAccountEditor($Owner, [string]$Key, [string]$AppName, $Account, [hashtable]$StoreOptions = @{}) {
     $window = [Windows.Forms.Form]::new()
-    $window.Text = 'Учётные данные'; $window.ClientSize = [Drawing.Size]::new(600, 290)
+    $window.Text = (Get-InstallerText 'Учётные данные'); $window.ClientSize = [Drawing.Size]::new(600, 290)
     $window.MinimumSize = [Drawing.Size]::new(616, 329); $window.StartPosition = 'CenterParent'
     $window.Font = [Drawing.Font]::new('Segoe UI', 11); $window.BackColor = [Drawing.Color]::FromArgb(245, 247, 251)
     $window.AutoScaleMode = 'Dpi'; $window.MinimizeBox = $false; $window.MaximizeBox = $false
@@ -16,29 +17,29 @@ function New-InstallerAccountEditor($Owner, [string]$Key, [string]$AppName, $Acc
     $layout.Controls.Add($appLabel, 0, 0); $layout.SetColumnSpan($appLabel, 2)
     $idLabel = [Windows.Forms.Label]::new(); $idLabel.Text = 'Apple ID'; $idLabel.Dock = 'Fill'; $idLabel.TextAlign = 'MiddleLeft'
     $idBox = [Windows.Forms.TextBox]::new(); $idBox.Dock = 'Fill'; $idBox.MaxLength = 320
-    $passLabel = [Windows.Forms.Label]::new(); $passLabel.Text = 'Пароль'; $passLabel.Dock = 'Fill'; $passLabel.TextAlign = 'MiddleLeft'
+    $passLabel = [Windows.Forms.Label]::new(); $passLabel.Text = (Get-InstallerText 'Пароль'); $passLabel.Dock = 'Fill'; $passLabel.TextAlign = 'MiddleLeft'
     $passBox = [Windows.Forms.TextBox]::new(); $passBox.Dock = 'Fill'; $passBox.MaxLength = 1024; $passBox.UseSystemPasswordChar = $true
     if ($Account) { $idBox.Text = [string]$Account.AppleId; $passBox.Text = [string]$Account.Password }
     $layout.Controls.Add($idLabel, 0, 1); $layout.Controls.Add($idBox, 1, 1)
     $layout.Controls.Add($passLabel, 0, 2); $layout.Controls.Add($passBox, 1, 2)
-    $showPass = [Windows.Forms.CheckBox]::new(); $showPass.Text = 'Показать пароль'; $showPass.AutoSize = $true
+    $showPass = [Windows.Forms.CheckBox]::new(); $showPass.Text = (Get-InstallerText 'Показать пароль'); $showPass.AutoSize = $true
     $showPass.Add_CheckedChanged({ $passBox.UseSystemPasswordChar = -not $showPass.Checked }.GetNewClosure())
     $layout.Controls.Add($showPass, 1, 3)
     $errorLabel = [Windows.Forms.Label]::new(); $errorLabel.Dock = 'Fill'; $errorLabel.ForeColor = [Drawing.Color]::Firebrick
     $layout.Controls.Add($errorLabel, 0, 4); $layout.SetColumnSpan($errorLabel, 2)
     $buttons = [Windows.Forms.FlowLayoutPanel]::new(); $buttons.Dock = 'Fill'; $buttons.FlowDirection = 'RightToLeft'
-    $saveButton = [Windows.Forms.Button]::new(); $saveButton.Text = 'Сохранить'; $saveButton.Size = [Drawing.Size]::new(125, 32)
-    $cancelButton = [Windows.Forms.Button]::new(); $cancelButton.Text = 'Отмена'; $cancelButton.Size = [Drawing.Size]::new(100, 32); $cancelButton.DialogResult = 'Cancel'
+    $saveButton = [Windows.Forms.Button]::new(); $saveButton.Text = (Get-InstallerText 'Сохранить'); $saveButton.Size = [Drawing.Size]::new(125, 32)
+    $cancelButton = [Windows.Forms.Button]::new(); $cancelButton.Text = (Get-InstallerText 'Отмена'); $cancelButton.Size = [Drawing.Size]::new(100, 32); $cancelButton.DialogResult = 'Cancel'
     $buttons.Controls.Add($saveButton); $buttons.Controls.Add($cancelButton)
     $layout.Controls.Add($buttons, 0, 5); $layout.SetColumnSpan($buttons, 2)
     $window.AcceptButton = $saveButton; $window.CancelButton = $cancelButton
     $window.Tag = [pscustomobject]@{ AppleId = $idBox; Password = $passBox; Save = $saveButton; ErrorLabel = $errorLabel }
     $saveButton.Add_Click({
-        if ([string]::IsNullOrWhiteSpace($idBox.Text) -or [string]::IsNullOrEmpty($passBox.Text)) { $errorLabel.Text = 'Введите Apple ID и пароль.'; return }
+        if ([string]::IsNullOrWhiteSpace($idBox.Text) -or [string]::IsNullOrEmpty($passBox.Text)) { $errorLabel.Text = (Get-InstallerText 'Введите Apple ID и пароль.'); return }
         try {
             Set-InstallerCredential -Key $Key -AppleId $idBox.Text.Trim() -Password $passBox.Text @StoreOptions
             $window.DialogResult = 'OK'; $window.Close()
-        } catch { $errorLabel.Text = 'Не удалось сохранить учётные данные в Windows.' }
+        } catch { $errorLabel.Text = (Get-InstallerText 'Не удалось сохранить учётные данные в Windows.') }
     }.GetNewClosure())
     return $window
 }
@@ -52,7 +53,7 @@ function Edit-InstallerAccount($Owner, [string]$Key, [string]$AppName, [hashtabl
 
 function New-InstallerAccountDisplay($Owner, [string]$Key, [string]$AppName, $Account, [hashtable]$StoreOptions = @{}) {
     $window = [Windows.Forms.Form]::new()
-    $window.Text = 'Введите на iPhone'; $window.ClientSize = [Drawing.Size]::new(860, 460)
+    $window.Text = (Get-InstallerText 'Введите на iPhone'); $window.ClientSize = [Drawing.Size]::new(860, 460)
     $window.MinimumSize = [Drawing.Size]::new(736, 430); $window.StartPosition = 'CenterParent'
     $window.Font = [Drawing.Font]::new('Segoe UI', 11); $window.BackColor = [Drawing.Color]::FromArgb(245, 247, 251)
     $window.AutoScaleMode = 'Dpi'; $window.MinimizeBox = $false
@@ -68,7 +69,7 @@ function New-InstallerAccountDisplay($Owner, [string]$Key, [string]$AppName, $Ac
     $heading.Font = [Drawing.Font]::new('Segoe UI', 19, [Drawing.FontStyle]::Bold)
     $layout.Controls.Add($heading, 0, 0)
     $idLabel = [Windows.Forms.Label]::new(); $idLabel.Text = 'Apple ID'; $idLabel.Dock = 'Fill'
-    $passLabel = [Windows.Forms.Label]::new(); $passLabel.Text = 'Пароль'; $passLabel.Dock = 'Fill'
+    $passLabel = [Windows.Forms.Label]::new(); $passLabel.Text = (Get-InstallerText 'Пароль'); $passLabel.Dock = 'Fill'
     $idText = [Windows.Forms.TextBox]::new(); $passwordText = [Windows.Forms.TextBox]::new()
     foreach ($field in @($idText, $passwordText)) {
         $field.ReadOnly = $true; $field.Multiline = $true; $field.WordWrap = $true; $field.ScrollBars = 'Vertical'
@@ -79,8 +80,8 @@ function New-InstallerAccountDisplay($Owner, [string]$Key, [string]$AppName, $Ac
     $layout.Controls.Add($idLabel, 0, 1); $layout.Controls.Add($idText, 0, 2)
     $layout.Controls.Add($passLabel, 0, 3); $layout.Controls.Add($passwordText, 0, 4)
     $buttons = [Windows.Forms.FlowLayoutPanel]::new(); $buttons.Dock = 'Fill'; $buttons.FlowDirection = 'RightToLeft'; $buttons.Padding = [Windows.Forms.Padding]::new(0, 8, 0, 0)
-    $closeButton = [Windows.Forms.Button]::new(); $closeButton.Text = 'Закрыть'; $closeButton.Size = [Drawing.Size]::new(120, 32); $closeButton.DialogResult = 'OK'
-    $editButton = [Windows.Forms.Button]::new(); $editButton.Text = 'Изменить'; $editButton.Size = [Drawing.Size]::new(120, 32)
+    $closeButton = [Windows.Forms.Button]::new(); $closeButton.Text = (Get-InstallerText 'Закрыть'); $closeButton.Size = [Drawing.Size]::new(120, 32); $closeButton.DialogResult = 'OK'
+    $editButton = [Windows.Forms.Button]::new(); $editButton.Text = (Get-InstallerText 'Изменить'); $editButton.Size = [Drawing.Size]::new(120, 32)
     $buttons.Controls.Add($closeButton); $buttons.Controls.Add($editButton); $layout.Controls.Add($buttons, 0, 5)
     $window.CancelButton = $closeButton
     $window.ActiveControl = $closeButton
@@ -91,7 +92,7 @@ function New-InstallerAccountDisplay($Owner, [string]$Key, [string]$AppName, $Ac
                 $updated = Get-InstallerCredential -Key $Key @StoreOptions
                 $idText.Text = [string]$updated.AppleId; $passwordText.Text = [string]$updated.Password
             }
-        } catch { $null = [Windows.Forms.MessageBox]::Show($window, 'Не удалось открыть учётные данные в Windows.', 'Учётные данные', 'OK', 'Error') }
+        } catch { $null = [Windows.Forms.MessageBox]::Show($window, (Get-InstallerText 'Не удалось открыть учётные данные в Windows.'), (Get-InstallerText 'Учётные данные'), 'OK', 'Error') }
     }.GetNewClosure())
     return $window
 }

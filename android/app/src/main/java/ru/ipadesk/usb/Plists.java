@@ -23,22 +23,22 @@ final class Plists {
     }
     static byte[] data(NSDictionary d, String key) throws IOException {
         NSObject v = d.objectForKey(key);
-        if (!(v instanceof NSData)) throw new IOException("Нет данных " + key + ".");
+        if (!(v instanceof NSData)) throw new IOException(L10n.t(L10n.Key.PLIST_MISSING_DATA, key));
         return ((NSData)v).bytes();
     }
     static NSDictionary parse(byte[] bytes) throws IOException {
         try {
             NSObject p = PropertyListParser.parse(bytes);
             if (p instanceof NSDictionary) return (NSDictionary)p;
-            throw new IOException("Ожидался словарь plist.");
-        } catch (Exception e) { throw new IOException("Не удалось прочитать plist.", e); }
+            throw new IOException(L10n.t(L10n.Key.PLIST_EXPECTED_DICT));
+        } catch (Exception e) { throw new IOException(L10n.t(L10n.Key.PLIST_READ_FAILED), e); }
     }
     static byte[] exact(InputStream in, int n) throws IOException {
-        if (n < 0 || n > 16 * 1024 * 1024) throw new IOException("Недопустимая длина ответа.");
+        if (n < 0 || n > 16 * 1024 * 1024) throw new IOException(L10n.t(L10n.Key.RESPONSE_BAD_LENGTH));
         byte[] b = new byte[n]; int offset = 0;
         while (offset < n) {
             int count = in.read(b, offset, n - offset);
-            if (count < 0) throw new EOFException("iPhone прервал ответ.");
+            if (count < 0) throw new EOFException(L10n.t(L10n.Key.RESPONSE_INTERRUPTED));
             offset += count;
         }
         return b;
