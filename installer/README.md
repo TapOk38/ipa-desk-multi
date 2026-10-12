@@ -1,5 +1,8 @@
 # IPA Install
 
+<details>
+<summary>English</summary>
+
 Installs IPA files on an iPhone from Windows over USB.
 
 **[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Install.exe)** · 1.1.0-beta.1
@@ -31,3 +34,37 @@ To install on another iPhone, reconnect the cable and click **Refresh**. Connect
 - **Installation error:** check the log. The IPA must be compatible with iOS and have a valid signature. The tool does not re-sign files or remove their Apple ID association.
 
 [All apps](../README.md) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Data storage](PRIVACY.md)
+
+</details>
+
+Устанавливает IPA на iPhone с Windows через USB.
+
+**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Install.exe)** · 1.1.0-beta.1
+
+## Требования
+
+Windows 10/11 x64, драйвер Apple, USB-кабель с передачей данных и IPA-файл. Драйвер устанавливается вместе с [Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k).
+
+## Использование
+
+1. Запустите EXE и выберите язык интерфейса. Подключите разблокированный iPhone и подтвердите доверие, если появится запрос.
+2. Нажмите **«Обновить»**, затем **«Выбрать…»** и укажите IPA.
+3. Нажмите **«Установить»**. Не отключайте кабель до сообщения **«Приложение установлено»**.
+
+Если при запуске приложения потребуется Apple ID, используйте учётную запись, с которой скачан IPA.
+
+Для другого iPhone переподключите кабель и нажмите **«Обновить»**. Подключайте по одному устройству.
+
+<details>
+<summary>Сохранение учётных данных</summary>
+
+Кнопка **«Учётные данные iCloud»** сохраняет Apple ID и пароль для показа после установки. Данные вводятся на iPhone вручную. Сохраняется одна общая учётная запись; при смене IPA она не меняется автоматически.
+
+</details>
+
+## Решение проблем
+
+- **iPhone не определяется:** проверьте кабель, доверие и подключение в Apple Devices.
+- **Ошибка установки:** проверьте журнал. IPA должен быть совместим с iOS и иметь действующую подпись. Программа не переподписывает файл и не снимает привязку к Apple ID.
+
+[Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Хранение данных](PRIVACY.md)

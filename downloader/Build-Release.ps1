@@ -16,6 +16,7 @@ try {
             $content=$content.Replace('(../','(https://github.com/TapOk38/ipa-desk-multi/blob/main/')
             if($name -eq 'README.md'){
                 $content=$content.Replace('Run the EXE.','Run `Start.cmd`.').Replace('**Downloads → IPA Desk Multi**','`Downloads` next to `Start.cmd`')
+                $content=$content.Replace('Запустите EXE.','Запустите `Start.cmd`.').Replace('**Загрузки → IPA Desk Multi**','`Downloads` рядом со `Start.cmd`')
             }
             $entry=$zip.CreateEntry('IPA-Desk-Multi/'+$name)
             $writer=[IO.StreamWriter]::new($entry.Open(),[Text.UTF8Encoding]::new($false))

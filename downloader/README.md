@@ -1,5 +1,8 @@
 # IPA Desk Multi
 
+<details>
+<summary>English</summary>
+
 Downloads apps from the App Store on Windows. Saves a separate IPA for each selected account.
 
 **[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Desk-Multi-0.4.0-beta.1.exe)** · 0.4.0-beta.1
@@ -30,3 +33,36 @@ Bulk downloading while switching between many Apple IDs on one PC is not recomme
 If an error occurs, check the log and include it in an issue after removing personal information.
 
 [All apps](../README.md) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Data storage](PRIVACY.md)
+
+</details>
+
+Скачивает приложения из App Store на Windows. Для каждой выбранной учётной записи сохраняет отдельный IPA.
+
+**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Desk-Multi-0.4.0-beta.1.exe)** · 0.4.0-beta.1
+
+## Требования
+
+Windows 10/11 x64, интернет и Apple ID с настроенным App Store. При включённой двухфакторной аутентификации необходим доступ к коду подтверждения.
+
+## Использование
+
+1. Запустите EXE. При необходимости выберите язык интерфейса.
+2. Нажмите **«Добавить»**, укажите Apple ID, пароль и описание учётной записи.
+3. Вставьте ссылку App Store или ID приложения. Отметьте учётные записи и нажмите **«Скачать IPA»**.
+4. Введите код подтверждения, если Apple его запросит. После завершения нажмите **«Открыть папку»**.
+
+Учётные записи обрабатываются последовательно. Файлы сохраняются в **Загрузки → IPA Desk Multi**. В имени IPA указаны приложение, версия, Apple ID и описание учётной записи.
+
+При первом использовании необходимые компоненты загружаются автоматически.
+
+## Установка и ограничения
+
+Для установки используйте [IPA Install](../installer/README.md) или [IPA USB](../android/README.md). При запуске приложения может потребоваться Apple ID, с которым скачан IPA.
+
+Приложение должно быть доступно выбранной учётной записи. Лицензия на бесплатное приложение получается автоматически; платные покупки не выполняются.
+
+Массовое скачивание со сменой множества Apple ID на одном ПК не рекомендуется: подтверждённого безопасного лимита нет.
+
+При ошибке проверьте журнал и приложите его текст к обращению, удалив личные данные.
+
+[Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Хранение данных](PRIVACY.md)
