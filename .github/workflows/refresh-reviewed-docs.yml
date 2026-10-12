@@ -1,0 +1,20 @@
+name: Refresh reviewed documentation
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/refresh-reviewed-docs.yml']
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update release descriptions
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release edit v0.3.1-beta.1 --notes-file RELEASE_NOTES.md
+          gh release edit install-v1.0.0-beta.1 --notes-file installer/RELEASE_NOTES.md
+          gh release edit android-v0.6.0-beta.1 --notes-file android/RELEASE_NOTES.md

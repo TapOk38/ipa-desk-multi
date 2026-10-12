@@ -1,6 +1,8 @@
 # IPA Desk Multi — скачивание IPA
 
-Скачивает приложения из App Store на Windows. Для каждой выбранной учётки сохраняет отдельный IPA.
+Скачивает приложения из App Store на Windows. Для каждой выбранной учётной записи сохраняет отдельный IPA.
+
+Версия 0.3.1-beta.1
 
 **[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/v0.3.1-beta.1/IPA-Desk-Multi-0.3.1-beta.1.exe)**
 
