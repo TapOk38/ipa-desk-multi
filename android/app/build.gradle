@@ -1,0 +1,22 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'ru.ipadesk.usb'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'ru.ipadesk.usb.prototype'
+        minSdk 26
+        targetSdk 35
+        versionCode 8
+        versionName '0.6.0-beta.1'
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    buildTypes { debug { debuggable true } }
+    sourceSets { main { assets.srcDirs = ['../licenses'] } }
+    // License texts are shipped as assets. Exclude duplicate JAR metadata only.
+    packaging { resources { excludes += ['META-INF/versions/**', 'META-INF/LICENSE*', 'META-INF/NOTICE*', 'META-INF/DEPENDENCIES', 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.RSA', 'META-INF/*.DSA'] } }
+    testOptions { unitTests.returnDefaultValues = true }
+}
+dependencies {
+    implementation fileTree(dir: '../libs', include: ['*.jar'])
+    testImplementation fileTree(dir: '../test-libs', include: ['*.jar'])
+}
