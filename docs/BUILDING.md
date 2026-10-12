@@ -1,20 +1,19 @@
-# Проверки и упаковка
+# Сборка и тесты
 
-Нужны Windows x64, Windows PowerShell 5.1 / .NET Framework. В PowerShell 7 тесты
-CodeDOM/System.Web могут работать иначе; используйте `powershell.exe` из Windows.
+Нужны Windows x64 и Windows PowerShell 5.1. Выполняйте команды из корня репозитория:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\Test-Engine.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\Test-Tools.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\Build-Release.ps1
+$ps = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+& $ps -NoProfile -ExecutionPolicy Bypass -File .\tests\Test-Engine.ps1
+& $ps -NoProfile -ExecutionPolicy Bypass -File .\tests\Test-Tools.ps1
+& $ps -NoProfile -ExecutionPolicy Bypass -File .\Build-Release.ps1
 ```
 
-Тесты не используют реальные Apple ID и не подключаются к Apple. У Test-Tools есть
-необязательный `-OfficialArchive`, чтобы дополнительно проверить распаковку уже скачанного
-официального архива по его хешу. Без него тестируются синтетические архивы и отказы.
-ZIP создаётся в `dist/` по явному списку файлов. `tools/`, скачанные IPA, учётки и тестовые
-данные никогда не упаковываются. Наличие локально скачанного EXE не меняет состав ZIP.
+Тесты используют вымышленные учётки и не подключаются к Apple.
+У `Test-Tools.ps1` есть параметр `-OfficialArchive` для проверки уже скачанного официального ZIP.
 
-Перед релизом проверьте реальное скачивание с согласованной учёткой, 2FA,
-путь с кириллицей и отмену. Не публикуйте личные журналы. GitHub Actions выполняет
-только локальные автоматические проверки, без аккаунта Apple.
+Готовый архив создаётся в `dist/`. Сборка включает файлы по заданному списку;
+учётки, скачанные IPA, журналы и папка `tools/` в него не входят.
+Для повторной сборки укажите новую папку через `-Destination`.
+
+Перед выпуском с изменениями программы проверьте скачивание, ввод 2FA, русские пути и отмену на реальной учётке.
