@@ -3,7 +3,7 @@
 <details>
 <summary>English</summary>
 
-Downloads apps from the App Store on Windows. Saves a separate IPA for each selected account.
+Downloads apps from the App Store on Windows. Supports adding multiple iCloud accounts.
 
 **[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe)** · 0.4.0-beta.3
 
@@ -36,7 +36,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 </details>
 
-Скачивает приложения из App Store на Windows. Для каждой выбранной учётной записи сохраняет отдельный IPA.
+Скачивает приложения из App Store на Windows. Поддерживает добавление нескольких учётных записей iCloud.
 
 **[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe)** · 0.4.0-beta.3
 
