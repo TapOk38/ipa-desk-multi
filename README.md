@@ -3,7 +3,7 @@
 <details>
 <summary>English</summary>
 
-Tools for downloading and installing IPA files, with Russian and English interfaces.
+Tools for downloading and installing IPA files.
 
 ### [TapOk IPA Downloader](downloader/README.md)
 
@@ -21,7 +21,7 @@ Install IPA files on an iPhone from Android over USB.
 
 </details>
 
-Программы для скачивания и установки IPA с русским и английским интерфейсом.
+Программы для скачивания и установки IPA.
 
 ### [TapOk IPA Downloader](downloader/README.md)
 
