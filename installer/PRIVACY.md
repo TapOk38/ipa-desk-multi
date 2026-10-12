@@ -1,17 +1,13 @@
-# Хранение данных
+# Data storage
 
-**Русский** | [English](PRIVACY.en.md)
+The selected IPA is sent to the connected iPhone over USB. Installation uses a temporary copy; the application attempts to remove it afterwards. The original IPA is preserved.
 
-Выбранный IPA передаётся подключённому iPhone по USB. Для установки создаётся временная копия файла; после операции программа пытается удалить её. Исходный IPA остаётся на месте.
+If credentials are saved through **iCloud credentials**, they are stored in `%LOCALAPPDATA%\IPA-Install\accounts.dat`, encrypted for the current Windows user. They are not passed to USB tools or entered on the iPhone automatically. Saved credentials are displayed after a successful installation.
 
-Если вы сохраняете Apple ID и пароль кнопкой **«Учётные данные iCloud»**, они записываются в `%LOCALAPPDATA%\IPA-Install\accounts.dat`. Данные зашифрованы средствами Windows для текущего пользователя.
+The language preference is stored separately in `language.txt` in the same application data folder.
 
-Эти данные не передаются USB-утилитам и не вводятся на iPhone автоматически. После успешной установки программа показывает сохранённые данные на экране.
+The EXE extracts its components to `%LOCALAPPDATA%\IPA-Install\app`. Saved accounts and IPA files are not included in the distributed executable.
 
-Выбранный язык сохраняется отдельно в файле `language.txt` в той же папке данных приложения.
+The interface does not collect telemetry. The log may contain IPA filenames and device details. Do not share passwords, `accounts.dat`, or screenshots showing credentials.
 
-EXE распаковывает свои компоненты в `%LOCALAPPDATA%\IPA-Install\app`. Учётные записи и IPA не входят в распространяемый файл.
-
-Телеметрии в оболочке нет. Журнал в окне может содержать имя IPA и сведения об устройстве. Не публикуйте пароли, файл `accounts.dat` и скриншоты окна с учётными данными.
-
-[К инструкции IPA Install](README.md)
+[IPA Install guide](README.md)

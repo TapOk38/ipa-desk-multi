@@ -1,17 +1,17 @@
-# Изменения
+# Changelog
 
 ## 0.7.0-beta.1 — 2026-10-12
 
-- Русский и английский интерфейсы с переключением языка в приложении.
-- Выбранный язык сохраняется между запусками.
-- Инструкции на русском и английском языках.
-- Исправлена упаковка APK; при сборке проверяются структура ZIP и контрольные суммы файлов.
+- Russian and English interfaces with an in-app language selector.
+- Language preference persists between launches.
+- Added Russian and English guides.
+- Fixed APK packaging; builds now verify ZIP structure and entry checksums.
 
 ## 0.6.0-beta.1 — 2026-10-12
 
-- Подготовлен первый публичный бета-выпуск на основе прототипа 0.6.
-- Поддержаны повторные записи пустых папок IPA без перепаковки.
-- Сохраняются проверки дубликатов файлов, CRC служебных записей и путей.
-- Неудачный выбор нового IPA сбрасывает предыдущий выбор.
-- Добавлены сборка без ключей в исходниках, CI, лицензии и инструкции.
-- Сохранены исправления USB mux, plist и очистки временных файлов из прототипов.
+- First public beta based on prototype 0.6.
+- Support for repeated empty directory entries in IPA files without repacking.
+- Retained duplicate file, metadata CRC and path validation.
+- Selecting an invalid IPA clears the previous selection.
+- Added builds without signing keys in source, CI, licenses and documentation.
+- Retained USB mux, plist and temporary file cleanup fixes from the prototypes.

@@ -1,7 +1,7 @@
-## Что изменено и зачем
+## Change and purpose
 
-## Как проверено
+## Validation
 
-## Известные ограничения
+## Known limitations
 
-- [ ] В diff нет учётных данных, IPA, локальных журналов и ключей подписи.
+- [ ] This change contains no account credentials, IPA files, personal logs or signing keys.

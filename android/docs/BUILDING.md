@@ -1,12 +1,10 @@
-# Сборка из исходников
+# Building from source
 
-**Русский** | [English](BUILDING.en.md)
+For installation instructions, see [README](../README.md).
 
-Инструкция по установке приложения — в [README](../README.md).
+Requires JDK 17, Android SDK Platform 35 and Build Tools 35.0.0. Set their paths in `JAVA_HOME` and `ANDROID_HOME`.
 
-Потребуются JDK 17, Android SDK Platform 35 и Build Tools 35.0.0. Укажите пути в `JAVA_HOME` и `ANDROID_HOME`.
-
-Все команды ниже выполняются из папки `android/` этого репозитория:
+Run the following commands from the repository's `android/` directory:
 
 ```sh
 cd android
@@ -27,24 +25,24 @@ chmod +x gradlew
 ./gradlew testDebugUnitTest assembleDebug
 ```
 
-При первом запуске Gradle скачает необходимые инструменты. Debug APK появится в `app/build/outputs/apk/debug/`.
+Gradle downloads the required tools on first use. The debug APK is written to `app/build/outputs/apk/debug/`.
 
-## Сборка скриптом на Windows
+## Windows build script
 
-Проверка исходников и запуск тестов:
+To compile the source and run tests:
 
 ```powershell
 .\Build-Manual.ps1 -Sdk 'C:\Android\sdk' -Jdk 'C:\Java\jdk-17' -TestsOnly
 ```
 
-Для сборки APK задайте пароли своего ключа в переменных окружения `IPA_USB_STORE_PASSWORD` и `IPA_USB_KEY_PASSWORD`, затем запустите:
+To build an APK, set your keystore and key passwords in the `IPA_USB_STORE_PASSWORD` and `IPA_USB_KEY_PASSWORD` environment variables, then run:
 
 ```powershell
 .\Build-Manual.ps1 -Sdk 'C:\Android\sdk' -Jdk 'C:\Java\jdk-17' -KeyStore 'C:\Keys\release.jks' -KeyAlias 'release'
 ```
 
-Результат: `manual-build/ipa-usb-0.7.0-beta.1.apk`. Скрипт не скачивает JDK и Android SDK.
+Output: `manual-build/ipa-usb-0.7.0-beta.1.apk`. The script does not download JDK or Android SDK.
 
-Для обновления установленного приложения нужен тот же ключ подписи. APK, подписанный другим ключом, не установится поверх опубликованной версии.
+Updating an installed app requires the same signing key. An APK signed with a different key cannot be installed over the published version.
 
-Зависимости находятся в `libs/` и `test-libs/`, их контрольные суммы — в `DEPENDENCIES.sha256`, лицензии и ссылки на исходники — в [NOTICE](../licenses/NOTICE.txt).
+Dependencies are stored in `libs/` and `test-libs/`, with checksums in `DEPENDENCIES.sha256`. Licenses and source links are listed in [NOTICE](../licenses/NOTICE.txt).

@@ -9,7 +9,7 @@ $work=Join-Path $Destination ('build-'+[guid]::NewGuid().ToString('N'))
 $null=[IO.Directory]::CreateDirectory($work)
 $archive=Join-Path $work 'payload.zip'
 # Explicit allowlist: no accounts, sessions, downloads, external binaries or test fixtures.
-$files=@('IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','PRIVACY.md','PRIVACY.en.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
+$files=@('IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','PRIVACY.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
 $zip=[IO.Compression.ZipFile]::Open($archive,[IO.Compression.ZipArchiveMode]::Create)
 try {
     foreach($name in $files){

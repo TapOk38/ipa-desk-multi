@@ -1,22 +1,13 @@
-# Хранение данных
+# Data storage
 
-**Русский** | [English](PRIVACY.en.md)
+The app does not collect telemetry and does not request the INTERNET permission. It sends the selected IPA and pairing/installation requests to the iPhone over USB.
 
-Приложение не отправляет телеметрию и не имеет разрешения INTERNET.
-По USB передаёт выбранный IPA и служебные запросы сопряжения/установки на iPhone.
-В закрытом кэше хранится рабочая копия выбранного IPA. После аварийного закрытия
-кэш может оставаться до следующего запуска или очистки данных приложения.
-На iPhone временный файл удаляется после подтверждённого исхода установки;
-при обрыве с неизвестным исходом он может остаться до завершения установки или последующей очистки.
+A working copy of the IPA is kept in private cache. After a crash, it may remain until the next launch or until app data is cleared. The temporary file on the iPhone is removed after the installation result is confirmed; an interrupted operation may leave it until installation or cleanup completes.
 
-Запись доверия хранится локально с AES-GCM; ключ — Android Keystore. Это позволяет
-повторно подключаться без нового сопряжения, если iPhone продолжает доверять записи.
-Удаление данных приложения удаляет локальную запись. Apple ID/пароль/2FA приложение не читает.
+The pairing record is stored locally using AES-GCM with a key held in Android Keystore. Reconnection can reuse the record while the iPhone still trusts it. Clearing app data removes the local record. The app does not read Apple IDs, passwords or verification codes.
 
-Выбранный язык сохраняется в локальных настройках приложения.
+The language choice is saved in local app preferences.
 
-Экспорт журнала производится вручную. В нём могут быть имена IPA (включая email,
-если он часть имени), модели устройств, версии ОС и ошибки. Перед отправкой удалите
-личные сведения. Запросы, приватные ключи и полный UDID в журнал не выводятся.
+Logs are exported manually. They may contain IPA filenames, including an email address if present in the name, device models, OS versions and errors. Remove personal information before sharing. Request contents, private keys and full device identifiers are not logged.
 
-[К инструкции IPA USB](README.md)
+[IPA USB guide](README.md)

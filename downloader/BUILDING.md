@@ -1,8 +1,8 @@
 # Building IPA Desk Multi
 
-[Русский](BUILDING.md) | **English**
-
 Requires 64-bit Windows, Windows PowerShell 5.1 and .NET Framework 4.5 or later.
+
+Run these commands from the `downloader/` folder.
 
 ```powershell
 .\Build-Exe.ps1 -Destination .\dist
@@ -16,4 +16,4 @@ The EXE contains the interface, application code and license notices. The ipatoo
 
 `Build-Release.ps1` creates the legacy package with `Start.cmd`. This format saves files in `Downloads` beside the scripts. The EXE saves them to the system **Downloads → IPA Desk Multi** folder.
 
-[Building IPA Install](../installer/BUILDING.en.md)
+[Building IPA Install](../installer/BUILDING.md)

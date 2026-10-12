@@ -1,7 +1,5 @@
 # Data storage
 
-[Русский](PRIVACY.md) | **English**
-
 ## Accounts
 
 Apple IDs, descriptions and passwords are saved in `%LOCALAPPDATA%\IPA-Desk-Multi\accounts.json`. Passwords are encrypted using Windows DPAPI for the current Windows user. Apple IDs and descriptions are stored as plain text.
@@ -24,4 +22,4 @@ Passwords and verification codes are passed to ipatool-cpp as process arguments.
 
 Components are extracted to `%LOCALAPPDATA%\IPA-Desk-Multi\app`. IPA files are saved to **Downloads → IPA Desk Multi**. Account data is stored separately and retained when the EXE is updated.
 
-[IPA Desk Multi guide](docs/DOWNLOAD.en.md)
+[IPA Desk Multi guide](README.md)

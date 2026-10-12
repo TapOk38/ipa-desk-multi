@@ -1,7 +1,5 @@
 # IPA Desk Multi
 
-[Русский](DOWNLOAD.md) | **English**
-
 Downloads apps from the App Store on Windows. Saves a separate IPA for each selected account.
 
 **[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Desk-Multi-0.4.0-beta.1.exe)** · 0.4.0-beta.1
@@ -23,7 +21,7 @@ Required components are downloaded automatically on first use.
 
 ## Installation and limitations
 
-Use [IPA Install](../installer/README.en.md) or [IPA USB](../android/README.en.md) to install the file. Launching the app may require the Apple ID used to download it.
+Use [IPA Install](../installer/README.md) or [IPA USB](../android/README.md) to install the file. Launching the app may require the Apple ID used to download it.
 
 The app must be available to the selected account. A license for a free app is acquired automatically; paid purchases are not made.
 
@@ -31,4 +29,4 @@ Bulk downloading while switching between many Apple IDs on one PC is not recomme
 
 If an error occurs, check the log and include it in an issue after removing personal information.
 
-[All apps](../README.en.md) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Data storage](../PRIVACY.en.md)
+[All apps](../README.md) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Data storage](PRIVACY.md)

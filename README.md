@@ -1,19 +1,17 @@
 # IPA Desk
 
-**Русский** | [English](README.en.md)
+Tools for downloading and installing IPA files.
 
-Программы для скачивания и установки IPA.
+### [IPA Desk Multi](downloader/README.md)
 
-### [IPA Desk Multi](docs/DOWNLOAD.md)
-
-Скачивание приложений из App Store на Windows.
+Download apps from the App Store on Windows.
 
 ### [IPA Install](installer/README.md)
 
-Установка IPA на iPhone с Windows через USB.
+Install IPA files on an iPhone from Windows over USB.
 
 ### [IPA USB](android/README.md)
 
-Установка IPA на iPhone с Android через USB.
+Install IPA files on an iPhone from Android over USB.
 
-[Скачать программы](https://github.com/TapOk38/ipa-desk-multi/releases/tag/suite-v1.0.0-beta.1) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Разработчикам](CONTRIBUTING.md)
+[Downloads](https://github.com/TapOk38/ipa-desk-multi/releases/tag/suite-v1.0.0-beta.1) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Contributing](.github/CONTRIBUTING.md)

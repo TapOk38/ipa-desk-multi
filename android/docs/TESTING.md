@@ -1,18 +1,16 @@
-# Подключение iPhone
+# Connecting an iPhone
 
-**Русский** | [English](TESTING.en.md)
+If the iPhone is not detected:
 
-Если iPhone не определяется:
+1. Check OTG on Android. Some devices disable it after inactivity.
+2. Unlock the iPhone, reconnect the cable and tap **Connect**.
+3. Allow USB access on Android and confirm trust on the iPhone. If trust is already saved, the prompt may not appear again.
+4. Try another USB data cable or an OTG adapter/hub.
 
-1. Проверьте OTG на Android: на некоторых моделях он отключается после бездействия.
-2. Разблокируйте iPhone, переподключите кабель и нажмите **«Подключить»**.
-3. Разрешите USB-доступ на Android и подтвердите доверие на iPhone. При сохранённом доверии повторный запрос может не появиться.
-4. Проверьте другой кабель с передачей данных или используйте OTG-переходник/хаб.
+Connection: **Android → OTG adapter or hub → cable → iPhone**. Android must act as the USB host; a direct USB-C ↔ USB-C connection may select the wrong role.
 
-Схема подключения: **Android → OTG-переходник или хаб → кабель → iPhone**. Android должен управлять USB-подключением; при прямом соединении USB-C ↔ USB-C нужная роль может не определиться автоматически.
+**No USB devices found** means Android has not detected a device yet. The iPhone trust prompt will not appear at that stage.
 
-**«USB-устройства не обнаружены»** означает, что Android ещё не видит устройство. На этом этапе запрос доверия на iPhone не появится.
+If the issue persists, tap **Save log** and [report an issue](https://github.com/TapOk38/ipa-desk-multi/issues). Include device models, OS versions and the connection method. Remove personal information from the log.
 
-Если проблема сохраняется, нажмите **«Сохранить журнал»** и [сообщите об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues). Укажите модели телефонов, версии ОС и способ подключения. Удалите личные данные из журнала.
-
-[К инструкции IPA USB](../README.md)
+[IPA USB guide](../README.md)

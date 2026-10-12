@@ -1,38 +1,38 @@
-name: Ошибка
-description: Сообщить о проблеме без личных данных
+name: Bug report
+description: Report a problem without sharing personal information
 body:
   - type: markdown
     attributes:
-      value: "Не прикладывайте Apple ID, пароль, 2FA, IPA, cookies или ключи. Обезличьте журнал."
+      value: "Do not attach Apple IDs, passwords, verification codes, IPA files, cookies or keys. Remove personal information from logs."
   - type: dropdown
     id: app
     attributes:
-      label: Программа
+      label: Application
       options:
-        - IPA Desk Multi — скачивание на Windows
-        - IPA Install — установка с Windows
-        - IPA USB — установка с Android
+        - IPA Desk Multi — download on Windows
+        - IPA Install — install from Windows
+        - IPA USB — install from Android
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: Версия программы
+      label: App version
     validations:
       required: true
   - type: textarea
     id: environment
     attributes:
-      label: ОС, модели устройств и способ подключения
+      label: OS, device models and connection method
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: Шаги, ожидаемый и фактический результат
+      label: Steps, expected result and actual result
     validations:
       required: true
   - type: textarea
     id: log
     attributes:
-      label: Обезличенный текст ошибки
+      label: Error message with personal information removed

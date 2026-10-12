@@ -1,19 +1,17 @@
-# Сборка IPA Install
+# Building IPA Install
 
-**Русский** | [English](BUILDING.en.md)
+Requires 64-bit Windows, Windows PowerShell 5.1 and .NET Framework 4.5 or later.
 
-Нужна 64-разрядная Windows с Windows PowerShell 5.1 и .NET Framework 4.5 или новее.
-
-Из корня репозитория:
+Run from the repository root:
 
 ```powershell
 .\installer\Prepare-Tools.ps1
 .\installer\Build-Exe.ps1 -Destination .\dist-install
 ```
 
-Первый скрипт скачивает закреплённые пакеты MSYS2 и соответствующие исходники, проверяет SHA-256 и извлекает только нужные EXE/DLL. Лицензии и рецепты сборки хранятся в `tools/`. Готовый файл — `dist-install/IPA-Install.exe`.
+The first script downloads pinned MSYS2 packages and their corresponding sources, verifies SHA-256 checksums, and extracts only the required EXE/DLL files. Licenses and build recipes are stored in `installer/tools/`. The output is `dist-install/IPA-Install.exe`.
 
-Проверка запуска и встроенных компонентов:
+To check startup and bundled components:
 
 ```powershell
 .\installer\Test-Exe.ps1 -ExePath .\dist-install\IPA-Install.exe -TestRoot .\.test-install-exe
@@ -21,6 +19,6 @@
 .\installer\tests\Test-Credentials.ps1 -ModulePath .\installer\Credentials.ps1 -TestRoot .\.test-install-credentials
 ```
 
-Тесты сценариев используют имитацию ответов iPhone; они не устанавливают приложения на реальные устройства.
+Workflow tests simulate iPhone responses; they do not install apps on real devices.
 
-Собственный код оболочки распространяется по [MIT](../LICENSE). Сторонние утилиты и библиотеки — по лицензиям в [NOTICE](tools/THIRD-PARTY-NOTICES.txt).
+The interface code is licensed under [MIT](../LICENSE). Third-party tools and libraries retain the licenses listed in [NOTICE](tools/THIRD-PARTY-NOTICES.txt).
