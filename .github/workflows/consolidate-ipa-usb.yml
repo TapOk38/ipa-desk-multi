@@ -23,34 +23,41 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Import published Android sources
+      - name: Fetch published Android sources
         run: |
-          $ErrorActionPreference = 'Stop'
           $source = Join-Path $env:RUNNER_TEMP 'ipa-usb-source'
-          $archive = Join-Path $env:RUNNER_TEMP 'ipa-usb-source.tar'
           git init $source
           if ($LASTEXITCODE -ne 0) { throw 'Source init failed' }
           git -C $source fetch --depth 1 https://github.com/TapOk38/ipa-usb-android.git 6d5cf4998f66d9395607225d99702c30cbf910d4
           if ($LASTEXITCODE -ne 0) { throw 'Source fetch failed' }
-          $paths = @(git -C $source ls-tree --name-only FETCH_HEAD | Where-Object { $_ -notin @('.github', 'CONTRIBUTING.md', 'SECURITY.md') })
-          git -C $source archive --format=tar "--output=$archive" FETCH_HEAD -- @paths
-          if ($LASTEXITCODE -ne 0) { throw 'Source archive failed' }
-          New-Item -ItemType Directory -Force android | Out-Null
-          tar -xf $archive -C android
-          if ($LASTEXITCODE -ne 0) { throw 'Source extraction failed' }
-          git restore --source=HEAD --worktree -- android/README.md android/RELEASE_NOTES.md android/docs/BUILDING.md android/docs/TESTING.md
-          if ($LASTEXITCODE -ne 0) { throw 'Guide restoration failed' }
-          $allFiles = @(git -C $source ls-tree -r --name-only FETCH_HEAD)
-          $checked = 0
-          foreach ($file in $allFiles) {
-            if ($file -match '^(app/|libs/|test-libs/|gradle/|licenses/|build-tools/)' -or $file -in @('LICENSE','DEPENDENCIES.sha256','Build-Manual.ps1','build.gradle','settings.gradle','gradle.properties','gradlew','gradlew.bat','.gitattributes','.gitignore')) {
-              $expected = git -C $source rev-parse "FETCH_HEAD:$file"
-              $actual = git hash-object --no-filters -- "android/$file"
-              if ($expected -ne $actual) { throw "Source mismatch: $file" }
-              $checked++
-            }
-          }
-          Write-Host "Verified $checked unchanged Android source/dependency files."
+      - name: Import Android Git objects without changing file contents
+        shell: python
+        run: |
+          import os, pathlib, subprocess
+          source = str(pathlib.Path(os.environ["RUNNER_TEMP"]) / "ipa-usb-source")
+          entries = subprocess.check_output(["git", "-C", source, "ls-tree", "-rz", "FETCH_HEAD"]).split(b"\0")
+          overlays = {"README.md", "RELEASE_NOTES.md", "docs/BUILDING.md", "docs/TESTING.md"}
+          checked = 0
+          for entry in entries:
+              if not entry:
+                  continue
+              meta, name = entry.split(b"\t", 1)
+              mode, kind, oid = meta.decode("ascii").split()
+              name = name.decode("utf-8")
+              if name.startswith(".github/") or name in {"CONTRIBUTING.md", "SECURITY.md"} or name in overlays:
+                  continue
+              if kind != "blob" or mode not in {"100644", "100755"}:
+                  raise RuntimeError("Unexpected source entry: " + name)
+              destination = pathlib.Path("android") / name
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              data = subprocess.check_output(["git", "-C", source, "cat-file", "blob", oid])
+              destination.write_bytes(data)
+              actual = subprocess.check_output(["git", "hash-object", "-w", "--no-filters", "--", str(destination)]).decode().strip()
+              if actual != oid:
+                  raise RuntimeError("Source mismatch: " + name)
+              subprocess.run(["git", "update-index", "--add", "--cacheinfo", mode + "," + oid + "," + destination.as_posix()], check=True)
+              checked += 1
+          print("Imported and verified", checked, "unchanged Android files.")
       - name: Check Android dependency checksums
         working-directory: android
         run: |
@@ -72,7 +79,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- android
+          git add -- android/README.md android/RELEASE_NOTES.md android/docs/BUILDING.md android/docs/TESTING.md
           if ($LASTEXITCODE -ne 0) { throw 'Staging failed' }
           git diff --cached --quiet
           if ($LASTEXITCODE -eq 1) {
