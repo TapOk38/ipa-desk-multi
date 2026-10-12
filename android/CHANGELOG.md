@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0-beta.4 — 2026-10-12
+
+- Renamed the app to TapOk IPA Installer — Android; kept the existing package ID and signing identity.
+- Allowed the heading to wrap on narrow screens.
+
 ## 0.7.0-beta.3 — 2026-10-12
 
 - Added the approved launcher icon.

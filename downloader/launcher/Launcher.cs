@@ -11,12 +11,12 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-[assembly: AssemblyTitle("IPA Desk Multi")]
+[assembly: AssemblyTitle("TapOk IPA Downloader")]
 [assembly: AssemblyDescription("Download App Store applications as IPA files")]
-[assembly: AssemblyProduct("IPA Desk Multi")]
+[assembly: AssemblyProduct("TapOk IPA Downloader")]
 [assembly: AssemblyVersion("0.4.0.0")]
-[assembly: AssemblyFileVersion("0.4.0.1")]
-[assembly: AssemblyInformationalVersion("0.4.0-beta.2")]
+[assembly: AssemblyFileVersion("0.4.0.3")]
+[assembly: AssemblyInformationalVersion("0.4.0-beta.3")]
 
 internal static class Launcher
 {
@@ -111,7 +111,7 @@ internal static class Launcher
             }
             catch { log = null; }
             if (testRoot == null)
-                MessageBox.Show(T("Не удалось запустить IPA Desk Multi.\r\n", "Could not start IPA Desk Multi.\r\n") + error.Message + (log == null ? "" : T("\r\n\r\nЖурнал: ", "\r\n\r\nLog: ") + log), "IPA Desk Multi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(T("Не удалось запустить TapOk IPA Downloader.\r\n", "Could not start TapOk IPA Downloader.\r\n") + error.Message + (log == null ? "" : T("\r\n\r\nЖурнал: ", "\r\n\r\nLog: ") + log), "TapOk IPA Downloader", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         }
     }

@@ -1,4 +1,4 @@
-# IPA Desk
+# TapOk IPA Tools
 
 <details>
 <summary>English</summary>
@@ -7,11 +7,11 @@ Three apps in one release. English is the default; Russian remains available. Pr
 
 | App | Purpose | Download | Guide |
 |---|---|---|---|
-| IPA Desk Multi 0.4.0-beta.2 | Download App Store apps on Windows | [EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Desk-Multi-0.4.0-beta.2.exe) | [Open](https://github.com/TapOk38/ipa-desk-multi/blob/main/downloader/README.md) |
-| IPA Install 1.1.0-beta.2 | Install IPA files on iPhone from Windows over USB | [EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Install.exe) | [Open](https://github.com/TapOk38/ipa-desk-multi/blob/main/installer/README.md) |
-| IPA USB 0.7.0-beta.3 | Install IPA files on iPhone from Android over USB | [APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/ipa-usb-0.7.0-beta.3.apk) | [Open](https://github.com/TapOk38/ipa-desk-multi/blob/main/android/README.md) |
+| TapOk IPA Downloader 0.4.0-beta.3 | Download App Store apps on Windows | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe) | [Open](https://github.com/TapOk38/tapok-ipa-tools/blob/main/downloader/README.md) |
+| TapOk IPA Installer — Windows 1.1.0-beta.3 | Install IPA files on iPhone from Windows over USB | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Windows.exe) | [Open](https://github.com/TapOk38/tapok-ipa-tools/blob/main/installer/README.md) |
+| TapOk IPA Installer — Android 0.7.0-beta.4 | Install IPA files on iPhone from Android over USB | [APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk) | [Open](https://github.com/TapOk38/tapok-ipa-tools/blob/main/android/README.md) |
 
-IPA USB: added the launcher icon. Includes the screen sizing and language selector fixes.
+All three apps now use TapOk names. Saved accounts, language settings and Android pairing remain compatible with previous versions.
 
 </details>
 
@@ -19,8 +19,8 @@ IPA USB: added the launcher icon. Includes the screen sizing and language select
 
 | Программа | Назначение | Скачать | Инструкция |
 |---|---|---|---|
-| IPA Desk Multi 0.4.0-beta.2 | Скачивание приложений из App Store на Windows | [EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Desk-Multi-0.4.0-beta.2.exe) | [Открыть](https://github.com/TapOk38/ipa-desk-multi/blob/main/downloader/README.md) |
-| IPA Install 1.1.0-beta.2 | Установка IPA на iPhone с Windows через USB | [EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Install.exe) | [Открыть](https://github.com/TapOk38/ipa-desk-multi/blob/main/installer/README.md) |
-| IPA USB 0.7.0-beta.3 | Установка IPA на iPhone с Android через USB | [APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/ipa-usb-0.7.0-beta.3.apk) | [Открыть](https://github.com/TapOk38/ipa-desk-multi/blob/main/android/README.md) |
+| TapOk IPA Downloader 0.4.0-beta.3 | Скачивание приложений из App Store на Windows | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe) | [Открыть](https://github.com/TapOk38/tapok-ipa-tools/blob/main/downloader/README.md) |
+| TapOk IPA Installer — Windows 1.1.0-beta.3 | Установка IPA на iPhone с Windows через USB | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Windows.exe) | [Открыть](https://github.com/TapOk38/tapok-ipa-tools/blob/main/installer/README.md) |
+| TapOk IPA Installer — Android 0.7.0-beta.4 | Установка IPA на iPhone с Android через USB | [APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk) | [Открыть](https://github.com/TapOk38/tapok-ipa-tools/blob/main/android/README.md) |
 
-IPA USB: добавлена иконка приложения. Сохранены исправления размера окна и переключателя языка.
+Все три приложения переименованы в TapOk. Сохранённые учётные записи, язык и сопряжение Android совместимы с предыдущими версиями.

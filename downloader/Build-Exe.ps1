@@ -25,10 +25,10 @@ $hash=(Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvaria
 $generated=Join-Path $work 'PayloadInfo.cs'
 [IO.File]::WriteAllText($generated,('internal static class PayloadInfo { internal const string Sha256 = "'+$hash+'"; }'),[Text.UTF8Encoding]::new($false))
 $compiler=Join-Path $env:SystemRoot 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-$exe=Join-Path $Destination 'IPA-Desk-Multi-0.4.0-beta.2.exe'
+$exe=Join-Path $Destination 'TapOk-IPA-Downloader-0.4.0-beta.3.exe'
 & $compiler /nologo /target:winexe /platform:x64 /optimize+ /codepage:65001 "/out:$exe" "/win32manifest:$PSScriptRoot\launcher\app.manifest" "/resource:$archive,IPA.Payload.zip" /reference:System.Windows.Forms.dll /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll (Join-Path $PSScriptRoot 'launcher\Launcher.cs') $generated
 if($LASTEXITCODE -ne 0){throw 'EXE compilation failed'}
-$manifest=[ordered]@{Version='0.4.0-beta.2';Exe=[IO.Path]::GetFileName($exe);SHA256=(Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash;PayloadSHA256=$hash;Files=$files}
+$manifest=[ordered]@{Version='0.4.0-beta.3';Exe=[IO.Path]::GetFileName($exe);SHA256=(Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash;PayloadSHA256=$hash;Files=$files}
 $manifest | ConvertTo-Json -Depth 3 | Set-Content -LiteralPath (Join-Path $Destination 'Build-result.json') -Encoding UTF8
 Write-Output $exe
 Get-FileHash -LiteralPath $exe -Algorithm SHA256

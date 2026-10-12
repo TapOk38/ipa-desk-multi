@@ -23,7 +23,7 @@ final class L10n {
     }
 
     enum Key {
-        TITLE("Установка IPA", "Install IPA"),
+        TITLE("TapOk IPA Installer", "TapOk IPA Installer"),
         LANGUAGE("Язык", "Language"),
         IPA_NOT_SELECTED("IPA не выбран", "No IPA selected"),
         SELECT_IPA("Выбрать IPA", "Select IPA"),

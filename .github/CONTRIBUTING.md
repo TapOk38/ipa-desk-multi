@@ -2,9 +2,9 @@
 
 | Application | Source | Build instructions |
 | --- | --- | --- |
-| IPA Desk Multi | `downloader/` | [Windows downloader](../downloader/BUILDING.md) |
-| IPA Install | `installer/` | [Windows installer](../installer/BUILDING.md) |
-| IPA USB | `android/` | [Android installer](../android/docs/BUILDING.md) |
+| TapOk IPA Downloader | `downloader/` | [Windows downloader](../downloader/BUILDING.md) |
+| TapOk IPA Installer — Windows | `installer/` | [Windows installer](../installer/BUILDING.md) |
+| TapOk IPA Installer — Android | `android/` | [Android installer](../android/docs/BUILDING.md) |
 
 Windows code is licensed under [MIT](../LICENSE); Android code is [GPL-3.0-only](../android/LICENSE). Third-party components retain their respective licenses.
 

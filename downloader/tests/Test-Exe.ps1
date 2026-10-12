@@ -8,7 +8,7 @@ function Assert($Value,[string]$Message){if(-not $Value){throw "FAIL: $Message"}
 # Exercise Windows quoting, non-ASCII paths, spaces and apostrophes without using a shell.
 $folder=Join-Path $work "Тестовая папка ' один EXE"
 $null=[IO.Directory]::CreateDirectory($folder)
-$exe=Join-Path $folder 'IPA Desk Multi.exe'
+$exe=Join-Path $folder 'TapOk IPA Downloader.exe'
 Copy-Item -LiteralPath $ExePath -Destination $exe
 $testRoot=Join-Path $folder 'Профиль проверки'
 $data=Join-Path $testRoot 'accounts'

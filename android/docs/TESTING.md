@@ -11,6 +11,6 @@ Connection: **Android → OTG adapter or hub → cable → iPhone**. Android mus
 
 **No USB devices found** means Android has not detected a device yet. The iPhone trust prompt will not appear at that stage.
 
-If the issue persists, tap **Save log** and [report an issue](https://github.com/TapOk38/ipa-desk-multi/issues). Include device models, OS versions and the connection method. Remove personal information from the log.
+If the issue persists, tap **Save log** and [report an issue](https://github.com/TapOk38/tapok-ipa-tools/issues). Include device models, OS versions and the connection method. Remove personal information from the log.
 
-[IPA USB guide](../README.md)
+[TapOk IPA Installer — Android guide](../README.md)

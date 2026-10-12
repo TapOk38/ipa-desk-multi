@@ -8,7 +8,7 @@ elseif (-not $SmokeTestPath) { Set-InstallerLanguage (Get-InstallerSavedLanguage
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 [Windows.Forms.Application]::EnableVisualStyles()
-if ([Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') { throw (Get-InstallerText 'Запустите IPA-Install.exe.') }
+if ([Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') { throw (Get-InstallerText 'Запустите TapOk-IPA-Installer-Windows.exe.') }
 $script:AppRoot = $PSScriptRoot
 . (Join-Path $script:AppRoot 'Engine.ps1')
 . (Join-Path $script:AppRoot 'Credentials.ps1')
@@ -25,7 +25,7 @@ $script:TerminalEvent = $false
 $script:Bus = [hashtable]::Synchronized(@{ Events = [Collections.Concurrent.ConcurrentQueue[object]]::new(); Cancel = $false })
 
 $form = [Windows.Forms.Form]::new()
-$form.Text = (Get-InstallerText 'Установка IPA')
+$form.Text = 'TapOk IPA Installer — Windows'
 $form.ClientSize = [Drawing.Size]::new(820, 560)
 $form.MinimumSize = [Drawing.Size]::new(796, 530)
 $form.StartPosition = 'CenterScreen'
@@ -39,7 +39,7 @@ foreach ($height in @(56, 108, 52, 38)) { $null = $root.RowStyles.Add([Windows.F
 $null = $root.RowStyles.Add([Windows.Forms.RowStyle]::new('Percent', 100))
 $form.Controls.Add($root)
 $header = [Windows.Forms.Panel]::new(); $header.Dock = 'Fill'
-$title = [Windows.Forms.Label]::new(); $title.Text = (Get-InstallerText 'Установка IPA'); $title.AutoSize = $true
+$title = [Windows.Forms.Label]::new(); $title.Text = 'TapOk IPA Installer'; $title.AutoSize = $true
 $title.Font = [Drawing.Font]::new('Segoe UI', 23, [Drawing.FontStyle]::Bold)
 $title.ForeColor = [Drawing.Color]::FromArgb(24, 38, 68)
 $header.Controls.Add($title); $root.Controls.Add($header, 0, 0)
@@ -97,8 +97,8 @@ function Update-StartState {
     $languageSelect.Enabled = (-not $script:Job)
 }
 function Update-InstallerLanguage {
-    $form.Text = Get-InstallerText 'Установка IPA'
-    $title.Text = Get-InstallerText 'Установка IPA'
+    $form.Text = 'TapOk IPA Installer — Windows'
+    $title.Text = 'TapOk IPA Installer'
     $ipaLabel.Text = Get-InstallerText 'IPA-файл'
     $browse.Text = Get-InstallerText 'Выбрать…'
     $refresh.Text = Get-InstallerText 'Обновить'

@@ -28,7 +28,7 @@ try {
     foreach ($a in @(Read-Accounts $script:AccountsPath)) { if ($a) { $script:Accounts.Add($a) } }
 } catch {
     if ($script:StoreLock) { $script:StoreLock.Dispose() }
-    $null = [Windows.Forms.MessageBox]::Show(((Get-IpaText 'Не удалось открыть учётки. Закройте другое окно IPA-Desk Multi, если оно открыто.') + "`n" + $_.Exception.Message), 'IPA-Desk Multi')
+    $null = [Windows.Forms.MessageBox]::Show(((Get-IpaText 'Не удалось открыть учётки. Закройте другое окно TapOk IPA Downloader, если оно открыто.') + "`n" + $_.Exception.Message), 'TapOk IPA Downloader')
     return
 }
 $script:Job = $null; $script:Active = $false; $script:Closing = $false; $script:StopRequested = $false
@@ -36,7 +36,7 @@ $script:Queue = @(); $script:Next = 0; $script:Success = 0; $script:Failed = 0
 $script:Current = $null; $script:Terminal = $false; $script:Secrets = @()
 $script:Bus = [hashtable]::Synchronized(@{ Events=[Collections.Concurrent.ConcurrentQueue[object]]::new(); Cancel=$false; Answer=$null; AnswerReady=$false })
 
-$form = [Windows.Forms.Form]::new(); $form.Text = (Get-IpaText 'Выгрузка IPA — учётки')
+$form = [Windows.Forms.Form]::new(); $form.Text = 'TapOk IPA Downloader'
 $form.ClientSize = [Drawing.Size]::new(860, 660); $form.MinimumSize = [Drawing.Size]::new(820, 680)
 $form.StartPosition = 'CenterScreen'; $form.AutoScaleMode = 'Dpi'
 $form.Font = [Drawing.Font]::new('Segoe UI', 10); $form.BackColor = [Drawing.Color]::FromArgb(245,247,251)
@@ -44,7 +44,7 @@ $root = [Windows.Forms.TableLayoutPanel]::new(); $root.Dock = 'Fill'; $root.Padd
 $root.ColumnCount = 1; $root.RowCount = 7
 foreach ($height in @(60,58,54,230,54,32)) { $null = $root.RowStyles.Add([Windows.Forms.RowStyle]::new('Absolute',$height)) }
 $null = $root.RowStyles.Add([Windows.Forms.RowStyle]::new('Percent',100)); $form.Controls.Add($root)
-$title = [Windows.Forms.Label]::new(); $title.Text = (Get-IpaText 'Выгрузка IPA'); $title.Dock = 'Fill'; $title.Font = [Drawing.Font]::new('Segoe UI',23,[Drawing.FontStyle]::Bold); $title.ForeColor = [Drawing.Color]::FromArgb(24,38,68)
+$title = [Windows.Forms.Label]::new(); $title.Text = 'TapOk IPA Downloader'; $title.Dock = 'Fill'; $title.Font = [Drawing.Font]::new('Segoe UI',21,[Drawing.FontStyle]::Bold); $title.ForeColor = [Drawing.Color]::FromArgb(24,38,68)
 $header=[Windows.Forms.TableLayoutPanel]::new(); $header.Dock='Fill'; $header.ColumnCount=2
 $null=$header.ColumnStyles.Add([Windows.Forms.ColumnStyle]::new('Percent',100)); $null=$header.ColumnStyles.Add([Windows.Forms.ColumnStyle]::new('Absolute',120))
 $languagePicker=[Windows.Forms.ComboBox]::new(); $languagePicker.DropDownStyle='DropDownList'; $languagePicker.Width=110; $languagePicker.Anchor='Right'; $languagePicker.AccessibleName='Language / Язык'

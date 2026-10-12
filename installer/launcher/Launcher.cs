@@ -11,12 +11,12 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-[assembly: AssemblyTitle("IPA Install")]
+[assembly: AssemblyTitle("TapOk IPA Installer — Windows")]
 [assembly: AssemblyDescription("Install IPA apps on iPhone via USB")]
-[assembly: AssemblyProduct("IPA Install")]
+[assembly: AssemblyProduct("TapOk IPA Installer — Windows")]
 [assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.1")]
-[assembly: AssemblyInformationalVersion("1.1.0-beta.2")]
+[assembly: AssemblyFileVersion("1.1.0.3")]
+[assembly: AssemblyInformationalVersion("1.1.0-beta.3")]
 
 internal static class Launcher
 {
@@ -108,7 +108,7 @@ internal static class Launcher
             }
             catch { log = null; }
             if (testRoot == null)
-                MessageBox.Show(Text("Не удалось запустить IPA Install.\r\n", "Could not start IPA Install.\r\n") + error.Message + (log == null ? "" : Text("\r\n\r\nЖурнал: ", "\r\n\r\nLog: ") + log), "IPA Install", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Text("Не удалось запустить TapOk IPA Installer — Windows.\r\n", "Could not start TapOk IPA Installer — Windows.\r\n") + error.Message + (log == null ? "" : Text("\r\n\r\nЖурнал: ", "\r\n\r\nLog: ") + log), "TapOk IPA Installer — Windows", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return 1;
         }
     }

@@ -39,7 +39,7 @@ function ConvertTo-InstallerArgument([AllowEmptyString()][string]$Value) {
 function Invoke-InstallerNative([string]$Tool, [string[]]$Arguments, [int]$TimeoutSeconds = 30, [string]$WorkingDirectory = '') {
     Test-InstallerCancel
     $exe = Join-Path $script:InstallerToolRoot ($Tool + '.exe')
-    if (-not [IO.File]::Exists($exe)) { throw (Get-InstallerText 'Не найдены компоненты установки. Закройте программу и запустите IPA-Install.exe повторно.') }
+    if (-not [IO.File]::Exists($exe)) { throw (Get-InstallerText 'Не найдены компоненты установки. Закройте программу и запустите TapOk-IPA-Installer-Windows.exe повторно.') }
     if ($script:InstallerOptions.ContainsKey('NativeTimeoutSeconds')) {
         $TimeoutSeconds = [Math]::Min($TimeoutSeconds, [Math]::Max(1, [int]$script:InstallerOptions.NativeTimeoutSeconds))
     }
@@ -58,7 +58,7 @@ function Invoke-InstallerNative([string]$Tool, [string[]]$Arguments, [int]$Timeo
     $process.StartInfo = $start
     $started = $false
     try {
-        try { $started = $process.Start() } catch { throw (Get-InstallerText 'Не удалось запустить файлы установки. Закройте программу и запустите IPA-Install.exe повторно.') }
+        try { $started = $process.Start() } catch { throw (Get-InstallerText 'Не удалось запустить файлы установки. Закройте программу и запустите TapOk-IPA-Installer-Windows.exe повторно.') }
         if (-not $started) { throw (Get-InstallerText 'Не удалось запустить файлы установки.') }
         $process.StandardInput.Close()
         $stdout = $process.StandardOutput.ReadToEndAsync()
@@ -76,7 +76,7 @@ function Invoke-InstallerNative([string]$Tool, [string[]]$Arguments, [int]$Timeo
         $err = $stderr.GetAwaiter().GetResult()
         $result = [pscustomobject]@{ ExitCode = $process.ExitCode; Stdout = $out; Stderr = $err; Text = $out + "`n" + $err }
         if ($process.ExitCode -eq -1073741515 -or $process.ExitCode -eq -1073741701) {
-            throw (Get-InstallerText 'Не удалось загрузить компоненты установки. Закройте программу и запустите IPA-Install.exe повторно.')
+            throw (Get-InstallerText 'Не удалось загрузить компоненты установки. Закройте программу и запустите TapOk-IPA-Installer-Windows.exe повторно.')
         }
         return $result
     } finally {

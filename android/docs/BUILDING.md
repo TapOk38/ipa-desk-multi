@@ -41,7 +41,7 @@ To build an APK, set your keystore and key passwords in the `IPA_USB_STORE_PASSW
 .\Build-Manual.ps1 -Sdk 'C:\Android\sdk' -Jdk 'C:\Java\jdk-17' -KeyStore 'C:\Keys\release.jks' -KeyAlias 'release'
 ```
 
-Output: `manual-build/ipa-usb-0.7.0-beta.3.apk`. The script does not download JDK or Android SDK.
+Output: `manual-build/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk`. The script does not download JDK or Android SDK.
 
 Updating an installed app requires the same signing key. An APK signed with a different key cannot be installed over the published version.
 

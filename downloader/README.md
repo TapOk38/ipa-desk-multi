@@ -1,11 +1,11 @@
-# IPA Desk Multi
+# TapOk IPA Downloader
 
 <details>
 <summary>English</summary>
 
 Downloads apps from the App Store on Windows. Saves a separate IPA for each selected account.
 
-**[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
+**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe)** · 0.4.0-beta.3
 
 ## Requirements
 
@@ -24,7 +24,7 @@ Required components are downloaded automatically on first use.
 
 ## Installation and limitations
 
-Use [IPA Install](../installer/README.md) or [IPA USB](../android/README.md) to install the file. Launching the app may require the Apple ID used to download it.
+Use [TapOk IPA Installer — Windows](../installer/README.md) or [TapOk IPA Installer — Android](../android/README.md) to install the file. Launching the app may require the Apple ID used to download it.
 
 The app must be available to the selected account. A license for a free app is acquired automatically; paid purchases are not made.
 
@@ -32,13 +32,13 @@ Bulk downloading while switching between many Apple IDs on one PC is not recomme
 
 If an error occurs, check the log and include it in an issue after removing personal information.
 
-[All apps](../README.md) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Data storage](PRIVACY.md)
+[All apps](../README.md) · [Report an issue](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Data storage](PRIVACY.md)
 
 </details>
 
 Скачивает приложения из App Store на Windows. Для каждой выбранной учётной записи сохраняет отдельный IPA.
 
-**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
+**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe)** · 0.4.0-beta.3
 
 ## Требования
 
@@ -57,7 +57,7 @@ Windows 10/11 x64, интернет и Apple ID с настроенным App St
 
 ## Установка и ограничения
 
-Для установки используйте [IPA Install](../installer/README.md) или [IPA USB](../android/README.md). При запуске приложения может потребоваться Apple ID, с которым скачан IPA.
+Для установки используйте [TapOk IPA Installer — Windows](../installer/README.md) или [TapOk IPA Installer — Android](../android/README.md). При запуске приложения может потребоваться Apple ID, с которым скачан IPA.
 
 Приложение должно быть доступно выбранной учётной записи. Лицензия на бесплатное приложение получается автоматически; платные покупки не выполняются.
 
@@ -65,4 +65,4 @@ Windows 10/11 x64, интернет и Apple ID с настроенным App St
 
 При ошибке проверьте журнал и приложите его текст к обращению, удалив личные данные.
 
-[Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Хранение данных](PRIVACY.md)
+[Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Хранение данных](PRIVACY.md)

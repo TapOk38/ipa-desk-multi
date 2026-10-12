@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$Apk, [Parameter(Mandatory=$true)][string]$Aapt2)
+﻿param([Parameter(Mandatory=$true)][string]$Apk, [Parameter(Mandatory=$true)][string]$Aapt2)
 $ErrorActionPreference = 'Stop'
 $tree = (& $Aapt2 dump xmltree $Apk --file AndroidManifest.xml) -join "`n"
 if ($LASTEXITCODE -ne 0) { throw 'Cannot read the packaged Android manifest.' }
@@ -17,7 +17,7 @@ if ($tree -notmatch ':icon\([^)]*\)=@0x7f' -or $tree -notmatch ':roundIcon\([^)]
     throw 'The packaged application must reference its launcher icon.'
 }
 $badging = (& $Aapt2 dump badging $Apk) -join "`n"
-if ($LASTEXITCODE -ne 0 -or $badging -notmatch "application: label='IPA USB' icon='res/[^']*ic_launcher.png'") {
+if ($LASTEXITCODE -ne 0 -or $badging -notmatch "application: label='TapOk IPA Installer — Android' icon='res/[^']*ic_launcher.png'") {
     throw 'The packaged launcher icon resource could not be resolved.'
 }
 Write-Output 'Packaged manifest verified: SDK order, SDK versions, resizable activity and launcher icon.'

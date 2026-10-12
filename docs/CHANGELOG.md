@@ -1,5 +1,10 @@
 # Changelog
 
+## suite-v1.0.0-beta.4 — 2026-10-12
+
+- Renamed the suite to TapOk IPA Tools and all three applications to TapOk IPA Downloader / TapOk IPA Installer (Windows and Android).
+- Preserved account storage, encryption identifiers, saved language and Android application identity for updates.
+
 ## suite-v1.0.0-beta.3 — 2026-10-12
 
 - Added the approved launcher icon to IPA USB 0.7.0-beta.3.

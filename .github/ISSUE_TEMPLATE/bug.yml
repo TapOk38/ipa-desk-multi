@@ -9,9 +9,9 @@ body:
     attributes:
       label: Application
       options:
-        - IPA Desk Multi — download on Windows
-        - IPA Install — install from Windows
-        - IPA USB — install from Android
+        - TapOk IPA Downloader — download on Windows
+        - TapOk IPA Installer — Windows — install from Windows
+        - TapOk IPA Installer — Android — install from Android
     validations:
       required: true
   - type: input

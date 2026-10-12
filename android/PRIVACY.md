@@ -10,4 +10,4 @@ The language choice is saved in local app preferences.
 
 Logs are exported manually. They may contain IPA filenames, including an email address if present in the name, device models, OS versions and errors. Remove personal information before sharing. Request contents, private keys and full device identifiers are not logged.
 
-[IPA USB guide](README.md)
+[TapOk IPA Installer — Android guide](README.md)

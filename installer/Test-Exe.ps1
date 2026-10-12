@@ -4,7 +4,7 @@ $ErrorActionPreference='Stop'
 $TestRoot=[IO.Path]::GetFullPath($TestRoot)
 $folder=Join-Path $TestRoot 'Тест [1]'
 $null=[IO.Directory]::CreateDirectory($folder)
-$exe=Join-Path $folder 'IPA Install.exe'
+$exe=Join-Path $folder 'TapOk IPA Installer — Windows.exe'
 Copy-Item -LiteralPath $ExePath -Destination $exe
 $profile=Join-Path $TestRoot 'profile'
 $script:checks=0

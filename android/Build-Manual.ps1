@@ -49,8 +49,8 @@ foreach ($resource in Get-ChildItem "$PSScriptRoot\app\src\main\res" -Recurse -F
 [xml]$manifest = Get-Content "$PSScriptRoot\app\src\main\AndroidManifest.xml" -Raw
 $ns = 'http://schemas.android.com/apk/res/android'
 $manifest.manifest.SetAttribute('package', 'ru.ipadesk.usb.prototype')
-$manifest.manifest.SetAttribute('versionCode', $ns, '11') | Out-Null
-$manifest.manifest.SetAttribute('versionName', $ns, '0.7.0-beta.3') | Out-Null
+$manifest.manifest.SetAttribute('versionCode', $ns, '12') | Out-Null
+$manifest.manifest.SetAttribute('versionName', $ns, '0.7.0-beta.4') | Out-Null
 $manifest.manifest.application.activity.SetAttribute('name', $ns, 'ru.ipadesk.usb.MainActivity') | Out-Null
 $sdkElement = $manifest.CreateElement('uses-sdk')
 $sdkElement.SetAttribute('minSdkVersion', $ns, '26') | Out-Null
@@ -137,8 +137,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Aligned APK ZIP verification failed' }
 & "$bt\zipalign.exe" -c 4 "$buildRoot\aligned.apk"
 if ($LASTEXITCODE -ne 0) { throw 'APK alignment verification failed' }
 $key = (Resolve-Path -LiteralPath $KeyStore).Path
-& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" sign --ks $key --ks-key-alias $KeyAlias --ks-pass env:IPA_USB_STORE_PASSWORD --key-pass env:IPA_USB_KEY_PASSWORD --out "$buildRoot\ipa-usb-0.7.0-beta.3.apk" "$buildRoot\aligned.apk"
+& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" sign --ks $key --ks-key-alias $KeyAlias --ks-pass env:IPA_USB_STORE_PASSWORD --key-pass env:IPA_USB_KEY_PASSWORD --out "$buildRoot\TapOk-IPA-Installer-Android-0.7.0-beta.4.apk" "$buildRoot\aligned.apk"
 if ($LASTEXITCODE -ne 0) { throw 'APK signing failed' }
-& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" verify --verbose --print-certs "$buildRoot\ipa-usb-0.7.0-beta.3.apk"
+& "$Jdk\bin\java.exe" -jar "$bt\lib\apksigner.jar" verify --verbose --print-certs "$buildRoot\TapOk-IPA-Installer-Android-0.7.0-beta.4.apk"
 if ($LASTEXITCODE -ne 0) { throw 'APK verification failed' }
-Get-FileHash "$buildRoot\ipa-usb-0.7.0-beta.3.apk" -Algorithm SHA256
+Get-FileHash "$buildRoot\TapOk-IPA-Installer-Android-0.7.0-beta.4.apk" -Algorithm SHA256

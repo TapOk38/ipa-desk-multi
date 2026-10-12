@@ -1,11 +1,11 @@
-# IPA USB
+# TapOk IPA Installer — Android
 
 <details>
 <summary>English</summary>
 
 Installs IPA files on an iPhone from Android over USB.
 
-**[Download APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/ipa-usb-0.7.0-beta.3.apk)** · 0.7.0-beta.3
+**[Download APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk)** · 0.7.0-beta.4
 
 ## Requirements
 
@@ -27,13 +27,13 @@ If the app requests an Apple ID when launched, use the account that downloaded t
 
 To report an error, tap **Save log** and remove personal information from the log.
 
-[All apps](../README.md) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Data storage](PRIVACY.md)
+[All apps](../README.md) · [Report an issue](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Data storage](PRIVACY.md)
 
 </details>
 
 Устанавливает IPA на iPhone с Android через USB.
 
-**[Скачать APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/ipa-usb-0.7.0-beta.3.apk)** · 0.7.0-beta.3
+**[Скачать APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk)** · 0.7.0-beta.4
 
 ## Требования
 
@@ -55,4 +55,4 @@ Android 8.0+ с поддержкой OTG, USB-кабель с передачей
 
 Для обращения об ошибке нажмите **«Сохранить журнал»** и удалите из журнала личные данные.
 
-[Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Хранение данных](PRIVACY.md)
+[Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Хранение данных](PRIVACY.md)

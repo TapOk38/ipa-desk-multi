@@ -91,7 +91,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
         // IPA cache is disposable, never part of backups.
         File[] stale = getCacheDir().listFiles((dir, name) -> name.startsWith("selected-") && name.endsWith(".ipa"));
         if (stale != null) for (File f : stale) f.delete();
-        log("IPA USB 0.7.0-beta.3 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
+        log("TapOk IPA Installer — Android 0.7.0-beta.4 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
         refreshButtons();
     }
     private int dp(int value) { return (int)(value * getResources().getDisplayMetrics().density + 0.5f); }
@@ -126,8 +126,8 @@ public final class MainActivity extends Activity implements Installer.Listener {
         root.requestApplyInsets();
         LinearLayout top = row(root);
         heading = text(L10n.t(L10n.Key.TITLE), 28, Color.rgb(20,40,70)); heading.setTypeface(null, Typeface.BOLD);
-        heading.setMaxLines(1); heading.setAutoSizeTextTypeUniformWithConfiguration(18, 28, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
-        top.addView(heading, new LinearLayout.LayoutParams(0, dp(48), 1));
+        heading.setMaxLines(2); heading.setAutoSizeTextTypeUniformWithConfiguration(16, 22, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
+        top.addView(heading, new LinearLayout.LayoutParams(0, dp(64), 1));
         language = new Spinner(this);
         ArrayAdapter<String> languages = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new String[]{"RU", "EN"}) {
             @Override public View getView(int position, View convertView, ViewGroup parent) {
@@ -171,7 +171,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
             setStatus(L10n.Key.STOPPING); stop.setEnabled(false);
         });
         save.setOnClickListener(v -> startActivityForResult(new Intent(Intent.ACTION_CREATE_DOCUMENT).setType("text/plain")
-            .addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE, "IPA-USB-log.txt"), SAVE_LOG));
+            .addCategory(Intent.CATEGORY_OPENABLE).putExtra(Intent.EXTRA_TITLE, "TapOk-IPA-Installer-log.txt"), SAVE_LOG));
         language.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onNothingSelected(AdapterView<?> parent) {}
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -359,7 +359,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
                 if (out == null) throw new IOException(L10n.t(L10n.Key.OPEN_FILE_FAILED));
                 captureUsb("export");
-                out.write((journal.toString() + "\n--- USB diagnostics (IPA USB 0.7.0-beta.3) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
+                out.write((journal.toString() + "\n--- USB diagnostics (TapOk IPA Installer — Android 0.7.0-beta.4) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
                 Toast.makeText(this, L10n.t(L10n.Key.LOG_SAVED), Toast.LENGTH_SHORT).show();
             } catch (Exception e) { failure(e); }
         } else if (request == PICK_IPA) {

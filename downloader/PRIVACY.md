@@ -22,4 +22,4 @@ Passwords and verification codes are passed to ipatool-cpp as process arguments.
 
 Components are extracted to `%LOCALAPPDATA%\IPA-Desk-Multi\app`. IPA files are saved to **Downloads → IPA Desk Multi**. Account data is stored separately and retained when the EXE is updated.
 
-[IPA Desk Multi guide](README.md)
+[TapOk IPA Downloader guide](README.md)

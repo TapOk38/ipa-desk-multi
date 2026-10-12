@@ -10,4 +10,4 @@ The EXE extracts its components to `%LOCALAPPDATA%\IPA-Install\app`. Saved accou
 
 The interface does not collect telemetry. The log may contain IPA filenames and device details. Do not share passwords, `accounts.dat`, or screenshots showing credentials.
 
-[IPA Install guide](README.md)
+[TapOk IPA Installer — Windows guide](README.md)

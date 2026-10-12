@@ -27,4 +27,4 @@ Then run `Start.cmd` again.
 
 ## Licenses
 
-The [ipatool MIT license](licenses/ipatool-MIT.txt) is included with attribution. The external component and its Apple libraries are distributed separately; see the [author's README](https://github.com/Sorvigolova/ipatool/blob/1.0.9/README.md) for details. The IPA Desk Multi license covers its own code.
+The [ipatool MIT license](licenses/ipatool-MIT.txt) is included with attribution. The external component and its Apple libraries are distributed separately; see the [author's README](https://github.com/Sorvigolova/ipatool/blob/1.0.9/README.md) for details. The TapOk IPA Downloader license covers its own code.
