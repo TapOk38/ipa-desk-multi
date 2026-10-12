@@ -70,7 +70,18 @@ public final class MainActivity extends Activity implements Installer.Listener {
         usb = (UsbManager)getSystemService(USB_SERVICE);
         getWindow().setStatusBarColor(Color.rgb(245,247,252));
         getWindow().setNavigationBarColor(Color.rgb(245,247,252));
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        if (Build.VERSION.SDK_INT >= 30) {
+            getWindow().setDecorFitsSystemWindows(false);
+            getWindow().getDecorView();
+            WindowInsetsController bars = getWindow().getInsetsController();
+            if (bars != null) bars.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS);
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
         buildUi();
         IntentFilter filter = new IntentFilter(USB_PERMISSION);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
@@ -80,7 +91,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
         // IPA cache is disposable, never part of backups.
         File[] stale = getCacheDir().listFiles((dir, name) -> name.startsWith("selected-") && name.endsWith(".ipa"));
         if (stale != null) for (File f : stale) f.delete();
-        log("IPA USB 0.7.0-beta.1 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
+        log("IPA USB 0.7.0-beta.2 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
         refreshButtons();
     }
     private int dp(int value) { return (int)(value * getResources().getDisplayMetrics().density + 0.5f); }
@@ -101,18 +112,34 @@ public final class MainActivity extends Activity implements Installer.Listener {
         root.setPadding(dp(18), dp(14), dp(18), dp(12)); root.setBackgroundColor(Color.rgb(245,247,252));
         setContentView(root);
         root.setOnApplyWindowInsetsListener((view, insets) -> {
-            view.setPadding(dp(18) + insets.getSystemWindowInsetLeft(), dp(14) + insets.getSystemWindowInsetTop(),
-                dp(18) + insets.getSystemWindowInsetRight(), dp(12) + insets.getSystemWindowInsetBottom()); return insets;
+            int left, top, right, bottom;
+            if (Build.VERSION.SDK_INT >= 30) {
+                Insets safe = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                left = safe.left; top = safe.top; right = safe.right; bottom = safe.bottom;
+            } else {
+                left = insets.getSystemWindowInsetLeft(); top = insets.getSystemWindowInsetTop();
+                right = insets.getSystemWindowInsetRight(); bottom = insets.getSystemWindowInsetBottom();
+            }
+            view.setPadding(dp(18) + left, dp(14) + top, dp(18) + right, dp(12) + bottom);
+            return insets;
         });
+        root.requestApplyInsets();
         LinearLayout top = row(root);
         heading = text(L10n.t(L10n.Key.TITLE), 28, Color.rgb(20,40,70)); heading.setTypeface(null, Typeface.BOLD);
         heading.setMaxLines(1); heading.setAutoSizeTextTypeUniformWithConfiguration(18, 28, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
         top.addView(heading, new LinearLayout.LayoutParams(0, dp(48), 1));
         language = new Spinner(this);
-        ArrayAdapter<String> languages = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new String[]{"RU", "EN"});
+        ArrayAdapter<String> languages = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new String[]{"RU", "EN"}) {
+            @Override public View getView(int position, View convertView, ViewGroup parent) {
+                TextView label = (TextView)super.getView(position, convertView, parent);
+                label.setTextSize(14); label.setSingleLine(true); label.setEllipsize(null);
+                label.setPadding(dp(8), 0, dp(4), 0); label.setGravity(Gravity.CENTER_VERTICAL);
+                return label;
+            }
+        };
         languages.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         language.setAdapter(languages); language.setSelection("ru".equals(L10n.language()) ? 0 : 1);
-        top.addView(language, new LinearLayout.LayoutParams(dp(82), dp(48)));
+        top.addView(language, new LinearLayout.LayoutParams(dp(96), dp(48)));
         fileLabel = text(L10n.t(L10n.Key.IPA_NOT_SELECTED), 15, Color.DKGRAY); fileLabel.setMaxLines(2); root.addView(fileLabel);
         LinearLayout choose = row(root); pick = button(L10n.t(L10n.Key.SELECT_IPA), choose); connect = button(L10n.t(L10n.Key.CONNECT), choose);
         deviceLabel = text(L10n.t(L10n.Key.DISCONNECTED), 16, Color.rgb(20,40,70)); root.addView(deviceLabel);
@@ -332,7 +359,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
                 if (out == null) throw new IOException(L10n.t(L10n.Key.OPEN_FILE_FAILED));
                 captureUsb("export");
-                out.write((journal.toString() + "\n--- USB diagnostics (IPA USB 0.7.0-beta.1) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
+                out.write((journal.toString() + "\n--- USB diagnostics (IPA USB 0.7.0-beta.2) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
                 Toast.makeText(this, L10n.t(L10n.Key.LOG_SAVED), Toast.LENGTH_SHORT).show();
             } catch (Exception e) { failure(e); }
         } else if (request == PICK_IPA) {

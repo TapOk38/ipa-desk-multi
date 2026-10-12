@@ -10,6 +10,12 @@ $null=[IO.Directory]::CreateDirectory($work)
 $accounts=Join-Path $work 'accounts.json'
 [IO.File]::WriteAllText($accounts,'account-store-fixture-must-not-change')
 $before=(Get-FileHash -LiteralPath $accounts -Algorithm SHA256).Hash
+$originalCulture=[Threading.Thread]::CurrentThread.CurrentUICulture
+try {
+    [Threading.Thread]::CurrentThread.CurrentUICulture=[Globalization.CultureInfo]::GetCultureInfo('ru-RU')
+    Initialize-IpaLanguage $work
+    Assert ((Get-IpaLanguage) -eq 'en') 'First launch defaults to English even on Russian Windows'
+} finally { [Threading.Thread]::CurrentThread.CurrentUICulture=$originalCulture }
 Save-IpaLanguage $work 'en'
 Set-IpaLanguage 'ru'
 Initialize-IpaLanguage $work
@@ -20,8 +26,7 @@ Assert ((Get-IpaText 'Скачать IPA') -ceq 'Скачать IPA') 'Switching
 Assert ((Get-FileHash -LiteralPath $accounts -Algorithm SHA256).Hash -eq $before) 'Saving language never changes account data'
 [IO.File]::WriteAllText((Join-Path $work 'language.txt'),'invalid')
 Initialize-IpaLanguage $work
-$default=if([Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq 'ru'){'ru'}else{'en'}
-Assert ((Get-IpaLanguage) -eq $default) 'Invalid preference falls back to OS language'
+Assert ((Get-IpaLanguage) -eq 'en') 'Invalid preference falls back to English'
 Initialize-IpaLanguage $work 'ru'
 Assert ((Get-IpaLanguage) -eq 'ru') 'Explicit test language takes priority'
 Set-IpaLanguage 'en'

@@ -15,12 +15,12 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Install IPA apps on iPhone via USB")]
 [assembly: AssemblyProduct("IPA Install")]
 [assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
-[assembly: AssemblyInformationalVersion("1.1.0-beta.1")]
+[assembly: AssemblyFileVersion("1.1.0.1")]
+[assembly: AssemblyInformationalVersion("1.1.0-beta.2")]
 
 internal static class Launcher
 {
-    private static bool russian = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
+    private static bool russian = false;
     private static string Text(string ru, string en) { return russian ? ru : en; }
 
     [STAThread]

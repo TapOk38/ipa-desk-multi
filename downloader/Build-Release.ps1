@@ -4,7 +4,7 @@ $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.IO.Compression
 $null=[IO.Directory]::CreateDirectory($Destination)
-$zipPath=Join-Path $Destination 'ipa-desk-multi-0.4.0-beta.1-windows.zip'
+$zipPath=Join-Path $Destination 'ipa-desk-multi-0.4.0-beta.2-windows.zip'
 $files=@('Start.cmd','IPA-Desk.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','README.md','PRIVACY.md','THIRD_PARTY.md','LICENSE','BUILDING.md','licenses/ipatool-MIT.txt','docs/interface.png')
 $stream=[IO.File]::Open($zipPath,[IO.FileMode]::CreateNew)
 $zip=$null

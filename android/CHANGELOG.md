@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0-beta.2 — 2026-10-12
+
+- Fixed the manual-build manifest order and enabled resizable windows to prevent legacy letterboxing.
+- Handle system-bar insets explicitly and widen the language selector.
+- Default to English while preserving saved Russian preferences.
+- Verify SDK order and activity resizing in the packaged APK.
+
 ## 0.7.0-beta.1 — 2026-10-12
 
 - Russian and English interfaces with an in-app language selector.

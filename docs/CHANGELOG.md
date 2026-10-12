@@ -1,9 +1,12 @@
 # Changelog
 
-## Unreleased
+## suite-v1.0.0-beta.2 — 2026-10-12
 
+- English is the default interface language in all three apps; saved preferences are preserved.
+- Fixed Android window compatibility settings for tall screens and system-bar insets.
+- Fixed the clipped Android language selector.
 - Organized source code into separate application folders.
-- Consolidated project documentation in English.
+- Consolidated technical documentation in English; app descriptions remain bilingual.
 
 ## suite-v1.0.0-beta.1 — 2026-10-12
 

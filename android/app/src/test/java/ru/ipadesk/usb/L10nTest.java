@@ -10,9 +10,9 @@ public class L10nTest {
     private final String original = L10n.language();
     @After public void restoreLanguage() { L10n.setLanguage(original); }
 
-    @Test public void selectsRussianOnlyForRussianSystemLocale() {
-        assertEquals("ru", L10n.resolve(null, Locale.forLanguageTag("ru-RU")));
-        assertEquals("ru", L10n.resolve(null, Locale.forLanguageTag("ru-KZ")));
+    @Test public void defaultsToEnglishForEverySystemLocale() {
+        assertEquals("en", L10n.resolve(null, Locale.forLanguageTag("ru-RU")));
+        assertEquals("en", L10n.resolve(null, Locale.forLanguageTag("ru-KZ")));
         assertEquals("en", L10n.resolve(null, Locale.US));
         assertEquals("en", L10n.resolve(null, Locale.GERMANY));
         assertEquals("en", L10n.resolve(null, null));
@@ -21,7 +21,7 @@ public class L10nTest {
         assertEquals("en", L10n.resolve("en", Locale.forLanguageTag("ru")));
         assertEquals("ru", L10n.resolve("ru", Locale.US));
         assertEquals("en", L10n.resolve("broken", Locale.JAPAN));
-        assertEquals("ru", L10n.resolve("", Locale.forLanguageTag("ru")));
+        assertEquals("en", L10n.resolve("", Locale.forLanguageTag("ru")));
     }
     @Test public void catalogueIsCompleteAndParameterCountsMatch() {
         for (L10n.Key key : L10n.Key.values()) {

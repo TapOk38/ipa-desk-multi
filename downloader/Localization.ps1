@@ -1,7 +1,7 @@
 ﻿#requires -Version 5.1
 # Keys are the original Russian UI strings. Keep external tool output unchanged.
 if (-not (Get-Variable -Name IpaLanguage -Scope Script -ErrorAction SilentlyContinue)) {
-    $script:IpaLanguage = if ([Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq 'ru') { 'ru' } else { 'en' }
+    $script:IpaLanguage = 'en'
 }
 $script:IpaEnglish = @{
     '; остановлено' = '; stopped'
@@ -119,7 +119,7 @@ function Set-IpaLanguage([ValidateSet('ru','en')][string]$Language) { $script:Ip
 function Get-IpaLanguage { return $script:IpaLanguage }
 function Initialize-IpaLanguage([string]$DataRoot, [string]$Override = '') {
     if ($Override -in @('ru','en')) { Set-IpaLanguage $Override; return }
-    $script:IpaLanguage = if ([Globalization.CultureInfo]::CurrentUICulture.TwoLetterISOLanguageName -eq 'ru') { 'ru' } else { 'en' }
+    $script:IpaLanguage = 'en'
     try {
         $saved = [IO.File]::ReadAllText((Join-Path $DataRoot 'language.txt')).Trim()
         if ($saved -in @('ru','en')) { Set-IpaLanguage $saved }

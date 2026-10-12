@@ -15,12 +15,12 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Download App Store applications as IPA files")]
 [assembly: AssemblyProduct("IPA Desk Multi")]
 [assembly: AssemblyVersion("0.4.0.0")]
-[assembly: AssemblyFileVersion("0.4.0.0")]
-[assembly: AssemblyInformationalVersion("0.4.0-beta.1")]
+[assembly: AssemblyFileVersion("0.4.0.1")]
+[assembly: AssemblyInformationalVersion("0.4.0-beta.2")]
 
 internal static class Launcher
 {
-    private static bool russian = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
+    private static bool russian = false;
     private static string T(string ru, string en) { return russian ? ru : en; }
     private static void LoadLanguage(string root)
     {

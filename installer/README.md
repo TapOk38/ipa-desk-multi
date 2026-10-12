@@ -5,7 +5,7 @@
 
 Installs IPA files on an iPhone from Windows over USB.
 
-**[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Install.exe)** · 1.1.0-beta.1
+**[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/IPA-Install.exe)** · 1.1.0-beta.2
 
 ## Requirements
 
@@ -39,7 +39,7 @@ To install on another iPhone, reconnect the cable and click **Refresh**. Connect
 
 Устанавливает IPA на iPhone с Windows через USB.
 
-**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Install.exe)** · 1.1.0-beta.1
+**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/IPA-Install.exe)** · 1.1.0-beta.2
 
 ## Требования
 
@@ -47,7 +47,7 @@ Windows 10/11 x64, драйвер Apple, USB-кабель с передачей 
 
 ## Использование
 
-1. Запустите EXE и выберите язык интерфейса. Подключите разблокированный iPhone и подтвердите доверие, если появится запрос.
+1. Запустите EXE. Для русского интерфейса выберите **Русский** в списке **English**. Подключите разблокированный iPhone и подтвердите доверие, если появится запрос.
 2. Нажмите **«Обновить»**, затем **«Выбрать…»** и укажите IPA.
 3. Нажмите **«Установить»**. Не отключайте кабель до сообщения **«Приложение установлено»**.
 

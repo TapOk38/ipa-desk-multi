@@ -9,7 +9,7 @@ final class L10n {
 
     static String resolve(String saved, Locale system) {
         if ("ru".equals(saved) || "en".equals(saved)) return saved;
-        return system != null && "ru".equals(system.getLanguage()) ? "ru" : "en";
+        return "en";
     }
     static void setLanguage(String value) {
         if (!"ru".equals(value) && !"en".equals(value)) throw new IllegalArgumentException("Unsupported language");

@@ -5,7 +5,7 @@
 
 Installs IPA files on an iPhone from Android over USB.
 
-**[Download APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/ipa-usb-0.7.0-beta.1.apk)** · 0.7.0-beta.1
+**[Download APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/ipa-usb-0.7.0-beta.2.apk)** · 0.7.0-beta.2
 
 ## Requirements
 
@@ -33,7 +33,7 @@ To report an error, tap **Save log** and remove personal information from the lo
 
 Устанавливает IPA на iPhone с Android через USB.
 
-**[Скачать APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/ipa-usb-0.7.0-beta.1.apk)** · 0.7.0-beta.1
+**[Скачать APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/ipa-usb-0.7.0-beta.2.apk)** · 0.7.0-beta.2
 
 ## Требования
 
@@ -41,7 +41,7 @@ Android 8.0+ с поддержкой OTG, USB-кабель с передачей
 
 ## Использование
 
-1. Установите APK и выберите язык интерфейса. Сохраните нужный IPA на Android.
+1. Установите APK. Для русского интерфейса переключите **EN → RU**. Сохраните нужный IPA на Android.
 2. Включите OTG, если такой переключатель есть в настройках. Соедините телефоны кабелем и разблокируйте iPhone.
 3. Нажмите **«Подключить»**. Разрешите USB-доступ на Android и подтвердите доверие на iPhone, если появится запрос.
 4. Через **«Выбрать IPA»** укажите файл и нажмите **«Установить»**. Не отключайте кабель до сообщения **«Приложение установлено»**.

@@ -15,21 +15,23 @@ $data=Join-Path $testRoot 'accounts'
 $null=[IO.Directory]::CreateDirectory($data)
 . (Join-Path $sourceRoot 'Accounts.ps1')
 Set-IpaLanguage 'ru'
-Save-IpaLanguage $data 'ru'
 $accountsPath=Join-Path $data 'accounts.json'
 Write-Accounts $accountsPath @([pscustomobject]@{Id='00000000000000000000000000000001';Email='test@example.invalid';Description='Тест';Password=(Lock-Password 'fixture-only')})
 $accountHash=(Get-FileHash -LiteralPath $accountsPath -Algorithm SHA256).Hash
 function Run-Smoke {
+    $languagePath=Join-Path $data 'language.txt'
+    $language=if(Test-Path -LiteralPath $languagePath){[IO.File]::ReadAllText($languagePath).Trim()}else{'en'}
     $process=Start-Process -FilePath $exe -ArgumentList @('--smoke-test',('"'+$testRoot+'"')) -WindowStyle Hidden -PassThru
     if(-not $process.WaitForExit(90000)){$process.Kill();throw 'Launcher smoke test timeout'}
     Assert ($process.ExitCode -eq 0) 'Single EXE opens and closes the actual WinForms window'
     Assert (Test-Path -LiteralPath (Join-Path $testRoot 'interface.png')) 'UI screenshot generated'
     $state=Get-Content -LiteralPath (Join-Path $testRoot 'interface.png.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-    $language=[IO.File]::ReadAllText((Join-Path $data 'language.txt')).Trim()
-    Assert ($state.Language -eq $language -and $state.Download -ceq $(if($language -eq 'ru'){'Скачать IPA'}else{'Download IPA'})) 'Actual UI respects the saved language'
+    Assert ($state.Language -eq $language -and $state.Download -ceq $(if($language -eq 'ru'){'Скачать IPA'}else{'Download IPA'})) 'Actual UI respects the saved language or defaults to English'
     Assert ($state.SwitchVerified -and $state.LanguageDisabledWhileBusy) 'Live switching updates controls and is disabled during work'
     Assert ((Get-FileHash -LiteralPath $accountsPath -Algorithm SHA256).Hash -eq $accountHash) 'Existing account store is preserved'
 }
+Run-Smoke
+Save-IpaLanguage $data 'ru'
 Run-Smoke
 $runtime=@(Get-ChildItem -LiteralPath (Join-Path $testRoot 'app') -Directory)[0].FullName
 Assert ((Get-ChildItem -LiteralPath $folder -File).Count -eq 1) 'Launch directory needs only the EXE'

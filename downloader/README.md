@@ -5,7 +5,7 @@
 
 Downloads apps from the App Store on Windows. Saves a separate IPA for each selected account.
 
-**[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Desk-Multi-0.4.0-beta.1.exe)** · 0.4.0-beta.1
+**[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
 
 ## Requirements
 
@@ -38,7 +38,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 Скачивает приложения из App Store на Windows. Для каждой выбранной учётной записи сохраняет отдельный IPA.
 
-**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.1/IPA-Desk-Multi-0.4.0-beta.1.exe)** · 0.4.0-beta.1
+**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
 
 ## Требования
 
@@ -46,7 +46,7 @@ Windows 10/11 x64, интернет и Apple ID с настроенным App St
 
 ## Использование
 
-1. Запустите EXE. При необходимости выберите язык интерфейса.
+1. Запустите EXE. Для русского интерфейса выберите **Русский** в списке **English**.
 2. Нажмите **«Добавить»**, укажите Apple ID, пароль и описание учётной записи.
 3. Вставьте ссылку App Store или ID приложения. Отметьте учётные записи и нажмите **«Скачать IPA»**.
 4. Введите код подтверждения, если Apple его запросит. После завершения нажмите **«Открыть папку»**.

@@ -88,7 +88,6 @@ function Get-InstallerLanguagePath {
     return Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)) 'IPA-Install/language.txt'
 }
 function Get-InstallerDefaultLanguage([string]$CultureName = [Globalization.CultureInfo]::CurrentUICulture.Name) {
-    if ($CultureName -match '^ru(?:-|$)') { return 'ru' }
     return 'en'
 }
 function Get-InstallerSavedLanguage([string]$Path = (Get-InstallerLanguagePath), [string]$CultureName = [Globalization.CultureInfo]::CurrentUICulture.Name) {

@@ -10,16 +10,16 @@ function Assert($Condition, [string]$Description) {
     if (-not $Condition) { throw ('FAIL: ' + $Description) }
     $script:checks++; Write-Output ('PASS: ' + $Description)
 }
-Assert ((Get-InstallerDefaultLanguage 'ru-RU') -eq 'ru' -and (Get-InstallerDefaultLanguage 'ru-KZ') -eq 'ru') 'Russian OS variants default to Russian'
+Assert ((Get-InstallerDefaultLanguage 'ru-RU') -eq 'en' -and (Get-InstallerDefaultLanguage 'ru-KZ') -eq 'en') 'Russian OS variants default to English'
 Assert ((Get-InstallerDefaultLanguage 'en-US') -eq 'en' -and (Get-InstallerDefaultLanguage 'de-DE') -eq 'en') 'Other OS languages default to English'
 $path = Join-Path $TestRoot 'profile/language.txt'
-Assert ((Get-InstallerSavedLanguage -Path $path -CultureName 'ru-RU') -eq 'ru' -and -not (Test-Path -LiteralPath $path)) 'Missing preference uses OS without creating a file'
+Assert ((Get-InstallerSavedLanguage -Path $path -CultureName 'ru-RU') -eq 'en' -and -not (Test-Path -LiteralPath $path)) 'Missing preference uses English without creating a file'
 Save-InstallerLanguage -Language 'en' -Path $path
 Assert ((Get-InstallerSavedLanguage -Path $path -CultureName 'ru-RU') -eq 'en') 'Saved English preference overrides Russian OS'
 Save-InstallerLanguage -Language 'ru' -Path $path
 Assert ((Get-InstallerSavedLanguage -Path $path -CultureName 'en-US') -eq 'ru') 'Preference can be changed and persists'
 [IO.File]::WriteAllText($path, 'invalid')
-Assert ((Get-InstallerSavedLanguage -Path $path -CultureName 'en-US') -eq 'en') 'Corrupt preference falls back to OS language'
+Assert ((Get-InstallerSavedLanguage -Path $path -CultureName 'ru-RU') -eq 'en') 'Corrupt preference falls back to English even on Russian Windows'
 Set-InstallerLanguage 'en'
 Assert ((Get-InstallerText 'Для приложения нужна iOS {0} или новее. На iPhone установлена iOS {1}.' @('18.1','17.0')) -ceq 'The app requires iOS 18.1 or later. The iPhone is running iOS 17.0.') 'Formatted English messages preserve both version values'
 Assert ((Convert-InstallerText 'iPhone подключён') -ceq 'iPhone connected') 'Existing status updates when switching to English'

@@ -6,7 +6,7 @@ Run these commands from the `downloader/` folder.
 
 ```powershell
 .\Build-Exe.ps1 -Destination .\dist
-.\tests\Test-Exe.ps1 -ExePath .\dist\IPA-Desk-Multi-0.4.0-beta.1.exe -WorkRoot $env:TEMP
+.\tests\Test-Exe.ps1 -ExePath .\dist\IPA-Desk-Multi-0.4.0-beta.2.exe -WorkRoot $env:TEMP
 .\tests\Test-Engine.ps1
 .\tests\Test-Tools.ps1
 .\tests\Test-Localization.ps1
