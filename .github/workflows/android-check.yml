@@ -1,0 +1,37 @@
+name: Android checks
+on:
+  push:
+    paths: ['android/**', '.github/workflows/android-check.yml']
+  pull_request:
+    paths: ['android/**', '.github/workflows/android-check.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Check bundled dependencies
+        run: |
+          Get-Content DEPENDENCIES.sha256 | ForEach-Object {
+            if ($_ -match '^([a-fA-F0-9]{64})\s+(.+)$') {
+              $expected = $Matches[1]
+              $path = $Matches[2].TrimStart('*')
+              if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $expected) { throw "Hash mismatch: $path" }
+            } else { throw 'Invalid dependency checksum line' }
+          }
+      - name: SDK
+        run: |
+          & "$env:ANDROID_HOME\cmdline-tools\latest\bin\sdkmanager.bat" 'platforms;android-35' 'build-tools;35.0.0'
+          if ($LASTEXITCODE -ne 0) { throw 'SDK setup failed' }
+      - name: Compile and test
+        run: .\Build-Manual.ps1 -Sdk $env:ANDROID_HOME -Jdk $env:JAVA_HOME -TestsOnly
