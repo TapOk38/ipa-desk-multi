@@ -13,4 +13,11 @@ if ($tree -notmatch 'minSdkVersion\([^)]*\)=26' -or $tree -notmatch 'targetSdkVe
 if ($tree -notmatch '(?s)E: activity .*?resizeableActivity\([^)]*\)=true') {
     throw 'The packaged activity must support resizable screens.'
 }
-Write-Output 'Packaged manifest verified: SDK order, SDK versions and resizable activity.'
+if ($tree -notmatch ':icon\([^)]*\)=@0x7f' -or $tree -notmatch ':roundIcon\([^)]*\)=@0x7f') {
+    throw 'The packaged application must reference its launcher icon.'
+}
+$badging = (& $Aapt2 dump badging $Apk) -join "`n"
+if ($LASTEXITCODE -ne 0 -or $badging -notmatch "application: label='IPA USB' icon='res/[^']*ic_launcher.png'") {
+    throw 'The packaged launcher icon resource could not be resolved.'
+}
+Write-Output 'Packaged manifest verified: SDK order, SDK versions, resizable activity and launcher icon.'

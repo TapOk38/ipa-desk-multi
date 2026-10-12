@@ -5,7 +5,7 @@
 
 Downloads apps from the App Store on Windows. Saves a separate IPA for each selected account.
 
-**[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
+**[Download EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
 
 ## Requirements
 
@@ -38,7 +38,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 Скачивает приложения из App Store на Windows. Для каждой выбранной учётной записи сохраняет отдельный IPA.
 
-**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
+**[Скачать EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/IPA-Desk-Multi-0.4.0-beta.2.exe)** · 0.4.0-beta.2
 
 ## Требования
 

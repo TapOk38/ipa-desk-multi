@@ -5,7 +5,7 @@
 
 Installs IPA files on an iPhone from Android over USB.
 
-**[Download APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/ipa-usb-0.7.0-beta.2.apk)** · 0.7.0-beta.2
+**[Download APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/ipa-usb-0.7.0-beta.3.apk)** · 0.7.0-beta.3
 
 ## Requirements
 
@@ -33,7 +33,7 @@ To report an error, tap **Save log** and remove personal information from the lo
 
 Устанавливает IPA на iPhone с Android через USB.
 
-**[Скачать APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.2/ipa-usb-0.7.0-beta.2.apk)** · 0.7.0-beta.2
+**[Скачать APK](https://github.com/TapOk38/ipa-desk-multi/releases/download/suite-v1.0.0-beta.3/ipa-usb-0.7.0-beta.3.apk)** · 0.7.0-beta.3
 
 ## Требования
 

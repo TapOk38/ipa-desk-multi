@@ -91,7 +91,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
         // IPA cache is disposable, never part of backups.
         File[] stale = getCacheDir().listFiles((dir, name) -> name.startsWith("selected-") && name.endsWith(".ipa"));
         if (stale != null) for (File f : stale) f.delete();
-        log("IPA USB 0.7.0-beta.2 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
+        log("IPA USB 0.7.0-beta.3 • Android " + Build.VERSION.RELEASE + " • " + Build.MANUFACTURER + " " + Build.MODEL);
         refreshButtons();
     }
     private int dp(int value) { return (int)(value * getResources().getDisplayMetrics().density + 0.5f); }
@@ -359,7 +359,7 @@ public final class MainActivity extends Activity implements Installer.Listener {
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
                 if (out == null) throw new IOException(L10n.t(L10n.Key.OPEN_FILE_FAILED));
                 captureUsb("export");
-                out.write((journal.toString() + "\n--- USB diagnostics (IPA USB 0.7.0-beta.2) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
+                out.write((journal.toString() + "\n--- USB diagnostics (IPA USB 0.7.0-beta.3) ---\n" + usbJournal).getBytes(StandardCharsets.UTF_8));
                 Toast.makeText(this, L10n.t(L10n.Key.LOG_SAVED), Toast.LENGTH_SHORT).show();
             } catch (Exception e) { failure(e); }
         } else if (request == PICK_IPA) {

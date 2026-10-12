@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0-beta.3 — 2026-10-12
+
+- Added the approved launcher icon.
+- Compile and package Android resources in manual builds; verify launcher resource references and APK alignment.
+
 ## 0.7.0-beta.2 — 2026-10-12
 
 - Fixed the manual-build manifest order and enabled resizable windows to prevent legacy letterboxing.

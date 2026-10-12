@@ -1,5 +1,11 @@
 # Changelog
 
+## suite-v1.0.0-beta.3 — 2026-10-12
+
+- Added the approved launcher icon to IPA USB 0.7.0-beta.3.
+- Package and verify Android resources and alignment during manual builds.
+- Windows apps are unchanged from beta.2.
+
 ## suite-v1.0.0-beta.2 — 2026-10-12
 
 - English is the default interface language in all three apps; saved preferences are preserved.

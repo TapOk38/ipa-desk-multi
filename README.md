@@ -17,7 +17,7 @@ Install IPA files on an iPhone from Windows over USB.
 
 Install IPA files on an iPhone from Android over USB.
 
-[Downloads](https://github.com/TapOk38/ipa-desk-multi/releases/tag/suite-v1.0.0-beta.2) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Contributing](.github/CONTRIBUTING.md)
+[Downloads](https://github.com/TapOk38/ipa-desk-multi/releases/tag/suite-v1.0.0-beta.3) · [Report an issue](https://github.com/TapOk38/ipa-desk-multi/issues) · [Contributing](.github/CONTRIBUTING.md)
 
 </details>
 
@@ -35,4 +35,4 @@ Install IPA files on an iPhone from Android over USB.
 
 Установка IPA на iPhone с Android через USB.
 
-[Скачать программы](https://github.com/TapOk38/ipa-desk-multi/releases/tag/suite-v1.0.0-beta.2) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Разработчикам](.github/CONTRIBUTING.md)
+[Скачать программы](https://github.com/TapOk38/ipa-desk-multi/releases/tag/suite-v1.0.0-beta.3) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Разработчикам](.github/CONTRIBUTING.md)
