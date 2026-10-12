@@ -1,33 +1,27 @@
-# IPA Desk — приложения для Windows
+# IPA Desk
 
-**IPA Desk Multi** скачивает приложения из App Store в формате IPA. **IPA Install** устанавливает готовые IPA на iPhone через USB.
+Три программы для скачивания приложений из App Store и установки IPA-файлов на iPhone.
 
-| Программа | Скачать | Для чего |
+**IPA — файл приложения для iPhone с расширением .ipa.** Если файла ещё нет, начните с IPA Desk Multi. Если он уже есть — выберите установку с Windows или Android.
+
+## Выберите программу
+
+| Что хотите сделать | Программа | Где запускается |
 | --- | --- | --- |
-| IPA Desk Multi | [EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/v0.3.1-beta.1/IPA-Desk-Multi-0.3.1-beta.1.exe) | Скачать IPA для одной или нескольких учёток |
-| IPA Install | [EXE](https://github.com/TapOk38/ipa-desk-multi/releases/download/install-v1.0.0-beta.1/IPA-Install.exe) | [Установить IPA на iPhone](installer/README.md) |
+| **Скачать IPA из App Store** для одной или нескольких учёток Apple ID | [**IPA Desk Multi →**](docs/DOWNLOAD.md) | Windows |
+| **Установить готовый IPA на iPhone с компьютера** через USB | [**IPA Install →**](installer/README.md) | Windows |
+| **Установить готовый IPA на iPhone с телефона Android** через USB/OTG | [**IPA USB →**](android/README.md) | Android |
 
-Windows 10/11 x64. Программы запускаются из EXE.
+На странице каждой программы — скачивание, требования и инструкция.
 
-## Скачать IPA
+## Как это работает
 
-1. Запустите IPA Desk Multi. Через **«Добавить»** сохраните Apple ID, пароль и необязательное описание учётки.
-2. Вставьте ссылку App Store или числовой ID в поле **«Ссылка или ID»**.
-3. Отметьте нужные учётки и нажмите **«Скачать IPA»**. Если Apple запросит код подтверждения, введите его.
-4. Дождитесь **«IPA сохранён»** и нажмите **«Открыть папку»**.
+**App Store → IPA-файл → установка на iPhone.**
 
-Учётки обрабатываются по очереди, для каждой сохраняется отдельный IPA. Файлы лежат в **Загрузки → IPA Desk Multi**; имя файла содержит название и версию приложения, Apple ID и описание учётки. Учётки сохраняются между запусками, их можно редактировать и удалять.
+IPA Desk Multi сохраняет файл приложения на компьютер. Затем его можно установить с этого же ПК через IPA Install или перенести на Android и установить через IPA USB.
 
-Подключать iPhone или заранее устанавливать на него приложение не нужно. При первом скачивании необходимые компоненты загружаются автоматически.
+На iPhone заранее ничего устанавливать не нужно. Для запуска приложения из App Store может потребоваться Apple ID, с которым скачан IPA.
 
-## Что учитывать
+[Все выпуски](https://github.com/TapOk38/ipa-desk-multi/releases) · [Сообщить об ошибке](https://github.com/TapOk38/ipa-desk-multi/issues) · [Разработчикам](CONTRIBUTING.md)
 
-- Приложение должно быть доступно выбранной учётке. Для бесплатного приложения программа при необходимости получает лицензию; платные покупки не выполняются.
-- Для запуска IPA на iPhone может потребоваться Apple ID, с которым он скачан.
-- Не рекомендуем массовое скачивание со сменой множества Apple ID на одном ПК: подтверждённого безопасного лимита нет.
-
-Установить IPA можно через [IPA Install на Windows](installer/README.md) или [IPA USB на Android](https://github.com/TapOk38/ipa-usb-android#readme).
-
-При ошибке посмотрите журнал внизу окна. Если нужна помощь, [создайте обращение](https://github.com/TapOk38/ipa-desk-multi/issues) с текстом ошибки без паролей и личных данных.
-
-[Релизы](https://github.com/TapOk38/ipa-desk-multi/releases) · [Хранение данных](PRIVACY.md) · [Сборка](docs/BUILDING.md) · [Компоненты](THIRD_PARTY.md) · [Лицензия](LICENSE)
+Лицензии: [Windows — MIT](LICENSE), [Android — GPL-3.0](android/LICENSE). Сторонние компоненты сохраняют свои лицензии.

@@ -4,6 +4,16 @@ body:
   - type: markdown
     attributes:
       value: "Не прикладывайте Apple ID, пароль, 2FA, IPA, cookies или ключи. Обезличьте журнал."
+  - type: dropdown
+    id: app
+    attributes:
+      label: Программа
+      options:
+        - IPA Desk Multi — скачивание на Windows
+        - IPA Install — установка с Windows
+        - IPA USB — установка с Android
+    validations:
+      required: true
   - type: input
     id: version
     attributes:
