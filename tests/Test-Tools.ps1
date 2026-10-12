@@ -1,4 +1,4 @@
-﻿#requires -Version 5.1
+#requires -Version 5.1
 param([string]$OfficialArchive='', [string]$WorkRoot=[IO.Path]::GetTempPath())
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot '..\Install-Tools.ps1')
@@ -15,6 +15,7 @@ if($OfficialArchive){
 
 # All remaining tests are self-contained and offline; fixture bytes are never run.
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression
 $fixture=Join-Path $root 'fixture.zip'; $bytes=[Text.Encoding]::UTF8.GetBytes('inert test fixture, not an executable')
 $zip=[IO.Compression.ZipFile]::Open($fixture,[IO.Compression.ZipArchiveMode]::Create)
 try {$entry=$zip.CreateEntry('ipatool-cpp-windows-amd64.exe');$out=$entry.Open();try{$out.Write($bytes,0,$bytes.Length)}finally{$out.Dispose()}}finally{$zip.Dispose()}
@@ -41,3 +42,4 @@ $failed=$false;try{Ensure-IpaTool -AppRoot (Join-Path $root 'network-fail') | Ou
 Assert $failed 'Download failure is returned without success'
 Assert (@(Get-ChildItem -LiteralPath (Join-Path $root 'network-fail') -Recurse -Directory | Where-Object Name -like '.install-*').Count -eq 0) 'Failed download leaves no working directory'
 Write-Output "$script:checks tool preparation checks passed. No Apple requests."
+
