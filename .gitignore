@@ -1,0 +1,14 @@
+tools/
+Downloads/
+dist/
+.test-*/
+tests/.test-*/
+*.ipa
+*.exe
+*.zip
+*.log
+*.jsonl
+accounts.json
+accounts.lock
+session-key.dpapi
+.env*
