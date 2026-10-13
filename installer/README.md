@@ -5,7 +5,7 @@
 
 Installs IPA files on an iPhone from Windows over USB.
 
-**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows.exe)** · 1.1.0-beta.3
+**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows-1.2.0-test.2.exe)** · 1.2.0-test.2
 
 ## Requirements
 
@@ -15,7 +15,7 @@ Windows 10/11 x64, an Apple device driver, a USB data cable and an IPA file. The
 
 1. Run the EXE and select the interface language. Connect an unlocked iPhone and confirm trust if prompted.
 2. Click **Refresh**, then **Browse…** and select an IPA.
-3. Click **Install**. Keep the cable connected until **App installed** appears.
+3. Click **Install**. Keep the cable connected until **Installed:** appears.
 
 If the app requests an Apple ID when launched, use the account that downloaded the IPA.
 
@@ -39,7 +39,7 @@ To install on another iPhone, reconnect the cable and click **Refresh**. Connect
 
 Устанавливает IPA на iPhone с Windows через USB.
 
-**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows.exe)** · 1.1.0-beta.3
+**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows-1.2.0-test.2.exe)** · 1.2.0-test.2
 
 ## Требования
 
@@ -49,7 +49,7 @@ Windows 10/11 x64, драйвер Apple, USB-кабель с передачей 
 
 1. Запустите EXE. Для русского интерфейса выберите **Русский** в списке **English**. Подключите разблокированный iPhone и подтвердите доверие, если появится запрос.
 2. Нажмите **«Обновить»**, затем **«Выбрать…»** и укажите IPA.
-3. Нажмите **«Установить»**. Не отключайте кабель до сообщения **«Приложение установлено»**.
+3. Нажмите **«Установить»**. Не отключайте кабель до сообщения **«Установлено:»**.
 
 Если при запуске приложения потребуется Apple ID, используйте учётную запись, с которой скачан IPA.
 

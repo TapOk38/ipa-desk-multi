@@ -28,5 +28,7 @@ jobs:
         run: .\installer\tests\Test-Credentials.ps1 -ModulePath .\installer\Credentials.ps1 -TestRoot (Join-Path $PWD '.test-installer-credentials')
       - name: Installer localization
         run: .\installer\tests\Test-Localization.ps1 -TestRoot (Join-Path $env:RUNNER_TEMP 'installer-language')
+      - name: Native installer workflow and GUI (fixtures only)
+        run: .\installer\tests\Test-Native.ps1 -WorkRoot $env:RUNNER_TEMP
       - name: Build portable ZIP
         run: .\downloader\Build-Release.ps1

@@ -1,48 +1,49 @@
 ﻿#requires -Version 5.1
 param([Parameter(Mandatory=$true)][string]$ExePath,[Parameter(Mandatory=$true)][string]$TestRoot)
 $ErrorActionPreference='Stop'
+$ExePath=[IO.Path]::GetFullPath($ExePath)
+$package=[IO.Path]::GetDirectoryName($ExePath)
 $TestRoot=[IO.Path]::GetFullPath($TestRoot)
-$folder=Join-Path $TestRoot 'Тест [1]'
-$null=[IO.Directory]::CreateDirectory($folder)
-$exe=Join-Path $folder 'TapOk IPA Installer — Windows.exe'
-Copy-Item -LiteralPath $ExePath -Destination $exe
-$profile=Join-Path $TestRoot 'profile'
+$null=[IO.Directory]::CreateDirectory($TestRoot)
 $script:checks=0
 function Assert($value,[string]$message){if(-not $value){throw "FAIL: $message"};$script:checks++;Write-Output "PASS: $message"}
-function Smoke {
-    $p=Start-Process -FilePath $exe -ArgumentList @('--smoke-test',('"'+$profile+'"')) -WindowStyle Hidden -PassThru
-    if(-not $p.WaitForExit(90000)){$p.Kill();throw 'Smoke timeout'}
-    Assert ($p.ExitCode -eq 0) 'Single EXE opens the installer UI from a Unicode path'
-    Assert (Test-Path -LiteralPath (Join-Path $profile 'interface.png')) 'Window rendered successfully'
+$assembly=[Reflection.Assembly]::LoadFile($ExePath)
+Assert (($assembly.GetManifestResourceNames() -join ',') -eq 'TapOk.USB.Components.zip') 'Only declared USB archive embedded'
+$bundle=$assembly.GetType('TapOk.Installer.RuntimeBundle').GetMethod('Open').Invoke($null,@())
+$package=$bundle.Root
+try {
+Assert (@($assembly.GetReferencedAssemblies() | Where-Object {$_.Name -match 'PowerShell|Automation'}).Count -eq 0) 'No PowerShell runtime'
+$flags=[Reflection.BindingFlags]'NonPublic,Static'
+$compiledHashes=$assembly.GetType('TapOk.Installer.PinnedTools').GetField('Hashes',$flags).GetValue($null)
+$toolRoot=Join-Path $package 'tools'
+$pinCount=0
+foreach($line in [IO.File]::ReadAllLines((Join-Path $toolRoot 'SHA256SUMS.txt'))){
+    if($line -notmatch '^([a-fA-F0-9]{64})\s+([a-zA-Z0-9_.-]+\.(?:exe|dll))$'){throw 'Invalid component manifest'}
+    $expected=$Matches[1];$name=$Matches[2];$pinCount++
+    Assert ((Get-FileHash -LiteralPath (Join-Path $toolRoot $name)).Hash -eq $expected) "Component matches pinned hash: $name"
+    Assert ($compiledHashes[$name] -eq $expected) "Compiled manifest matches: $name"
 }
-Smoke
-$runtime=@(Get-ChildItem -LiteralPath (Join-Path $profile 'app') -Directory)[0].FullName
-Assert ((@(Get-ChildItem -LiteralPath $folder -File).Count) -eq 1) 'No adjacent scripts or DLLs are required'
-foreach($name in @('IPA-Install.ps1','Engine.ps1','Credentials.ps1','AccountWindows.ps1','Localization.ps1')){
-    Assert ((Get-FileHash -LiteralPath (Join-Path $runtime $name)).Hash -eq (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot $name)).Hash) "Embedded script matches source: $name"
-}
-foreach($line in [IO.File]::ReadAllLines((Join-Path $runtime 'tools/SHA256SUMS.txt'))){
-    if($line -notmatch '^([a-fA-F0-9]{64})\s+(.+)$'){throw 'Invalid checksum line'}
-    Assert ((Get-FileHash -LiteralPath (Join-Path $runtime ('tools/'+$Matches[2]))).Hash -eq $Matches[1]) 'Bundled USB component hash matches'
-}
+Assert ($pinCount -eq $compiledHashes.Count) 'All compiled component hashes accounted for'
 foreach($tool in @('idevice_id','ideviceinfo','ideviceinstaller','idevicepair','plistutil')){
-    $start=[Diagnostics.ProcessStartInfo]::new((Join-Path $runtime ('tools/'+$tool+'.exe')),'--help')
+    # Help only: no device enumeration, pairing, installation or account use.
+    $start=[Diagnostics.ProcessStartInfo]::new((Join-Path $toolRoot ($tool+'.exe')),'--help')
     $start.UseShellExecute=$false;$start.CreateNoWindow=$true;$start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
+    $start.EnvironmentVariables['PATH']=$toolRoot+';'+[Environment]::GetFolderPath([Environment+SpecialFolder]::System)
     $p=[Diagnostics.Process]::Start($start)
-    $stdout=$p.StandardOutput.ReadToEndAsync();$stderr=$p.StandardError.ReadToEndAsync()
-    if(-not $p.WaitForExit(15000)){$p.Kill();throw 'Tool help timeout'}
-    $null=$stdout.GetAwaiter().GetResult();$null=$stderr.GetAwaiter().GetResult()
-    Assert ($p.ExitCode -eq 0) "USB tool and DLLs load: $tool"
-    $p.Dispose()
+    try{
+        $stdout=$p.StandardOutput.ReadToEndAsync();$stderr=$p.StandardError.ReadToEndAsync()
+        if(-not $p.WaitForExit(15000)){$p.Kill();throw 'Tool help timeout'}
+        $null=$stdout.GetAwaiter().GetResult();$null=$stderr.GetAwaiter().GetResult()
+        Assert ($p.ExitCode -eq 0) "USB executable and libraries load: $tool --help"
+    }finally{$p.Dispose()}
 }
-$sensitive=@(Get-ChildItem -LiteralPath $runtime -Recurse -File | Where-Object {$_.Extension -in @('.ipa','.log','.jsonl') -or $_.Name -in @('accounts.dat','accounts.json')})
-Assert ($sensitive.Count -eq 0) 'No IPA, account files or journals in the payload'
-Assert (Test-Path -LiteralPath (Join-Path $runtime 'tools/licenses/ideviceinstaller/COPYING')) 'Dependency licence included'
-Assert (Test-Path -LiteralPath (Join-Path $runtime 'tools/sources')) 'Corresponding dependency sources included'
-[IO.File]::WriteAllText((Join-Path $runtime 'Engine.ps1'),'throw "Corrupted cache must not execute"')
-Smoke
-Assert ((Get-FileHash -LiteralPath (Join-Path $runtime 'Engine.ps1')).Hash -eq (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'Engine.ps1')).Hash) 'Corrupted cache repaired before execution'
-$bytes=[IO.File]::ReadAllBytes($exe);$pe=[BitConverter]::ToInt32($bytes,60)
+$files=@(Get-ChildItem -LiteralPath $package -Recurse -File)
+$sensitive=@($files | Where-Object {$_.Extension -in @('.ipa','.log','.jsonl','.ps1','.pfx','.key') -or $_.Name -in @('accounts.dat','accounts.json')})
+Assert ($sensitive.Count -eq 0) 'No accounts, IPA, logs, scripts or signing keys in package'
+Assert (Test-Path -LiteralPath (Join-Path $toolRoot 'licenses/ideviceinstaller/COPYING')) 'Dependency license included'
+Assert (@(Get-ChildItem -LiteralPath (Join-Path $toolRoot 'sources') -File).Count -gt 0) 'Corresponding dependency sources included'
+$bytes=[IO.File]::ReadAllBytes($ExePath);$pe=[BitConverter]::ToInt32($bytes,60)
 Assert ([BitConverter]::ToUInt16($bytes,$pe+24+68) -eq 2) 'GUI executable without a console'
-Write-Output "$script:checks EXE checks passed"
-Write-Output (Join-Path $profile 'interface.png')
+[IO.File]::WriteAllText((Join-Path $TestRoot 'package-result.txt'),"$script:checks package checks passed; --help only, no USB or account operations.")
+Write-Output "$script:checks package checks passed"} finally {$bundle.Dispose()}
+Assert (-not (Test-Path -LiteralPath $package)) 'Temporary bundle removed after normal disposal'

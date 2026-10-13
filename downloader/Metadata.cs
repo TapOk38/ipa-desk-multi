@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Xml;
 
-// Read only top-level string fields used in an IPA filename. No object execution,
+// Read only top-level app identity and filename fields. No object execution,
 // external XML resources, recursive binary objects, or extraction to disk.
 public static class IpaDeskMetadata {
     public static Dictionary<string,string> Read(byte[] bytes) {
@@ -74,7 +74,7 @@ public static class IpaDeskMetadata {
             var result=new Dictionary<string,string>();
             for(int i=0;i<length;i++) {
                 string key=Text(Number(at+i*refSize,refSize,table));
-                if(key!="CFBundleName" && key!="CFBundleDisplayName" && key!="CFBundleShortVersionString" && key!="MinimumOSVersion") continue;
+                if(key!="CFBundleIdentifier" && key!="CFBundleName" && key!="CFBundleDisplayName" && key!="CFBundleShortVersionString" && key!="MinimumOSVersion") continue;
                 string value=Text(Number(at+(length+i)*refSize,refSize,table));
                 if(value!=null) result[key]=value;
             }
