@@ -5,7 +5,7 @@
 
 Downloads apps from the App Store on Windows. Supports adding multiple iCloud accounts.
 
-**Download temporarily unavailable:** Defender detects 0.5.0-beta.1 as Trojan:Win32/Sabsik.TE.A!ml. Investigation is ongoing; a false positive has not been confirmed.
+[Download EXE — 0.5.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.1-test.1.exe)
 
 ## Requirements
 
@@ -38,7 +38,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 Скачивает приложения из App Store на Windows. Поддерживает добавление нескольких учётных записей iCloud.
 
-**Скачивание временно недоступно:** Defender обнаруживает в версии 0.5.0-beta.1 Trojan:Win32/Sabsik.TE.A!ml. Причина проверяется; ложное срабатывание пока не подтверждено.
+[Скачать EXE — 0.5.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.1-test.1.exe)
 
 ## Требования
 
