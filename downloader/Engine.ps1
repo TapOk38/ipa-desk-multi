@@ -1,6 +1,7 @@
 ﻿#requires -Version 5.1
 Set-StrictMode -Version 2.0
 . (Join-Path $PSScriptRoot 'Accounts.ps1')
+. (Join-Path $PSScriptRoot 'Purchases.ps1')
 . (Join-Path $PSScriptRoot 'Metadata.ps1')
 . (Join-Path $PSScriptRoot 'Install-Tools.ps1')
 $ErrorActionPreference = 'Stop'
@@ -152,7 +153,7 @@ function Invoke-Native([string]$Executable, [string[]]$Arguments, [int]$TimeoutS
         $watch = [Diagnostics.Stopwatch]::StartNew()
         while (-not $process.WaitForExit(100)) {
             Test-Cancel
-            if ($watch.Elapsed.TotalSeconds -gt $TimeoutSeconds) { throw (Get-IpaText 'Превышено время ожидания. Проверьте интернет и повторите запуск.') }
+            if ($watch.Elapsed.TotalSeconds -gt $TimeoutSeconds) { throw [TimeoutException]::new((Get-IpaText 'Превышено время ожидания. Проверьте интернет и повторите запуск.')) }
         }
         Test-Cancel
         $output = $stdout.GetAwaiter().GetResult() + "`n" + $stderr.GetAwaiter().GetResult()
@@ -217,7 +218,7 @@ function Test-AuthCodeRequired($Result) {
     return $false
 }
 function Resolve-CppTool {
-    $candidate=Join-Path $script:Options.AppRoot 'tools\cpp-1.0.9\ipatool-cpp.exe'
+    $candidate=Join-Path $script:Options.AppRoot 'tools\cpp-1.1.6\ipatool-cpp.exe'
     if(-not [IO.File]::Exists($candidate)){Send-Event 'status' (Get-IpaText 'Загрузка компонента IPATool с GitHub…')}
     return Ensure-IpaTool -AppRoot $script:Options.AppRoot -Cancelled { $script:Bus.Cancel }
 }
@@ -267,34 +268,12 @@ function Test-IpaArchive([string]$Path) {
         if (-not $valid.Count) { throw (Get-IpaText 'В архиве отсутствует Payload/*.app/Info.plist. Результат не похож на IPA.') }
     } finally { $zip.Dispose() }
 }
-function Invoke-Workflow($Options, $Bus) {
-    if ($Options.ContainsKey('Language')) { Set-IpaLanguage $Options.Language }
-    $script:Options = $Options
-    $script:Bus = $Bus
-    $script:Secrets = [Collections.Generic.List[string]]::new()
-    $script:Secrets.Add([string]$Options.Password)
-    $script:SessionRunRoot = $null
-    $script:SessionRunParent = $null
-    $script:RuntimeRoot = Join-Path $Options.DataRoot 'runtime'
-    $script:NativeWorkDirectory = ''
+function Invoke-AppDownload($Download) {
     $partial = $null
+    $destination = $Download.OutputFolder
+    $script:NativeWorkDirectory = $destination
     try {
-        Test-Cancel
-        $Options.AppId = Resolve-AppId $Options.AppId
-        if ($Options.ContainsKey('EncryptedPassword')) { $Options.Password = Unlock-Password $Options.EncryptedPassword }
-        $script:Secrets.Add([string]$Options.Password)
-        if ($Options.Email -notmatch '^\S+@\S+\.\S+$') { throw (Get-IpaText 'Введите Apple ID в виде адреса электронной почты.') }
-        $destination = [IO.Path]::GetFullPath($Options.OutputFolder)
-        $null = [IO.Directory]::CreateDirectory($destination)
-        $script:NativeWorkDirectory = $destination
-        $probe = Join-Path $destination ([guid]::NewGuid().ToString('N') + '.write-test')
-        [IO.File]::WriteAllText($probe, '')
-        [IO.File]::Delete($probe)
-        Send-Event 'status' (Get-IpaText 'Подготовка IPATool…')
-        $script:CppExe = Resolve-CppTool
-        Initialize-LocalSession
-        Connect-Apple
-        $app = [pscustomobject]@{ Name = ('app-' + $Options.AppId); Id = $Options.AppId }
+        $app = [pscustomobject]@{ Name = ('app-' + $Download.AppId); Id = $Download.AppId }
         $partial = Join-Path $destination ('.ipa-desk-' + [guid]::NewGuid().ToString('N') + '.partial.ipa')
         # The unique ASCII basename avoids narrow-path encoding failures in C++.
         # WorkingDirectory is per process; do not change the GUI's global directory.
@@ -309,20 +288,14 @@ function Invoke-Workflow($Options, $Bus) {
         Test-IpaArchive $partial
         $hash = (Get-FileHash -LiteralPath $partial -Algorithm SHA256).Hash
         Test-Cancel
-        $description = if ($Options.ContainsKey('Description')) { $Options.Description } else { '' }
-        $stem = Get-IpaFileStem $partial $app.Id $Options.Email $description $destination
+        $description = if ($script:Options.ContainsKey('Description')) { $script:Options.Description } else { '' }
+        $stem = Get-IpaFileStem $partial $app.Id $script:Options.Email $description $destination
         $final = Join-Path $destination ($stem + '.ipa')
         $counter = 1
         while ([IO.File]::Exists($final)) { $final = Join-Path $destination ("$stem ($counter).ipa"); $counter++ }
         [IO.File]::Move($partial, $final)
         $size = ([IO.FileInfo]$final).Length
-        Send-Event 'done' ([pscustomobject]@{ Path = $final; Bytes = $size; Sha256 = $hash })
-    } catch {
-        if ($Bus.Cancel -or $_.Exception -is [OperationCanceledException]) {
-            Send-Event 'cancelled' (Get-IpaText 'Операция отменена.')
-        } else {
-            Send-Event 'error' (Protect-Text $_.Exception.Message)
-        }
+        return [pscustomobject]@{ AppId = $app.Id; Path = $final; Bytes = $size; Sha256 = $hash }
     } finally {
         if ($partial) {
             # Also remove the raw .tmp file left by an interrupted C++ download.
@@ -333,6 +306,61 @@ function Invoke-Workflow($Options, $Bus) {
                 }
             }
         }
+    }
+}
+function Invoke-Workflow($Options, $Bus) {
+    if ($Options.ContainsKey('Language')) { Set-IpaLanguage $Options.Language }
+    $script:Options = $Options
+    $script:Bus = $Bus
+    $script:Secrets = [Collections.Generic.List[string]]::new()
+    $script:Secrets.Add([string]$Options.Password)
+    $script:SessionRunRoot = $null
+    $script:SessionRunParent = $null
+    $script:RuntimeRoot = Join-Path $Options.DataRoot 'runtime'
+    $script:NativeWorkDirectory = ''
+    $batch = $Options.ContainsKey('Downloads')
+    $history = $Options.ContainsKey('Mode') -and $Options.Mode -eq 'purchases'
+    try {
+        Test-Cancel
+        $downloads = @(if ($batch) { $Options.Downloads } elseif ($history) { [pscustomobject]@{AppId='1';OutputFolder=$Options.DataRoot} } else { [pscustomobject]@{AppId=$Options.AppId;OutputFolder=$Options.OutputFolder} })
+        if (-not $downloads.Count) { throw (Get-IpaText 'Добавьте хотя бы одно приложение в список.') }
+        # Validate every destination before logging in, then keep one session per account.
+        foreach ($download in $downloads) {
+            $download.AppId = Resolve-AppId $download.AppId
+            $download.OutputFolder = [IO.Path]::GetFullPath($download.OutputFolder)
+            $null = [IO.Directory]::CreateDirectory($download.OutputFolder)
+            $probe = Join-Path $download.OutputFolder ([guid]::NewGuid().ToString('N') + '.write-test')
+            [IO.File]::WriteAllText($probe, '')
+            [IO.File]::Delete($probe)
+        }
+        if ($Options.ContainsKey('EncryptedPassword')) { $Options.Password = Unlock-Password $Options.EncryptedPassword }
+        $script:Secrets.Add([string]$Options.Password)
+        if ($Options.Email -notmatch '^\S+@\S+\.\S+$') { throw (Get-IpaText 'Введите Apple ID в виде адреса электронной почты.') }
+        $script:NativeWorkDirectory = $downloads[0].OutputFolder
+        Send-Event 'status' (Get-IpaText 'Подготовка IPATool…')
+        $script:CppExe = Resolve-CppTool
+        Initialize-LocalSession
+        Connect-Apple
+        if ($history) { $apps = @(Get-OwnedApplications); Send-Event 'purchases' $apps; return }
+        $success = 0; $failed = 0
+        foreach ($download in $downloads) {
+            Test-Cancel
+            if ($batch) { Send-Event 'app-start' $download.AppId }
+            try {
+                $result = Invoke-AppDownload $download
+                $success++
+                if ($batch) { Send-Event 'app-done' $result } else { Send-Event 'done' $result }
+            } catch {
+                if ($Bus.Cancel -or $_.Exception -is [OperationCanceledException] -or -not $batch) { throw }
+                $failed++
+                Send-Event 'app-error' ([pscustomobject]@{AppId=$download.AppId;Message=(Protect-Text $_.Exception.Message)})
+            }
+        }
+        if ($batch) { Send-Event 'batch-done' ([pscustomobject]@{Succeeded=$success;Failed=$failed}) }
+    } catch {
+        if ($Bus.Cancel -or $_.Exception -is [OperationCanceledException]) { Send-Event 'cancelled' (Get-IpaText 'Операция отменена.') }
+        else { Send-Event 'error' (Protect-Text $_.Exception.Message) }
+    } finally {
         Remove-LocalSession
         $Options.Password = ''
         $Options.Passphrase = ''

@@ -19,6 +19,7 @@ release-assets/
 accounts.json
 accounts.dat
 accounts.lock
+download-list.json
 session-key.dpapi
 .env*
 installer/tools/sources/

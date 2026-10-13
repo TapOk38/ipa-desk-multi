@@ -16,6 +16,8 @@ jobs:
         run: .\downloader\tests\Test-Tools.ps1
       - name: Downloader localization
         run: .\downloader\tests\Test-Localization.ps1
+      - name: Saved download list (offline fixtures)
+        run: .\downloader\tests\Test-DownloadList.ps1 -WorkRoot $env:RUNNER_TEMP
       - name: Installer workflow regression
         run: .\installer\tests\Test-Engine.ps1 -AppRoot .\installer -TestRoot (Join-Path $PWD '.test-installer-engine')
       - name: Installer credential protection

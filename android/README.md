@@ -5,7 +5,7 @@
 
 Installs IPA files on an iPhone from Android over USB.
 
-**[Download APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk)** · 0.7.0-beta.4
+**[Download APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk)** · 0.7.0-beta.4
 
 ## Requirements
 
@@ -33,7 +33,7 @@ To report an error, tap **Save log** and remove personal information from the lo
 
 Устанавливает IPA на iPhone с Android через USB.
 
-**[Скачать APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk)** · 0.7.0-beta.4
+**[Скачать APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk)** · 0.7.0-beta.4
 
 ## Требования
 

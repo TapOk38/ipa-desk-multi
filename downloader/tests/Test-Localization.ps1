@@ -37,7 +37,7 @@ foreach($key in $script:IpaEnglish.Keys){
     if($left -cne $right){$formatMismatch+=$key}
     if(-not $script:IpaEnglish[$key] -or $script:IpaEnglish[$key] -match '[А-Яа-яЁё]'){$missing+=$key}
 }
-foreach($file in @('IPA-Desk.ps1','Engine.ps1','Accounts.ps1','Metadata.ps1','Install-Tools.ps1')){
+foreach($file in @('IPA-Desk.ps1','AppListUI.ps1','DownloadList.ps1','Purchases.ps1','Engine.ps1','Accounts.ps1','Metadata.ps1','Install-Tools.ps1')){
     $tokens=$null;$errors=$null
     $ast=[Management.Automation.Language.Parser]::ParseFile((Join-Path $root $file),[ref]$tokens,[ref]$errors)
     Assert (-not $errors) "PowerShell parses: $file"

@@ -6,7 +6,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 [Windows.Forms.Application]::EnableVisualStyles()
 if ([Threading.Thread]::CurrentThread.ApartmentState -ne 'STA') { throw (Get-IpaText 'Запустите Start.cmd.') }
-. (Join-Path $PSScriptRoot 'Accounts.ps1')
+. (Join-Path $PSScriptRoot 'DownloadList.ps1')
 # Some launch environments contain both PATH and Path. .NET requires unique keys.
 $environment = [Environment]::GetEnvironmentVariables()
 $pathKeys = @($environment.Keys | Where-Object { $_ -ieq 'PATH' })
@@ -18,6 +18,7 @@ if ($pathKeys.Count -gt 1) {
 $script:AppRoot = $PSScriptRoot
 $script:OutputRoot = if ($OutputRoot) { [IO.Path]::GetFullPath($OutputRoot) } else { Join-Path $script:AppRoot 'Downloads' }
 $script:DataRoot = if ($TestDataRoot) { [IO.Path]::GetFullPath($TestDataRoot) } elseif ($SmokeTestPath) { Join-Path ([IO.Path]::GetTempPath()) ('ipa-multi-smoke-' + [guid]::NewGuid().ToString('N')) } else { Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'IPA-Desk-Multi' }
+$script:DownloadListPath = Join-Path $script:DataRoot 'download-list.json'
 $script:AccountsPath = Join-Path $script:DataRoot 'accounts.json'
 Initialize-IpaLanguage $script:DataRoot $Language
 $script:StoreLock = $null
@@ -37,12 +38,12 @@ $script:Current = $null; $script:Terminal = $false; $script:Secrets = @()
 $script:Bus = [hashtable]::Synchronized(@{ Events=[Collections.Concurrent.ConcurrentQueue[object]]::new(); Cancel=$false; Answer=$null; AnswerReady=$false })
 
 $form = [Windows.Forms.Form]::new(); $form.Text = 'TapOk IPA Downloader'
-$form.ClientSize = [Drawing.Size]::new(860, 660); $form.MinimumSize = [Drawing.Size]::new(820, 680)
+$form.ClientSize = [Drawing.Size]::new(900, 760); $form.MinimumSize = [Drawing.Size]::new(860, 760)
 $form.StartPosition = 'CenterScreen'; $form.AutoScaleMode = 'Dpi'
 $form.Font = [Drawing.Font]::new('Segoe UI', 10); $form.BackColor = [Drawing.Color]::FromArgb(245,247,251)
 $root = [Windows.Forms.TableLayoutPanel]::new(); $root.Dock = 'Fill'; $root.Padding = [Windows.Forms.Padding]::new(24)
 $root.ColumnCount = 1; $root.RowCount = 7
-foreach ($height in @(60,58,54,230,54,32)) { $null = $root.RowStyles.Add([Windows.Forms.RowStyle]::new('Absolute',$height)) }
+foreach ($height in @(60,206,54,160,54,32)) { $null = $root.RowStyles.Add([Windows.Forms.RowStyle]::new('Absolute',$height)) }
 $null = $root.RowStyles.Add([Windows.Forms.RowStyle]::new('Percent',100)); $form.Controls.Add($root)
 $title = [Windows.Forms.Label]::new(); $title.Text = 'TapOk IPA Downloader'; $title.Dock = 'Fill'; $title.Font = [Drawing.Font]::new('Segoe UI',21,[Drawing.FontStyle]::Bold); $title.ForeColor = [Drawing.Color]::FromArgb(24,38,68)
 $header=[Windows.Forms.TableLayoutPanel]::new(); $header.Dock='Fill'; $header.ColumnCount=2
@@ -50,15 +51,11 @@ $null=$header.ColumnStyles.Add([Windows.Forms.ColumnStyle]::new('Percent',100));
 $languagePicker=[Windows.Forms.ComboBox]::new(); $languagePicker.DropDownStyle='DropDownList'; $languagePicker.Width=110; $languagePicker.Anchor='Right'; $languagePicker.AccessibleName='Language / Язык'
 $null=$languagePicker.Items.AddRange(@('Русский','English')); $languagePicker.SelectedIndex=if((Get-IpaLanguage) -eq 'ru'){0}else{1}
 $header.Controls.Add($title,0,0); $header.Controls.Add($languagePicker,1,0); $root.Controls.Add($header,0,0)
-$fields = [Windows.Forms.TableLayoutPanel]::new(); $fields.Dock='Fill'; $fields.BackColor=[Drawing.Color]::White; $fields.Padding=[Windows.Forms.Padding]::new(10)
-$fields.ColumnCount=2; $null=$fields.ColumnStyles.Add([Windows.Forms.ColumnStyle]::new('Absolute',150)); $null=$fields.ColumnStyles.Add([Windows.Forms.ColumnStyle]::new('Percent',100))
-$label=[Windows.Forms.Label]::new(); $label.Text=(Get-IpaText 'Ссылка или ID'); $label.Dock='Fill'; $label.TextAlign='MiddleLeft'
-$query=[Windows.Forms.TextBox]::new(); $query.Dock='Fill'
-$fields.Controls.Add($label,0,0); $fields.Controls.Add($query,1,0); $root.Controls.Add($fields,0,1)
 function New-Button($Panel,[string]$Text,[int]$Width) {
     $b=[Windows.Forms.Button]::new(); $b.Text=$Text; $b.Size=[Drawing.Size]::new($Width,34); $b.FlatStyle='Flat'; $b.FlatAppearance.BorderColor=[Drawing.Color]::FromArgb(207,215,227)
     $Panel.Controls.Add($b); return $b
 }
+. (Join-Path $PSScriptRoot 'AppListUI.ps1')
 $manage=[Windows.Forms.FlowLayoutPanel]::new(); $manage.Dock='Fill'; $manage.Padding=[Windows.Forms.Padding]::new(0,5,0,0); $manage.WrapContents=$false
 $add=New-Button $manage (Get-IpaText 'Добавить') 105; $edit=New-Button $manage (Get-IpaText 'Изменить') 105; $delete=New-Button $manage (Get-IpaText 'Удалить') 100
 $all=New-Button $manage (Get-IpaText 'Выбрать все') 130; $none=New-Button $manage (Get-IpaText 'Снять выбор') 130
@@ -141,8 +138,8 @@ $all.Add_Click({foreach($row in $list.Items){$row.Checked=$true}})
 $none.Add_Click({foreach($row in $list.Items){$row.Checked=$false}})
 function Set-Busy([bool]$Value){$manage.Enabled=-not $Value; $list.Enabled=-not $Value; $fields.Enabled=-not $Value; $start.Enabled=-not $Value; $stop.Enabled=$Value; $languagePicker.Enabled=-not $Value}
 function Update-MainLanguage {
-    foreach($control in @($form,$title,$label,$add,$edit,$delete,$all,$none,$start,$stop,$openFolder)) { $control.Text=Convert-IpaDisplayText $control.Text }
-    foreach($column in $list.Columns) { $column.Text=Convert-IpaDisplayText $column.Text }
+    foreach($control in @($form,$title,$fields,$addApp,$editApp,$deleteApp,$allApps,$noApps,$ownedApps,$add,$edit,$delete,$all,$none,$start,$stop,$openFolder)) { $control.Text=Convert-IpaDisplayText $control.Text }
+    foreach($column in @($list.Columns)+@($appsList.Columns)) { $column.Text=Convert-IpaDisplayText $column.Text }
     foreach($row in $list.Items) { $row.SubItems[1].Text=Convert-IpaDisplayText $row.SubItems[1].Text }
     $status.Text=Get-IpaText 'Выберите учётки'
 }
@@ -172,6 +169,77 @@ function Show-Code([string]$Message) {
         else{Stop-Queue}
     } finally{$code.Clear(); $dialog.Tag=$null; $dialog.Dispose()}
 }
+function Show-Purchases([object[]]$Apps) {
+    if (-not $Apps.Count) {$status.Text=Get-IpaText 'История покупок пуста'; Add-Log $status.Text; return}
+    $dialog=[Windows.Forms.Form]::new(); $dialog.Text=(Get-IpaText 'Покупки учётки')+' — '+$script:Current.Tag.Email
+    $dialog.ClientSize=[Drawing.Size]::new(720,480); $dialog.MinimumSize=[Drawing.Size]::new(620,400); $dialog.StartPosition='CenterParent'; $dialog.Font=$form.Font
+    $layout=[Windows.Forms.TableLayoutPanel]::new(); $layout.Dock='Fill'; $layout.Padding=[Windows.Forms.Padding]::new(12); $layout.RowCount=3
+    $null=$layout.RowStyles.Add([Windows.Forms.RowStyle]::new('Absolute',36)); $null=$layout.RowStyles.Add([Windows.Forms.RowStyle]::new('Percent',100)); $null=$layout.RowStyles.Add([Windows.Forms.RowStyle]::new('Absolute',46)); $dialog.Controls.Add($layout)
+    $searchRow=[Windows.Forms.TableLayoutPanel]::new(); $searchRow.Dock='Fill'; $searchRow.ColumnCount=2
+    $null=$searchRow.ColumnStyles.Add([Windows.Forms.ColumnStyle]::new('Absolute',200)); $null=$searchRow.ColumnStyles.Add([Windows.Forms.ColumnStyle]::new('Percent',100))
+    $searchLabel=[Windows.Forms.Label]::new(); $searchLabel.Text=Get-IpaText 'Поиск по названию или ID'; $searchLabel.Dock='Fill'
+    $filter=[Windows.Forms.TextBox]::new(); $filter.Dock='Fill'; $filter.AccessibleName=$searchLabel.Text; $searchRow.Controls.Add($searchLabel,0,0); $searchRow.Controls.Add($filter,1,0); $layout.Controls.Add($searchRow,0,0)
+    $view=[Windows.Forms.ListView]::new(); $view.Dock='Fill'; $view.View='Details'; $view.CheckBoxes=$true; $view.FullRowSelect=$true
+    $null=$view.Columns.Add((Get-IpaText 'Приложение'),460); $null=$view.Columns.Add('App Store ID',190); $layout.Controls.Add($view,0,1)
+    $selection=@{}; $viewState=@{Suppress=$false}; $sorted=@($Apps | Sort-Object Name)
+    $populate={
+        $viewState.Suppress=$true; $view.BeginUpdate()
+        try {
+            $view.Items.Clear(); $needle=$filter.Text.Trim()
+            foreach($app in $sorted){
+                if($needle -and $app.Name.IndexOf($needle,[StringComparison]::OrdinalIgnoreCase) -lt 0 -and $app.Id.IndexOf($needle,[StringComparison]::OrdinalIgnoreCase) -lt 0){continue}
+                $row=[Windows.Forms.ListViewItem]::new([string]$app.Name); $row.Tag=[string]$app.Id; $null=$row.SubItems.Add([string]$app.Id); $row.Checked=$selection.ContainsKey($row.Tag); $null=$view.Items.Add($row)
+            }
+        }finally{$view.EndUpdate();$viewState.Suppress=$false}
+    }
+    $view.Add_ItemChecked({param($sender,$e);if(-not $viewState.Suppress){if($e.Item.Checked){$selection[$e.Item.Tag]=$true}else{$selection.Remove($e.Item.Tag)}}})
+    $filter.Add_TextChanged($populate); & $populate
+    $buttons=[Windows.Forms.FlowLayoutPanel]::new();$buttons.Dock='Fill';$buttons.FlowDirection='RightToLeft';$layout.Controls.Add($buttons,0,2)
+    $ok=New-Button $buttons (Get-IpaText 'Добавить в список') 190; $cancel=New-Button $buttons (Get-IpaText 'Отмена') 110; $cancel.DialogResult='Cancel'; $dialog.CancelButton=$cancel
+    $ok.Add_Click({
+        try {
+            if(-not $selection.Count){return}
+            $combined=@(Get-AppEntries)
+            foreach($app in $sorted | Where-Object {$selection.ContainsKey($_.Id)}){
+                $existing=@($combined | Where-Object Id -eq $app.Id)
+                if($existing.Count){$existing[0].Selected=$true; if(-not $existing[0].Name){$existing[0].Name=$app.Name}}
+                else{$combined+=@([pscustomobject]@{Id=$app.Id;Name=$app.Name;Selected=$true})}
+            }
+            Set-AppEntries $combined -Save
+            $dialog.DialogResult='OK';$dialog.Close()
+        }catch{$null=[Windows.Forms.MessageBox]::Show($dialog,$_.Exception.Message,(Get-IpaText 'Список приложений'))}
+    })
+    try {
+        if($SmokeTestPath){
+            $dialog.Opacity=0; $dialog.ShowInTaskbar=$false; $dialog.Show(); [Windows.Forms.Application]::DoEvents()
+            $filter.Text='Removed'; [Windows.Forms.Application]::DoEvents()
+            if($view.Items.Count -ne 1 -or $view.Items[0].Tag -ne '303'){throw 'Purchase search did not find the delisted fixture.'}
+            $view.Items[0].Checked=$true; $filter.Text='nothing matches'; $filter.Text=''
+            if(-not $selection.ContainsKey('303')){throw 'Filtering lost the checked purchase.'}
+            $bitmap=[Drawing.Bitmap]::new($dialog.Width,$dialog.Height)
+            try{$dialog.DrawToBitmap($bitmap,[Drawing.Rectangle]::new(0,0,$dialog.Width,$dialog.Height));$bitmap.Save(($SmokeTestPath+'.purchases.png'),[Drawing.Imaging.ImageFormat]::Png)}finally{$bitmap.Dispose()}
+            $ok.PerformClick()
+            if(@(Get-AppEntries | ForEach-Object Id) -notcontains '303'){throw 'Selected purchase was not added to the saved list.'}
+            $script:PurchasePickerVerified=$true
+        }else{$null=$dialog.ShowDialog($form)}
+    }finally{$dialog.Dispose()}
+}
+$ownedApps.Add_Click({
+    if($script:Active){return}
+    if(-not $list.SelectedItems.Count){$null=[Windows.Forms.MessageBox]::Show($form,(Get-IpaText 'Выделите одну учётку в таблице для просмотра её покупок.'),(Get-IpaText 'Покупки учётки'));return}
+    $script:Current=$list.SelectedItems[0];$a=$script:Current.Tag
+    $options=@{AppRoot=$script:AppRoot;DataRoot=(Join-Path $script:DataRoot 'sessions');Language=(Get-IpaLanguage);Email=$a.Email;Password='';EncryptedPassword=$a.Password;Mode='purchases'}
+    $script:Bus.Cancel=$false;$script:Bus.Answer=$null;$script:Bus.AnswerReady=$false;$script:PendingPurchases=$null;$script:Secrets=@();$script:Terminal=$false;$script:StopRequested=$false
+    $script:StageText='';$script:HistoryMode=$true;$script:Active=$true;Set-Busy $true
+    $status.Text=(Get-IpaText 'Покупки учётки')+' — '+$a.Email; Add-Log $status.Text
+    $runner=$null
+    try {
+        $runner=[PowerShell]::Create();$null=$runner.AddScript('param($Path,$Options,$Bus); . $Path; Invoke-Workflow $Options $Bus').AddArgument((Join-Path $script:AppRoot 'Engine.ps1')).AddArgument($options).AddArgument($script:Bus)
+        $script:Job=@{Runner=$runner;Handle=$runner.BeginInvoke()}
+    }catch{if($runner){$runner.Dispose()};$script:Active=$false;$script:HistoryMode=$false;Set-Busy $false;Add-Log (Get-IpaText 'Не удалось запустить обработку учётки.')}
+})
+
+
 function Start-Next {
     if($script:StopRequested -or $script:Next -ge $script:Queue.Count){
         foreach($row in $script:Queue){if($row.SubItems[1].Text -eq (Get-IpaText 'В очереди')){$row.SubItems[1].Text=(Get-IpaText 'Не выполнено')}}
@@ -179,12 +247,12 @@ function Start-Next {
         $status.Text=((Get-IpaText 'Готово: {0}; ошибок: {1}{2}') -f $script:Success,$script:Failed,$(if($script:StopRequested){(Get-IpaText '; остановлено')}else{''}))
         Add-Log $status.Text; if($script:Closing){$form.Close()}; return
     }
-    $script:Current=$script:Queue[$script:Next]; $script:Next++; $script:Terminal=$false; $script:Secrets=@()
+    $script:Current=$script:Queue[$script:Next]; $script:Next++; $script:Terminal=$false; $script:Secrets=@(); $script:CurrentSuccess=0; $script:CurrentFailed=0
     $a=$script:Current.Tag
     $folderName=([regex]::Replace($a.Email,'[^a-zA-Z0-9@._-]','_'))
     if($folderName.Length -gt 70){$folderName=$folderName.Substring(0,70)}
-    $destination=Join-Path (Join-Path $script:OutputRoot $script:AppId) ($folderName+'-'+$a.Id.Substring(0,8))
-    $options=@{AppRoot=$script:AppRoot;DataRoot=(Join-Path $script:DataRoot 'sessions');Language=(Get-IpaLanguage);Email=$a.Email;Description=(Get-AccountDescription $a);Password='';EncryptedPassword=$a.Password;AppId=$script:AppId;OutputFolder=$destination;FileName='';ToolPath=''}
+    $downloads=@(foreach($id in $script:AppIds){[pscustomobject]@{AppId=$id;OutputFolder=(Join-Path (Join-Path $script:OutputRoot $id) ($folderName+'-'+$a.Id.Substring(0,8)))}})
+    $options=@{AppRoot=$script:AppRoot;DataRoot=(Join-Path $script:DataRoot 'sessions');Language=(Get-IpaLanguage);Email=$a.Email;Description=(Get-AccountDescription $a);Password='';EncryptedPassword=$a.Password;Downloads=$downloads;FileName='';ToolPath=''}
     $script:Bus.Cancel=$false; $script:Bus.Answer=$null; $script:Bus.AnswerReady=$false
     $accountLabel=$a.Email; $accountDescription=Get-AccountDescription $a
     if($accountDescription){$accountLabel=$accountDescription+' — '+$a.Email}
@@ -194,15 +262,15 @@ function Start-Next {
         $runner=[PowerShell]::Create()
         $null=$runner.AddScript('param($Path,$Options,$Bus); . $Path; Invoke-Workflow $Options $Bus').AddArgument((Join-Path $script:AppRoot 'Engine.ps1')).AddArgument($options).AddArgument($script:Bus)
         $handle=$runner.BeginInvoke(); $script:Job=@{Runner=$runner;Handle=$handle}
-    }catch{if($runner){$runner.Dispose()}; $script:Current.SubItems[1].Text=(Get-IpaText 'Ошибка запуска'); $script:Failed++; Add-Log (Get-IpaText 'Не удалось запустить обработку учётки.')}
+    }catch{if($runner){$runner.Dispose()}; $script:Current.SubItems[1].Text=(Get-IpaText 'Ошибка запуска'); $script:Failed+=$script:AppIds.Count; Add-Log (Get-IpaText 'Не удалось запустить обработку учётки.')}
 }
 $start.Add_Click({
     if($script:Active){return}
-    try{$script:AppId=Resolve-AppId $query.Text}catch{$null=[Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,(Get-IpaText 'Приложение'));return}
+    try{$script:AppIds=@(Get-AppEntries | Where-Object Selected | ForEach-Object Id); if(-not $script:AppIds.Count){throw (Get-IpaText 'Отметьте приложения галочками.')}; if($script:AppListReadError){throw $script:AppListReadError}}catch{$null=[Windows.Forms.MessageBox]::Show($form,$_.Exception.Message,(Get-IpaText 'Приложение'));return}
     $script:Queue=@($list.Items | Where-Object Checked)
     if(-not $script:Queue.Count){$null=[Windows.Forms.MessageBox]::Show($form,(Get-IpaText 'Отметьте учётки галочками.'),(Get-IpaText 'Учётки'));return}
     foreach($row in $script:Queue){$row.SubItems[1].Text=(Get-IpaText 'В очереди')}
-    $script:Next=0; $script:Success=0; $script:Failed=0; $script:StopRequested=$false; $script:Active=$true
+    $script:HistoryMode=$false; $script:Next=0; $script:Success=0; $script:Failed=0; $script:StopRequested=$false; $script:Active=$true
     Set-Busy $true; $log.Clear(); Start-Next
 })
 $timer=[Windows.Forms.Timer]::new(); $timer.Interval=150
@@ -212,22 +280,40 @@ $timer.Add_Tick({
         $eventItem=$null
         while($script:Bus.Events.TryDequeue([ref]$eventItem)){
             switch($eventItem.Kind){
-                'status' {$script:Current.SubItems[1].Text=[string]$eventItem.Data}
-                'log' {} # Keep the journal focused on each account's result.
+                'status' {
+                    $text=[string]$eventItem.Data; $script:Current.SubItems[1].Text=$text
+                    $script:StageText=$text; $script:StageStarted=[DateTime]::UtcNow
+                    $status.Text=$text; Add-Log $text
+                }
+                'log' {Add-Log ([string]$eventItem.Data)}
                 'code' {if(-not $script:StopRequested){Show-Code ([string]$eventItem.Data)}}
-                'done' {$script:Terminal=$true; $script:Success++; $script:Current.SubItems[1].Text=(Get-IpaText 'IPA сохранён'); Add-Log ((Get-IpaText 'Сохранён: ')+$eventItem.Data.Path)}
-                'error' {$script:Terminal=$true; $script:Failed++; $script:Current.SubItems[1].Text=(Get-IpaText 'Ошибка — см. журнал'); Add-Log ((Get-IpaText 'Ошибка: ')+$eventItem.Data)}
-                'cancelled' {$script:Terminal=$true; $script:Current.SubItems[1].Text=(Get-IpaText 'Отменено')}
+                'app-start' {$script:CurrentAppId=[string]$eventItem.Data; Add-Log ($script:Current.Tag.Email+' — App ID '+$script:CurrentAppId)}
+                'app-done' {$script:Success++; $script:CurrentSuccess++; Add-Log ((Get-IpaText 'Сохранён: ')+$eventItem.Data.Path)}
+                'app-error' {$script:Failed++; $script:CurrentFailed++; Add-Log ('App ID '+$eventItem.Data.AppId+' — '+(Get-IpaText 'Ошибка: ')+$eventItem.Data.Message)}
+                'batch-done' {$script:Terminal=$true; $script:Current.SubItems[1].Text=((Get-IpaText 'Скачано: {0}; ошибок: {1}') -f $script:CurrentSuccess,$script:CurrentFailed)}
+                'purchases' {$script:Terminal=$true; $status.Text=Get-IpaText 'Список получен'; $script:PendingPurchases=@($eventItem.Data); $script:Current.SubItems[1].Text=(Get-IpaText 'Список получен')}
+                'error' {$script:Terminal=$true; $status.Text=Get-IpaText 'Ошибка — см. журнал'; if(-not $script:HistoryMode){$script:Failed+=($script:AppIds.Count-$script:CurrentSuccess-$script:CurrentFailed)}; $script:Current.SubItems[1].Text=(Get-IpaText 'Ошибка — см. журнал'); Add-Log ((Get-IpaText 'Ошибка: ')+$eventItem.Data)}
+                'cancelled' {$script:Terminal=$true; $status.Text=Get-IpaText 'Отменено'; $script:Current.SubItems[1].Text=(Get-IpaText 'Отменено')}
                 default {Stop-Queue; Add-Log (Get-IpaText 'Неожиданный запрос. Очередь остановлена.')}
             }
+        }
+        if($script:Active -and $script:HistoryMode -and -not $script:Terminal -and -not $script:StopRequested -and $script:StageText){
+            $elapsed=[int]([DateTime]::UtcNow-$script:StageStarted).TotalSeconds
+            $status.Text=$script:StageText+'  '+((Get-IpaText '{0} с') -f $elapsed)
         }
         if($script:Job -and $script:Job.Handle.IsCompleted){
             if(-not $script:Bus.Events.IsEmpty){return}
             try{$null=$script:Job.Runner.EndInvoke($script:Job.Handle)}catch{}
-            if(-not $script:Terminal){$script:Failed++; $script:Current.SubItems[1].Text=(Get-IpaText 'Ошибка'); Add-Log (Get-IpaText 'Обработка учётки завершилась без результата.')}
+            if(-not $script:Terminal){if(-not $script:HistoryMode){$script:Failed+=($script:AppIds.Count-$script:CurrentSuccess-$script:CurrentFailed)}; $script:Current.SubItems[1].Text=(Get-IpaText 'Ошибка'); Add-Log (Get-IpaText 'Обработка учётки завершилась без результата.')}
             $script:Job.Runner.Dispose(); $script:Job=$null; $script:Bus.Answer=$null; $script:Secrets=@()
         }
-        if($script:Active -and -not $script:Job){Start-Next}
+        if($script:Active -and -not $script:Job){
+            if($script:HistoryMode){
+                $script:Active=$false; $script:HistoryMode=$false; Set-Busy $false
+                if(-not $script:Closing -and $null -ne $script:PendingPurchases){Show-Purchases $script:PendingPurchases; $script:PendingPurchases=$null}
+                if($script:Closing){$form.Close()}
+            }else{Start-Next}
+        }
     } finally {if(-not $form.IsDisposed){$timer.Start()}}
 })
 $form.Add_FormClosing({param($sender,$eventArgs); if($script:Active){$eventArgs.Cancel=$true; $script:Closing=$true; Stop-Queue}})
@@ -243,10 +329,23 @@ try {
         }
         Set-Busy $true
         if($languagePicker.Enabled){throw 'Language selector must be disabled while processing.'}
+        if($appsList.Enabled -or $addApp.Enabled -or $ownedApps.Enabled){throw 'App list must be disabled while processing.'}
         Set-Busy $false
-        $state=@{Language=(Get-IpaLanguage);Title=$title.Text;Download=$start.Text;Add=$add.Text;OpenFolder=$openFolder.Text;Status=$status.Text;SwitchVerified=$true;LanguageDisabledWhileBusy=$true}
+        $addApp.PerformClick()
+        $manual=@($appsList.Items | Where-Object {$_.Tag.Id -eq '404'})[0]
+        $manual.Selected=$true; $editApp.PerformClick()
+        $manual=@($appsList.Items | Where-Object {$_.Tag.Id -eq '404'})[0]
+        if($manual.Tag.Name -ne 'Edited App'){throw 'App editor did not update the name.'}
+        $manual.Checked=$false
+        if(@(Read-DownloadEntries $script:DownloadListPath | Where-Object Id -eq '404')[0].Selected){throw 'App selection was not saved.'}
+        $manual.Selected=$true; $deleteApp.PerformClick()
+        if(@(Get-AppEntries | Where-Object Id -eq '404').Count){throw 'App delete did not remove the row.'}
+        $script:Current=$list.Items[0]
+        Show-Purchases @([pscustomobject]@{Id='101';Name='Example App'},[pscustomobject]@{Id='303';Name='Removed App'})
+        if([IO.File]::Exists($SmokeTestPath+'.error.txt')){throw [IO.File]::ReadAllText($SmokeTestPath+'.error.txt')}
+        $state=@{Language=(Get-IpaLanguage);Title=$title.Text;Download=$start.Text;Add=$add.Text;OpenFolder=$openFolder.Text;Status=$status.Text;SwitchVerified=$true;LanguageDisabledWhileBusy=$true;AppEditorVerified=$true;PurchasePickerVerified=$script:PurchasePickerVerified;AppList=(Read-DownloadList $script:DownloadListPath)}
         [IO.File]::WriteAllText(($SmokeTestPath+'.json'),($state | ConvertTo-Json),[Text.UTF8Encoding]::new($false))
         $bitmap=[Drawing.Bitmap]::new($form.Width,$form.Height)
         try{$form.DrawToBitmap($bitmap,[Drawing.Rectangle]::new(0,0,$form.Width,$form.Height)); $bitmap.Save($SmokeTestPath,[Drawing.Imaging.ImageFormat]::Png)}finally{$bitmap.Dispose()}
     }else{$timer.Start(); $null=$form.ShowDialog()}
-} finally {$timer.Stop(); $timer.Dispose(); $form.Dispose(); $script:StoreLock.Dispose()}
+} finally {$script:UpdatingApps=$true; $timer.Stop(); $timer.Dispose(); $form.Dispose(); $script:StoreLock.Dispose()}

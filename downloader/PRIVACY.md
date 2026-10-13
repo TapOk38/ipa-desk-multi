@@ -8,9 +8,11 @@ Verification codes are not saved. Each operation uses a temporary profile that i
 
 The language preference is stored separately in `language.txt` in the same application data folder.
 
+App IDs, names and selection flags are stored in `download-list.json` in the same data folder. Purchase history is held in memory; only the entries added to the download list are saved.
+
 ## Network access
 
-The ipatool-cpp component is downloaded from GitHub during initial setup. It contacts Apple servers for authentication, license acquisition and downloads. Apple IDs are not sent to GitHub. The interface does not collect telemetry.
+The local test EXE includes ipatool-cpp. Source checkouts may download missing components during setup. It contacts Apple servers for authentication, license acquisition and downloads. Purchase history is requested from Apple using the same temporary session. Invoice details are processed in memory; only app IDs and names selected by the user are saved in the download list. Apple IDs are not sent to GitHub. The interface does not collect telemetry.
 
 ## IPA files and logs
 
@@ -20,6 +22,6 @@ Passwords and verification codes are passed to ipatool-cpp as process arguments.
 
 ## EXE version
 
-Components are extracted to `%LOCALAPPDATA%\IPA-Desk-Multi\app`. IPA files are saved to **Downloads → IPA Desk Multi**. Account data is stored separately and retained when the EXE is updated.
+Components are extracted to `%LOCALAPPDATA%\IPA-Desk-Multi\app`. IPA files are saved to **Downloads → TapOk IPA Downloader**. Account data is stored separately and retained when the EXE is updated.
 
 [TapOk IPA Downloader guide](README.md)

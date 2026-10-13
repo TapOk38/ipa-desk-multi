@@ -14,9 +14,9 @@ using System.Windows.Forms;
 [assembly: AssemblyTitle("TapOk IPA Downloader")]
 [assembly: AssemblyDescription("Download App Store applications as IPA files")]
 [assembly: AssemblyProduct("TapOk IPA Downloader")]
-[assembly: AssemblyVersion("0.4.0.0")]
-[assembly: AssemblyFileVersion("0.4.0.3")]
-[assembly: AssemblyInformationalVersion("0.4.0-beta.3")]
+[assembly: AssemblyVersion("0.5.0.0")]
+[assembly: AssemblyFileVersion("0.5.0.5")]
+[assembly: AssemblyInformationalVersion("0.5.0-beta.1")]
 
 internal static class Launcher
 {
@@ -52,7 +52,7 @@ internal static class Launcher
             Directory.CreateDirectory(dataRoot);
             string runtimeRoot = Path.Combine(dataRoot, "app", PayloadInfo.Sha256.Substring(0, 32));
             ExtractPayload(runtimeRoot);
-            string outputRoot = testRoot == null ? Path.Combine(GetDownloads(), "IPA Desk Multi") : Path.Combine(testRoot, "Downloads");
+            string outputRoot = Path.Combine(testRoot == null ? GetDownloads() : Path.Combine(testRoot, "Downloads"), "TapOk IPA Downloader");
             string powershell = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"System32\WindowsPowerShell\v1.0\powershell.exe");
             if (!File.Exists(powershell)) throw new FileNotFoundException(T("В Windows не найден Windows PowerShell.", "Windows PowerShell was not found."));
             NormalizePathEnvironment();

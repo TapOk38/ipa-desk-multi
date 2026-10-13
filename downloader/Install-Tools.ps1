@@ -4,11 +4,11 @@ param([string]$ArchivePath)
 # Fixed release and hashes, never execute downloaded PowerShell or select 'latest'.
 function Get-IpaToolSpec {
     return @{
-        Version='1.0.9'
-        Url='https://github.com/Sorvigolova/ipatool/releases/download/1.0.9/windows_amd64_ipatool-cpp.zip'
-        ArchiveSha256='264BE72D4B70E8A5540647277690FB47FCF1D7D6178ACF84629E93C0E564A331'
+        Version='1.1.6'
+        Url='https://github.com/Sorvigolova/ipatool/releases/download/1.1.6/windows_amd64_ipatool-cpp.zip'
+        ArchiveSha256='18313C41400958F467CA177B7DFEC7C7A642CC3D1E18E73B2452F9D4E95BB841'
         Entry='ipatool-cpp-windows-amd64.exe'
-        ExeSha256='394E8953D317F39645F03A1BFE039D0DC0FFC04291EB9D0F535BD1BBCA4F4581'
+        ExeSha256='F053593059A5ADA859F2D28F8707BEB8D53F02B7830A9895C5913653A23A0CE2'
     }
 }
 function Test-ToolCancellation([scriptblock]$Check) {
@@ -18,7 +18,7 @@ function Receive-PinnedTool([string]$Url,[string]$Destination,[scriptblock]$Canc
     Add-Type -AssemblyName System.Net.Http
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     $client=[Net.Http.HttpClient]::new(); $client.Timeout=[TimeSpan]::FromMinutes(5)
-    $client.DefaultRequestHeaders.UserAgent.ParseAdd('TapOk-IPA-Downloader/0.4.0-beta.3')
+    $client.DefaultRequestHeaders.UserAgent.ParseAdd('TapOk-IPA-Downloader/0.5.0-beta.1')
     $cts=[Threading.CancellationTokenSource]::new(); $response=$null; $inputStream=$null; $outputStream=$null
     try {
         $request=$client.GetAsync($Url,[Net.Http.HttpCompletionOption]::ResponseHeadersRead,$cts.Token)
@@ -54,7 +54,7 @@ function Ensure-IpaTool([string]$AppRoot,[string]$LocalArchive='',[scriptblock]$
     $folder=Join-Path $AppRoot ('tools\cpp-'+$spec.Version)
     $exe=Join-Path $folder 'ipatool-cpp.exe'
     if([IO.File]::Exists($exe)){
-        if((Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw (Get-IpaText 'Компонент IPATool повреждён или имеет другую версию. Удалите только tools\cpp-1.0.9 и повторите запуск.')}
+        if((Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash -ne $spec.ExeSha256){throw (Get-IpaText 'Компонент IPATool повреждён или имеет другую версию. Удалите только tools\cpp-1.1.6 и повторите запуск.')}
         return $exe
     }
     $null=[IO.Directory]::CreateDirectory($folder)

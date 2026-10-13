@@ -5,7 +5,7 @@
 
 Downloads apps from the App Store on Windows. Supports adding multiple iCloud accounts.
 
-**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe)** · 0.4.0-beta.3
+**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.0-beta.1.exe)** · 0.5.0-beta.1
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Windows 10/11 x64, an internet connection and an Apple ID configured for the App
 3. Paste an App Store link or app ID. Select the accounts and click **Download IPA**.
 4. Enter a verification code if Apple requests it. When the download finishes, click **Open folder**.
 
-Accounts are processed sequentially. Files are saved to **Downloads → IPA Desk Multi**. Each filename includes the app, version, Apple ID and account description.
+Accounts are processed sequentially. Files are saved to **Downloads → TapOk IPA Downloader**. Each filename includes the app, version, Apple ID and account description.
 
 Required components are downloaded automatically on first use.
 
@@ -38,7 +38,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 Скачивает приложения из App Store на Windows. Поддерживает добавление нескольких учётных записей iCloud.
 
-**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Downloader-0.4.0-beta.3.exe)** · 0.4.0-beta.3
+**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.0-beta.1.exe)** · 0.5.0-beta.1
 
 ## Требования
 
@@ -51,7 +51,7 @@ Windows 10/11 x64, интернет и Apple ID с настроенным App St
 3. Вставьте ссылку App Store или ID приложения. Отметьте учётные записи и нажмите **«Скачать IPA»**.
 4. Введите код подтверждения, если Apple его запросит. После завершения нажмите **«Открыть папку»**.
 
-Учётные записи обрабатываются последовательно. Файлы сохраняются в **Загрузки → IPA Desk Multi**. В имени IPA указаны приложение, версия, Apple ID и описание учётной записи.
+Учётные записи обрабатываются последовательно. Файлы сохраняются в **Загрузки → TapOk IPA Downloader**. В имени IPA указаны приложение, версия, Apple ID и описание учётной записи.
 
 При первом использовании необходимые компоненты загружаются автоматически.
 

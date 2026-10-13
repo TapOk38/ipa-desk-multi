@@ -5,7 +5,7 @@
 
 Installs IPA files on an iPhone from Windows over USB.
 
-**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Windows.exe)** · 1.1.0-beta.3
+**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows.exe)** · 1.1.0-beta.3
 
 ## Requirements
 
@@ -39,7 +39,7 @@ To install on another iPhone, reconnect the cable and click **Refresh**. Connect
 
 Устанавливает IPA на iPhone с Windows через USB.
 
-**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.4/TapOk-IPA-Installer-Windows.exe)** · 1.1.0-beta.3
+**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows.exe)** · 1.1.0-beta.3
 
 ## Требования
 

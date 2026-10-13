@@ -32,11 +32,13 @@ $unicodeToolFolder=Join-Path $test 'Программа с кириллицей'
 $null=[IO.Directory]::CreateDirectory($unicodeToolFolder)
 Copy-Item -LiteralPath $fake -Destination $unicodeToolFolder
 $fake=Join-Path $unicodeToolFolder 'fake.exe'
-function Run-Case([string]$Scenario,[bool]$Cancel=$false,[string]$Email='test@example.invalid',[string]$FolderPrefix='', [string]$Description='', [string]$EnginePath=(Join-Path $root 'Engine.ps1'), [string]$Language='ru'){
+function Run-Case([string]$Scenario,[bool]$Cancel=$false,[string]$Email='test@example.invalid',[string]$FolderPrefix='', [string]$Description='', [string]$EnginePath=(Join-Path $root 'Engine.ps1'), [string]$Language='ru',[string[]]$AppIds=@(),[switch]$History,[switch]$CancelAfterFirst){
     $env:IPA_DESK_TEST_SCENARIO=$Scenario
     $folder=Join-Path $test ($FolderPrefix+[guid]::NewGuid().ToString('N'))
     $null=[IO.Directory]::CreateDirectory($folder);[IO.File]::WriteAllText((Join-Path $folder ('app-101_'+$Email+'.ipa')),'existing')
     $options=@{AppRoot=$root;DataRoot=(Join-Path $test 'sessions');Language=$Language;Email=$Email;Description=$Description;EncryptedPassword=$cipher;Password='';AppId='101';OutputFolder=$folder;FileName='';ToolPath=$fake}
+    if($AppIds.Count){$options.Downloads=@(foreach($id in $AppIds){[pscustomobject]@{AppId=$id;OutputFolder=(Join-Path $folder $id)}})}
+    if($History){$options.Mode='purchases'}
     $bus=[hashtable]::Synchronized(@{Events=[Collections.Concurrent.ConcurrentQueue[object]]::new();Cancel=$false;Answer=$null;AnswerReady=$false})
     $events=[Collections.Generic.List[object]]::new();$runner=[PowerShell]::Create()
     $null=$runner.AddScript('param($Path,$Options,$Bus); . $Path; function Resolve-CppTool { return $script:Options.ToolPath }; Invoke-Workflow $Options $Bus').AddArgument($EnginePath).AddArgument($options).AddArgument($bus)
@@ -46,9 +48,10 @@ function Run-Case([string]$Scenario,[bool]$Cancel=$false,[string]$Email='test@ex
             $event=$null
             while($bus.Events.TryDequeue([ref]$event)){
                 $events.Add($event)
+                if($CancelAfterFirst -and $event.Kind -eq 'app-done'){$bus.Cancel=$true}
                 if($event.Kind -eq 'code'){if($Cancel){$bus.Cancel=$true}else{$bus.Answer='123456';$bus.AnswerReady=$true}}
             }
-            if($Scenario -in @('slow','download-slow') -and $watch.Elapsed.TotalSeconds -gt 2){$bus.Cancel=$true}
+            if($Scenario -in @('slow','download-slow','owned-cancel') -and $watch.Elapsed.TotalSeconds -gt 2){$bus.Cancel=$true}
             if($watch.Elapsed.TotalSeconds -gt 25){$bus.Cancel=$true;throw 'Timeout'}
             Start-Sleep -Milliseconds 20
         }while(-not $handle.IsCompleted -or -not $bus.Events.IsEmpty)
@@ -106,5 +109,42 @@ try{
     Assert (@($english.Events | Where-Object { $_.Kind -eq 'status' -and $_.Data -eq 'Downloading IPA…' }).Count -eq 1) 'English download status reaches the UI event queue'
     $englishError=Run-Case 'license' -Language 'en'
     Assert (@($englishError.Events | Where-Object { $_.Kind -eq 'error' -and $_.Data -like 'Download failed. Apple did not confirm a license*' }).Count -eq 1) 'English application error reaches the UI event queue'
+    $beforeAudit=@(Get-Content -LiteralPath $env:IPA_DESK_TEST_AUDIT).Count
+    $batch=Run-Case 'batch-mixed' -AppIds @('101','202','303')
+    Assert (@($batch.Events | Where-Object Kind -eq app-done).Count -eq 2) 'Batch continues after an unavailable app and saves both other apps'
+    Assert (@($batch.Events | Where-Object Kind -eq app-error).Count -eq 1) 'Batch reports failure against the correct app'
+    Assert (@($batch.Events | Where-Object Kind -eq code).Count -eq 1) 'One 2FA exchange for the full account batch'
+    Assert ((@(Get-Content -LiteralPath $env:IPA_DESK_TEST_AUDIT).Count-$beforeAudit) -eq 1) 'Batch uses one authenticated session'
+    $summary=@($batch.Events | Where-Object Kind -eq batch-done)[0].Data
+    Assert ($summary.Succeeded -eq 2 -and $summary.Failed -eq 1) 'Batch totals distinguish successful and failed downloads'
+    $done=@($batch.Events | Where-Object Kind -eq app-done)
+    Assert ($done[0].Data.AppId -eq '101' -and $done[1].Data.AppId -eq '303') 'Batch keeps app order and skips only the failed app'
+    Assert ((Split-Path (Split-Path $done[1].Data.Path -Parent) -Leaf) -eq '303') 'Each app has its own destination folder'
+    Assert (-not $batch.Options.Password -and -not $batch.Options.Passphrase) 'Batch clears credentials after all downloads'
+    $batch=Run-Case 'batch-ok' -AppIds @('101')
+    Assert (@($batch.Events | Where-Object Kind -eq app-done).Count -eq 1) 'A single-entry batch works'
+    $batch=Run-Case 'batch-ok' -AppIds @('101','202','303') -CancelAfterFirst
+    Assert (@($batch.Events | Where-Object Kind -eq cancelled).Count -eq 1 -and @($batch.Events | Where-Object Kind -eq batch-done).Count -eq 0) 'Cancellation stops a batch without reporting it complete'
+    $batch=Run-Case 'login-fail' -AppIds @('101','202')
+    Assert (@($batch.Events | Where-Object Kind -eq app-start).Count -eq 0 -and @($batch.Events | Where-Object Kind -eq error).Count -eq 1) 'Login failure starts no downloads'
+    $history=Run-Case 'owned-pages' -History
+    $owned=@($history.Events | Where-Object Kind -eq purchases)
+    Assert ($owned.Count -eq 1 -and @($owned[0].Data).Count -eq 101) 'Purchase history merges years and deduplicates apps without a public store search'
+    Assert (@($owned[0].Data | Where-Object Id -eq '909').Count -eq 0 -and $owned[0].Data[0].Name -eq 'App 1') 'Non-app purchases are excluded and latest app name is preserved'
+    Assert (@($history.Events | Where-Object { $_.Kind -eq 'log' -and $_.Data -like 'Проверен * год.*' }).Count -eq ([DateTime]::Now.Year-2007)) 'Every year is queried, including empty years back to 2008'
+    Assert (@($history.Events | Where-Object Kind -eq done).Count -eq 0) 'Reading purchase history does not download an app'
+    $history=Run-Case 'owned-unknown' -History
+    $owned=@($history.Events | Where-Object Kind -eq purchases)
+    Assert ($owned.Count -eq 1 -and @($owned[0].Data).Count -eq 1 -and $owned[0].Data[0].Id -eq '404') 'Old delisted purchase remains visible across empty years without a public lookup'
+    $history=Run-Case 'owned-empty' -History
+    $owned=@($history.Events | Where-Object Kind -eq purchases)
+    Assert ($owned.Count -eq 1 -and @($owned[0].Data).Count -eq 0) 'Empty purchase history is a valid response'
+    foreach($scenario in @('owned-offline','owned-late-error','owned-malformed','owned-invalid-shape','wrong-account')){
+        $history=Run-Case $scenario -History
+        Assert (@($history.Events | Where-Object Kind -eq purchases).Count -eq 0 -and @($history.Events | Where-Object Kind -eq error).Count -eq 1) "$scenario never returns another account or partial history"
+        Assert (($history.Events | ConvertTo-Json -Depth 5) -notmatch 'PRIVATE-INVOICE-DATA') "$scenario does not expose raw invoice data"
+    }
+    $history=Run-Case 'owned-cancel' -History
+    Assert (@($history.Events | Where-Object Kind -eq cancelled).Count -eq 1 -and @($history.Events | Where-Object Kind -eq purchases).Count -eq 0 -and $history.Seconds -lt 8) 'Cancelling history terminates the request without returning a partial list'
     Write-Output "$script:Count checks passed; real DPAPI, simulated Apple responses."
 }finally{$env:IPA_DESK_TEST_SCENARIO=$null;$env:IPA_DESK_TEST_AUDIT=$null;$env:IPA_DESK_TEST_DOWNLOAD_AUDIT=$null}
