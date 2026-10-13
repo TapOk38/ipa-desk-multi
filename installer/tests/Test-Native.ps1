@@ -7,7 +7,7 @@ $compiler=Join-Path $env:SystemRoot 'Microsoft.NET\Framework64\v4.0.30319\csc.ex
 if(-not $ExePath){
     # Offline CI uses an empty, hashed ZIP; only smoke mode opens this test UI.
     $ExePath=Join-Path $root 'TapOk-IPA-Installer-Windows.exe'
-    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
     $payload=Join-Path $root 'empty-components.zip'
     $emptyZip=[IO.Compression.ZipFile]::Open($payload,[IO.Compression.ZipArchiveMode]::Create)
     $emptyZip.Dispose()

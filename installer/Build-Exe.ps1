@@ -1,7 +1,7 @@
 ﻿#requires -Version 5.1
 param([Parameter(Mandatory=$true)][string]$Destination)
 $ErrorActionPreference='Stop'
-Add-Type -AssemblyName System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
 $Destination=[IO.Path]::GetFullPath($Destination)
 $null=[IO.Directory]::CreateDirectory($Destination)
 $work=Join-Path $PSScriptRoot ('.build/'+[guid]::NewGuid().ToString('N'))
