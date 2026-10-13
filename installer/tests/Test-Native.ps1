@@ -47,7 +47,7 @@ $assembly=[Reflection.Assembly]::LoadFile($ExePath)
 if(($assembly.GetManifestResourceNames() -join ',') -ne 'TapOk.USB.Components.zip'){throw 'Unexpected embedded resources'}
 if(@($assembly.GetReferencedAssemblies() | Where-Object {$_.Name -match 'Automation|PowerShell'}).Count -gt 0){throw 'Unexpected PowerShell reference'}
 # Preserve an Internet zone marker during both GUI runs. Never unblock or change Defender settings.
-[IO.File]::WriteAllText(($ExePath+':Zone.Identifier'),"[ZoneTransfer]`r`nZoneId=3`r`n")
+Set-Content -LiteralPath $ExePath -Stream Zone.Identifier -Value "[ZoneTransfer]`r`nZoneId=3`r`n" -Encoding ASCII
 foreach($language in @('en','ru')){
     $profile=Join-Path $root ('smoke-'+$language)
     $null=[IO.Directory]::CreateDirectory($profile)
@@ -64,5 +64,5 @@ foreach($language in @('en','ru')){
     if(Test-Path -LiteralPath $runtime){throw 'Runtime not removed after normal exit'}
     Write-Output "PASS: $language GUI, Internet marker, TEMP-only extraction, cleanup, no USB calls"
 }
-if(-not ([IO.File]::ReadAllText($ExePath+':Zone.Identifier').Contains('ZoneId=3'))){throw 'Internet marker changed'}
+if(-not ((Get-Content -LiteralPath $ExePath -Stream Zone.Identifier -Raw).Contains('ZoneId=3'))){throw 'Internet marker changed'}
 Write-Output "Results: $root"
