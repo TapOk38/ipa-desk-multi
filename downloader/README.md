@@ -5,7 +5,7 @@
 
 Downloads apps from the App Store on Windows. Supports adding multiple iCloud accounts.
 
-**Downloader download temporarily unavailable:** version 0.5.1-test.1 was also blocked as a virus during download on a user PC. The earlier on-demand scan did not reproduce this detection. The cause is unresolved; a false positive has not been confirmed.
+[Download EXE — 0.6.0-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.0-test.1.exe). Test build; resolution of the earlier Defender detection is not yet confirmed.
 
 ## Requirements
 
@@ -14,8 +14,8 @@ Windows 10/11 x64, an internet connection and an Apple ID configured for the App
 ## Usage
 
 1. Run the EXE. Select the interface language if needed.
-2. Click **Add** and enter the Apple ID, password and account description.
-3. Paste an App Store link or app ID. Select the accounts and click **Download IPA**.
+2. Click **Add account** and enter the Apple ID, password and account description.
+3. Click **Add app** to enter an App Store link or ID, or select apps through **Purchase history**. Check the apps and accounts, then click **Download IPA**.
 4. Enter a verification code if Apple requests it. When the download finishes, click **Open folder**.
 
 Accounts are processed sequentially. Files are saved to **Downloads → TapOk IPA Downloader**. Each filename includes the app, version, Apple ID and account description.
@@ -38,7 +38,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 Скачивает приложения из App Store на Windows. Поддерживает добавление нескольких учётных записей iCloud.
 
-**Скачивание Downloader временно недоступно:** версия 0.5.1-test.1 также заблокирована как вирус при скачивании на ПК пользователя. Предыдущее отдельное сканирование не воспроизвело срабатывание. Причина не установлена; ложное срабатывание не подтверждено.
+[Скачать EXE — 0.6.0-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.0-test.1.exe). Тестовая сборка; устранение прежнего срабатывания Defender пока не подтверждено.
 
 ## Требования
 
@@ -47,8 +47,8 @@ Windows 10/11 x64, интернет и Apple ID с настроенным App St
 ## Использование
 
 1. Запустите EXE. Для русского интерфейса выберите **Русский** в списке **English**.
-2. Нажмите **«Добавить»**, укажите Apple ID, пароль и описание учётной записи.
-3. Вставьте ссылку App Store или ID приложения. Отметьте учётные записи и нажмите **«Скачать IPA»**.
+2. Нажмите **«Добавить учётку»**, укажите Apple ID, пароль и описание учётной записи.
+3. Нажмите **«Добавить приложение»** и укажите ссылку App Store или ID либо выберите приложения через **«Историю покупок»**. Отметьте приложения и учётки, затем нажмите **«Скачать IPA»**.
 4. Введите код подтверждения, если Apple его запросит. После завершения нажмите **«Открыть папку»**.
 
 Учётные записи обрабатываются последовательно. Файлы сохраняются в **Загрузки → TapOk IPA Downloader**. В имени IPA указаны приложение, версия, Apple ID и описание учётной записи.

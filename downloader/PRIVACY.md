@@ -22,6 +22,6 @@ Passwords and verification codes are passed to ipatool-cpp as process arguments.
 
 ## EXE version
 
-Components are extracted to `%LOCALAPPDATA%\IPA-Desk-Multi\app`. IPA files are saved to **Downloads → TapOk IPA Downloader**. Account data is stored separately and retained when the EXE is updated.
+The native EXE does not extract or execute PowerShell scripts. Earlier versions may have left a script cache under `%LOCALAPPDATA%\IPA-Desk-Multi\app`; this version does not use it. The pinned download component uses the separate cache described above. IPA files are saved to **Downloads → TapOk IPA Downloader**. Account data is stored separately and retained when the EXE is updated.
 
 [TapOk IPA Downloader guide](README.md)
