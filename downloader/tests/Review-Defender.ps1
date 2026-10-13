@@ -17,11 +17,16 @@ try {
     function Scan-Target($Name,$Path){
         $scanStart=Get-Date
         $before=if([IO.File]::Exists($Path)){(Get-FileHash -LiteralPath $Path).Hash}else{$null}
-        & $scanner -Scan -ScanType 3 -File $Path 2>&1 | Out-File (Join-Path $ReportRoot ($Name+'.txt')) -Encoding utf8
+        # This diagnostic mode scans archives and ignores runner file exclusions.
+        # It does not change Defender settings or execute any scanned file.
+        $scanLog=Join-Path $ReportRoot ($Name+'.txt')
+        & $scanner -Scan -ScanType 3 -File $Path -DisableRemediation 2>&1 | Out-File $scanLog -Encoding utf8
         $exitCode=$LASTEXITCODE
+        $scanText=[IO.File]::ReadAllText($scanLog)
+        $completed=($scanText -match 'found no threats' -and $scanText -notmatch '(?i)skipped')
         $detections=@(Get-MpThreatDetection | Where-Object InitialDetectionTime -ge $scanStart | Select-Object ThreatID,ActionSuccess,InitialDetectionTime,Resources)
-        $report.Scans+=@{Name=$Name;ExitCode=$exitCode;SHA256=$before;Detections=$detections}
-        if($exitCode -ne 0 -or $detections.Count){throw "Defender did not clear $Name. See scan report."}
+        $report.Scans+=@{Name=$Name;ExitCode=$exitCode;SHA256=$before;Detections=$detections;ScanCompleted=$completed;Output=$scanText}
+        if($exitCode -ne 0 -or $detections.Count -or -not $completed){throw "Defender did not clear $Name. See scan report."}
     }
     Scan-Target 'source' $root
     . (Join-Path $root 'Install-Tools.ps1')
