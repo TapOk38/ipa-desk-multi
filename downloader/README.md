@@ -5,7 +5,7 @@
 
 Downloads apps from the App Store on Windows. Supports adding multiple iCloud accounts.
 
-[Download EXE — 0.5.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.1-test.1.exe)
+**Downloader download temporarily unavailable:** version 0.5.1-test.1 was also blocked as a virus during download on a user PC. The earlier on-demand scan did not reproduce this detection. The cause is unresolved; a false positive has not been confirmed.
 
 ## Requirements
 
@@ -38,7 +38,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 Скачивает приложения из App Store на Windows. Поддерживает добавление нескольких учётных записей iCloud.
 
-[Скачать EXE — 0.5.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.1-test.1.exe)
+**Скачивание Downloader временно недоступно:** версия 0.5.1-test.1 также заблокирована как вирус при скачивании на ПК пользователя. Предыдущее отдельное сканирование не воспроизвело срабатывание. Причина не установлена; ложное срабатывание не подтверждено.
 
 ## Требования
 
