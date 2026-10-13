@@ -218,9 +218,10 @@ function Test-AuthCodeRequired($Result) {
     return $false
 }
 function Resolve-CppTool {
-    $candidate=Join-Path $script:Options.AppRoot 'tools\cpp-1.1.6\ipatool-cpp.exe'
+    $toolRoot=if($script:Options.ContainsKey('ComponentRoot')){$script:Options.ComponentRoot}else{$script:Options.AppRoot}
+    $candidate=Join-Path $toolRoot ('tools\cpp-'+(Get-IpaToolSpec).Version+'\ipatool-cpp.exe')
     if(-not [IO.File]::Exists($candidate)){Send-Event 'status' (Get-IpaText 'Загрузка компонента IPATool с GitHub…')}
-    return Ensure-IpaTool -AppRoot $script:Options.AppRoot -Cancelled { $script:Bus.Cancel }
+    return Ensure-IpaTool -AppRoot $toolRoot -Cancelled { $script:Bus.Cancel }
 }
 function Connect-Apple {
     if (-not $script:Options.Password) {

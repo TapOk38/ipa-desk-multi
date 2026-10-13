@@ -6,7 +6,7 @@ $null=Ensure-IpaTool -AppRoot $PSScriptRoot
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.IO.Compression
 $null=[IO.Directory]::CreateDirectory($Destination)
-$zipPath=Join-Path $Destination 'TapOk-IPA-Downloader-0.5.0-beta.1-windows.zip'
+$zipPath=Join-Path $Destination 'TapOk-IPA-Downloader-0.5.1-test.1-windows.zip'
 $files=@('Start.cmd','IPA-Desk.ps1','DownloadList.ps1','AppListUI.ps1','tools/cpp-1.1.6/ipatool-cpp.exe','licenses/ipatool-cpp-MIT.txt','Purchases.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','README.md','PRIVACY.md','THIRD_PARTY.md','LICENSE','BUILDING.md','licenses/ipatool-MIT.txt','docs/interface.png')
 $stream=[IO.File]::Open($zipPath,[IO.FileMode]::CreateNew)
 $zip=$null

@@ -2,7 +2,7 @@
 
 Uses **ipatool-cpp 1.1.6** from [Sorvigolova/ipatool](https://github.com/Sorvigolova/ipatool/releases/tag/1.1.6), based on [ipatool](https://github.com/majd/ipatool).
 
-The local test EXE includes the pinned component. Its SHA-256 checksum is verified before use. Source checkouts can download the component through Install-Tools.ps1.
+The EXE downloads the pinned component on first use and verifies its SHA-256 checksum before execution. The shared component cache survives interface updates. Source checkouts can prepare the same component through Install-Tools.ps1.
 
 ## Manual setup when running from source
 
@@ -27,6 +27,6 @@ Then run `Start.cmd` again.
 
 ## Licenses
 
-The [ipatool MIT license](licenses/ipatool-MIT.txt) is included with attribution. The component is included in this local test package; see the [author's README](https://github.com/Sorvigolova/ipatool/blob/1.1.6/README.md) for details. The TapOk IPA Downloader license covers its own code.
+The [ipatool MIT license](licenses/ipatool-MIT.txt) is included with attribution. The component is downloaded from the pinned release; see the [author's README](https://github.com/Sorvigolova/ipatool/blob/1.1.6/README.md) for details. The TapOk IPA Downloader license covers its own code.
 
 Purchase history uses the same pinned ipatool-cpp component, querying invoices for each year from 2008 to the current year.

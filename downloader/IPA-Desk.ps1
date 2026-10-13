@@ -228,7 +228,7 @@ $ownedApps.Add_Click({
     if($script:Active){return}
     if(-not $list.SelectedItems.Count){$null=[Windows.Forms.MessageBox]::Show($form,(Get-IpaText 'Выделите одну учётку в таблице для просмотра её покупок.'),(Get-IpaText 'Покупки учётки'));return}
     $script:Current=$list.SelectedItems[0];$a=$script:Current.Tag
-    $options=@{AppRoot=$script:AppRoot;DataRoot=(Join-Path $script:DataRoot 'sessions');Language=(Get-IpaLanguage);Email=$a.Email;Password='';EncryptedPassword=$a.Password;Mode='purchases'}
+    $options=@{AppRoot=$script:AppRoot;ComponentRoot=(Join-Path $script:DataRoot 'components');DataRoot=(Join-Path $script:DataRoot 'sessions');Language=(Get-IpaLanguage);Email=$a.Email;Password='';EncryptedPassword=$a.Password;Mode='purchases'}
     $script:Bus.Cancel=$false;$script:Bus.Answer=$null;$script:Bus.AnswerReady=$false;$script:PendingPurchases=$null;$script:Secrets=@();$script:Terminal=$false;$script:StopRequested=$false
     $script:StageText='';$script:HistoryMode=$true;$script:Active=$true;Set-Busy $true
     $status.Text=(Get-IpaText 'Покупки учётки')+' — '+$a.Email; Add-Log $status.Text
@@ -252,7 +252,7 @@ function Start-Next {
     $folderName=([regex]::Replace($a.Email,'[^a-zA-Z0-9@._-]','_'))
     if($folderName.Length -gt 70){$folderName=$folderName.Substring(0,70)}
     $downloads=@(foreach($id in $script:AppIds){[pscustomobject]@{AppId=$id;OutputFolder=(Join-Path (Join-Path $script:OutputRoot $id) ($folderName+'-'+$a.Id.Substring(0,8)))}})
-    $options=@{AppRoot=$script:AppRoot;DataRoot=(Join-Path $script:DataRoot 'sessions');Language=(Get-IpaLanguage);Email=$a.Email;Description=(Get-AccountDescription $a);Password='';EncryptedPassword=$a.Password;Downloads=$downloads;FileName='';ToolPath=''}
+    $options=@{AppRoot=$script:AppRoot;ComponentRoot=(Join-Path $script:DataRoot 'components');DataRoot=(Join-Path $script:DataRoot 'sessions');Language=(Get-IpaLanguage);Email=$a.Email;Description=(Get-AccountDescription $a);Password='';EncryptedPassword=$a.Password;Downloads=$downloads;FileName='';ToolPath=''}
     $script:Bus.Cancel=$false; $script:Bus.Answer=$null; $script:Bus.AnswerReady=$false
     $accountLabel=$a.Email; $accountDescription=Get-AccountDescription $a
     if($accountDescription){$accountLabel=$accountDescription+' — '+$a.Email}

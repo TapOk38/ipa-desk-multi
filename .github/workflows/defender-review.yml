@@ -20,3 +20,12 @@ jobs:
           name: defender-review
           path: ${{ runner.temp }}/defender-review
           if-no-files-found: error
+      - name: Save scanned candidate
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scanned-candidate
+          path: |
+            ${{ runner.temp }}/review-build/*.exe
+            ${{ runner.temp }}/review-build/Build-result.json
+          if-no-files-found: error

@@ -39,7 +39,7 @@ Save-IpaLanguage $data 'ru'
 Run-Smoke
 $runtime=@(Get-ChildItem -LiteralPath (Join-Path $testRoot 'app') -Directory)[0].FullName
 Assert ((Get-ChildItem -LiteralPath $folder -File).Count -eq 1) 'Launch directory needs only the EXE'
-$expected=@('IPA-Desk.ps1','DownloadList.ps1','AppListUI.ps1','tools/cpp-1.1.6/ipatool-cpp.exe','licenses/ipatool-cpp-MIT.txt','Purchases.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','PRIVACY.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
+$expected=@('IPA-Desk.ps1','DownloadList.ps1','AppListUI.ps1','licenses/ipatool-cpp-MIT.txt','Purchases.ps1','Accounts.ps1','Engine.ps1','Metadata.ps1','Metadata.cs','Install-Tools.ps1','Localization.ps1','PRIVACY.md','THIRD_PARTY.md','LICENSE','licenses/ipatool-MIT.txt')
 foreach($name in $expected){
     Assert ((Get-FileHash -LiteralPath (Join-Path $runtime $name) -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath (Join-Path $sourceRoot $name) -Algorithm SHA256).Hash) "Embedded file matches source: $name"
 }

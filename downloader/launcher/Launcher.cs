@@ -15,8 +15,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Download App Store applications as IPA files")]
 [assembly: AssemblyProduct("TapOk IPA Downloader")]
 [assembly: AssemblyVersion("0.5.0.0")]
-[assembly: AssemblyFileVersion("0.5.0.5")]
-[assembly: AssemblyInformationalVersion("0.5.0-beta.1")]
+[assembly: AssemblyFileVersion("0.5.1.1")]
+[assembly: AssemblyInformationalVersion("0.5.1-test.1")]
 
 internal static class Launcher
 {
@@ -57,7 +57,7 @@ internal static class Launcher
             if (!File.Exists(powershell)) throw new FileNotFoundException(T("В Windows не найден Windows PowerShell.", "Windows PowerShell was not found."));
             NormalizePathEnvironment();
             var start = new ProcessStartInfo(powershell);
-            start.Arguments = "-NoLogo -NoProfile -NonInteractive -STA -ExecutionPolicy Bypass -WindowStyle Hidden -File " + Quote(Path.Combine(runtimeRoot, "IPA-Desk.ps1")) + " -OutputRoot " + Quote(outputRoot);
+            start.Arguments = "-NoLogo -NoProfile -NonInteractive -STA -ExecutionPolicy RemoteSigned -WindowStyle Hidden -File " + Quote(Path.Combine(runtimeRoot, "IPA-Desk.ps1")) + " -OutputRoot " + Quote(outputRoot);
             string screenshot = null;
             if (testRoot != null)
             {

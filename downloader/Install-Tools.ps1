@@ -18,7 +18,7 @@ function Receive-PinnedTool([string]$Url,[string]$Destination,[scriptblock]$Canc
     Add-Type -AssemblyName System.Net.Http
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
     $client=[Net.Http.HttpClient]::new(); $client.Timeout=[TimeSpan]::FromMinutes(5)
-    $client.DefaultRequestHeaders.UserAgent.ParseAdd('TapOk-IPA-Downloader/0.5.0-beta.1')
+    $client.DefaultRequestHeaders.UserAgent.ParseAdd('TapOk-IPA-Downloader/0.5.1-test.1')
     $cts=[Threading.CancellationTokenSource]::new(); $response=$null; $inputStream=$null; $outputStream=$null
     try {
         $request=$client.GetAsync($Url,[Net.Http.HttpCompletionOption]::ResponseHeadersRead,$cts.Token)

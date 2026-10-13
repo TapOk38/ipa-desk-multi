@@ -12,7 +12,7 @@ App IDs, names and selection flags are stored in `download-list.json` in the sam
 
 ## Network access
 
-The local test EXE includes ipatool-cpp. Source checkouts may download missing components during setup. It contacts Apple servers for authentication, license acquisition and downloads. Purchase history is requested from Apple using the same temporary session. Invoice details are processed in memory; only app IDs and names selected by the user are saved in the download list. Apple IDs are not sent to GitHub. The interface does not collect telemetry.
+The EXE downloads a pinned ipatool-cpp release from GitHub on first use and checks its SHA-256 before execution. The component cache is stored separately under `%LOCALAPPDATA%\IPA-Desk-Multi\components` and reused across app updates. It contacts Apple servers for authentication, license acquisition and downloads. Purchase history is requested from Apple using the same temporary session. Invoice details are processed in memory; only app IDs and names selected by the user are saved in the download list. Apple IDs are not sent to GitHub. The interface does not collect telemetry.
 
 ## IPA files and logs
 
