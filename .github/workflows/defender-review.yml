@@ -1,0 +1,22 @@
+name: Defender review
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@v4
+      - name: Review source, pinned dependency and package without launching the app
+        run: .\downloader\tests\Review-Defender.ps1 -ReportRoot (Join-Path $env:RUNNER_TEMP 'defender-review')
+      - name: Save scan evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: defender-review
+          path: ${{ runner.temp }}/defender-review
+          if-no-files-found: error

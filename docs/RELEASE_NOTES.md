@@ -1,3 +1,7 @@
+> **Downloader 0.5.0-beta.1 temporarily withdrawn:** Microsoft Defender reports Trojan:Win32/Sabsik.TE.A!ml. Investigation is ongoing; a false positive has not been confirmed. Do not restore the quarantined file or disable protection.
+
+> **Downloader 0.5.0-beta.1 временно снят:** Microsoft Defender обнаруживает Trojan:Win32/Sabsik.TE.A!ml. Причина проверяется; ложное срабатывание пока не подтверждено. Не восстанавливайте файл из карантина и не отключайте защиту.
+
 # TapOk IPA Tools
 
 <details>
@@ -7,7 +11,7 @@ Three apps in one release. English is the default; Russian remains available. Pr
 
 | App | Purpose | Download | Guide |
 |---|---|---|---|
-| TapOk IPA Downloader 0.5.0-beta.1 | Download App Store apps on Windows | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.0-beta.1.exe) | [Open](https://github.com/TapOk38/tapok-ipa-tools/blob/main/downloader/README.md) |
+| TapOk IPA Downloader 0.5.0-beta.1 | Download App Store apps on Windows | Temporarily withdrawn / Временно снят | [Open](https://github.com/TapOk38/tapok-ipa-tools/blob/main/downloader/README.md) |
 | TapOk IPA Installer — Windows 1.1.0-beta.3 | Install IPA files on iPhone from Windows over USB | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows.exe) | [Open](https://github.com/TapOk38/tapok-ipa-tools/blob/main/installer/README.md) |
 | TapOk IPA Installer — Android 0.7.0-beta.4 | Install IPA files on iPhone from Android over USB | [APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk) | [Open](https://github.com/TapOk38/tapok-ipa-tools/blob/main/android/README.md) |
 
@@ -19,7 +23,7 @@ Downloader 0.5.0-beta.1 adds a saved app list and purchase history, including pr
 
 | Программа | Назначение | Скачать | Инструкция |
 |---|---|---|---|
-| TapOk IPA Downloader 0.5.0-beta.1 | Скачивание приложений из App Store на Windows | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.5.0-beta.1.exe) | [Открыть](https://github.com/TapOk38/tapok-ipa-tools/blob/main/downloader/README.md) |
+| TapOk IPA Downloader 0.5.0-beta.1 | Скачивание приложений из App Store на Windows | Temporarily withdrawn / Временно снят | [Открыть](https://github.com/TapOk38/tapok-ipa-tools/blob/main/downloader/README.md) |
 | TapOk IPA Installer — Windows 1.1.0-beta.3 | Установка IPA на iPhone с Windows через USB | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows.exe) | [Открыть](https://github.com/TapOk38/tapok-ipa-tools/blob/main/installer/README.md) |
 | TapOk IPA Installer — Android 0.7.0-beta.4 | Установка IPA на iPhone с Android через USB | [APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk) | [Открыть](https://github.com/TapOk38/tapok-ipa-tools/blob/main/android/README.md) |
 
