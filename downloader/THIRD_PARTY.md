@@ -2,11 +2,11 @@
 
 Uses **ipatool-cpp 1.1.6** from [Sorvigolova/ipatool](https://github.com/Sorvigolova/ipatool/releases/tag/1.1.6), based on [ipatool](https://github.com/majd/ipatool).
 
-The EXE downloads the pinned component on first use and verifies its SHA-256 checksum before execution. The shared component cache survives interface updates. Source checkouts can prepare the same component through Install-Tools.ps1.
+The EXE includes the pinned component and its license notices. It extracts them to a unique TEMP folder, verifies SHA-256 before use and removes its own temporary files on normal exit. Component preparation does not use the network. Source checkouts can prepare the same component through Install-Tools.ps1 before building.
 
 ## Manual setup when running from source
 
-The EXE prepares the component automatically. For the source package with `Start.cmd`, use these steps if automatic downloading is unavailable:
+The EXE already contains the component. For the source package with `Start.cmd`, use these steps if automatic downloading is unavailable:
 
 1. Download the [official ZIP](https://github.com/Sorvigolova/ipatool/releases/download/1.1.6/windows_amd64_ipatool-cpp.zip).
 2. Open PowerShell in the `downloader/` folder.

@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,35 +28,6 @@ namespace TapOk.Downloader {
                     while(!p.WaitForExit(100)){token.ThrowIfCancellationRequested();if(clock.Elapsed.TotalSeconds>seconds)throw new TimeoutException(Texts.T("Превышено время ожидания ответа. Проверьте интернет.","Response timed out. Check your internet connection."));}
                     token.ThrowIfCancellationRequested();return new ToolResult{ExitCode=p.ExitCode,Text=output.GetAwaiter().GetResult()+"\n"+error.GetAwaiter().GetResult()};
                 }finally{if(started && !p.HasExited){p.Kill();p.WaitForExit();}}
-            }
-        }
-    }
-    public static class Component {
-        public const string ExeHash="F053593059A5ADA859F2D28F8707BEB8D53F02B7830A9895C5913653A23A0CE2";
-        const string ZipHash="18313C41400958F467CA177B7DFEC7C7A642CC3D1E18E73B2452F9D4E95BB841";
-        public static string Prepare(string dataRoot,CancellationToken token,Action<string> log){
-            token.ThrowIfCancellationRequested();var folder=Path.Combine(dataRoot,@"components\tools\cpp-1.1.6");Directory.CreateDirectory(folder);var exe=Path.Combine(folder,"ipatool-cpp.exe");
-            using(var gate=new FileStream(Path.Combine(folder,".install.lock"),FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.None)){
-                if(File.Exists(exe)){if(Data.Hash(exe)!=ExeHash)throw new InvalidDataException(Texts.T("Компонент IPATool изменён или повреждён.","IPATool component was modified or damaged."));return exe;}
-                log(Texts.T("Загрузка компонента IPATool…","Downloading IPATool component…"));string work=Path.Combine(folder,Guid.NewGuid().ToString("N"));Directory.CreateDirectory(work);
-                try{
-                    var archive=Path.Combine(work,"component.zip");ServicePointManager.SecurityProtocol|=SecurityProtocolType.Tls12;
-                    using(var cts=CancellationTokenSource.CreateLinkedTokenSource(token))using(var client=new HttpClient()){
-                        cts.CancelAfter(TimeSpan.FromMinutes(5));client.DefaultRequestHeaders.UserAgent.ParseAdd("TapOk-IPA-Downloader/0.6.0-test.1");
-                        using(var response=client.GetAsync("https://github.com/Sorvigolova/ipatool/releases/download/1.1.6/windows_amd64_ipatool-cpp.zip",HttpCompletionOption.ResponseHeadersRead,cts.Token).GetAwaiter().GetResult()){
-                            response.EnsureSuccessStatusCode();if(response.Content.Headers.ContentLength>40*1024*1024)throw new InvalidDataException("Component archive too large.");
-                            using(var input=response.Content.ReadAsStreamAsync().GetAwaiter().GetResult())using(var output=new FileStream(archive,FileMode.CreateNew)){
-                                byte[] buffer=new byte[65536];long total=0;int count;while((count=input.ReadAsync(buffer,0,buffer.Length,cts.Token).GetAwaiter().GetResult())>0){total+=count;if(total>40*1024*1024)throw new InvalidDataException("Component archive too large.");output.Write(buffer,0,count);}
-                            }
-                        }
-                    }
-                    token.ThrowIfCancellationRequested();if(Data.Hash(archive)!=ZipHash)throw new InvalidDataException("Component archive SHA-256 mismatch.");
-                    var unpacked=Path.Combine(work,"ipatool.exe");using(var zip=ZipFile.OpenRead(archive)){
-                        var entry=zip.GetEntry("ipatool-cpp-windows-amd64.exe");if(entry==null||entry.Length>80*1024*1024)throw new InvalidDataException("Invalid component archive.");
-                        using(var input=entry.Open())using(var output=new FileStream(unpacked,FileMode.CreateNew))input.CopyTo(output);
-                    }
-                    if(Data.Hash(unpacked)!=ExeHash)throw new InvalidDataException("Component SHA-256 mismatch.");token.ThrowIfCancellationRequested();File.Move(unpacked,exe);return exe;
-                }finally{Session.DeleteTree(work,folder);}
             }
         }
     }

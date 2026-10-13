@@ -18,10 +18,14 @@ jobs:
         run: .\downloader\tests\Test-Localization.ps1
       - name: Saved download list (offline fixtures)
         run: .\downloader\tests\Test-DownloadList.ps1 -WorkRoot $env:RUNNER_TEMP
+      - name: Prepare pinned downloader component for bundling
+        run: |
+          . .\downloader\Install-Tools.ps1
+          Ensure-IpaTool -AppRoot .\downloader
       - name: Build native .NET downloader
         run: .\downloader\Build-Exe.ps1 -Destination (Join-Path $env:RUNNER_TEMP 'native-downloader')
       - name: Native workflow and GUI checks (no Apple requests)
-        run: .\downloader\tests\Test-Native.ps1 -ExePath (Join-Path $env:RUNNER_TEMP 'native-downloader/TapOk-IPA-Downloader-0.6.0-test.1.exe') -WorkRoot $env:RUNNER_TEMP
+        run: .\downloader\tests\Test-Native.ps1 -ExePath (Join-Path $env:RUNNER_TEMP 'native-downloader/TapOk-IPA-Downloader-0.6.1-test.1.exe') -WorkRoot $env:RUNNER_TEMP
       - name: Installer workflow regression
         run: .\installer\tests\Test-Engine.ps1 -AppRoot .\installer -TestRoot (Join-Path $PWD '.test-installer-engine')
       - name: Installer credential protection

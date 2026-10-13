@@ -12,7 +12,7 @@ App IDs, names and selection flags are stored in `download-list.json` in the sam
 
 ## Network access
 
-The EXE downloads a pinned ipatool-cpp release from GitHub on first use and checks its SHA-256 before execution. The component cache is stored separately under `%LOCALAPPDATA%\IPA-Desk-Multi\components` and reused across app updates. It contacts Apple servers for authentication, license acquisition and downloads. Purchase history is requested from Apple using the same temporary session. Invoice details are processed in memory; only app IDs and names selected by the user are saved in the download list. Apple IDs are not sent to GitHub. The interface does not collect telemetry.
+The EXE includes a pinned ipatool-cpp release. It verifies its SHA-256 and extracts it into a unique `%TEMP%\TapOk-IPA-Downloader-<random>` folder, which is removed on normal exit where possible. A crash may leave temporary files. Preparing the component requires no network connection. It contacts Apple servers for authentication, license acquisition and downloads. Purchase history is requested from Apple using the same temporary session. Invoice details are processed in memory; only app IDs and names selected by the user are saved in the download list. Apple IDs are not sent to GitHub. The interface does not collect telemetry.
 
 ## IPA files and logs
 
@@ -22,6 +22,6 @@ Passwords and verification codes are passed to ipatool-cpp as process arguments.
 
 ## EXE version
 
-The native EXE does not extract or execute PowerShell scripts. Earlier versions may have left a script cache under `%LOCALAPPDATA%\IPA-Desk-Multi\app`; this version does not use it. The pinned download component uses the separate cache described above. IPA files are saved to **Downloads → TapOk IPA Downloader**. Account data is stored separately and retained when the EXE is updated.
+The native EXE does not extract or execute PowerShell scripts. Earlier versions may have left a script cache under `%LOCALAPPDATA%\IPA-Desk-Multi\app`; this version does not use it. The bundled component uses TEMP as described above; the previous shared component cache is no longer used. IPA files are saved to **Downloads → TapOk IPA Downloader**. Account data is stored separately and retained when the EXE is updated.
 
 [TapOk IPA Downloader guide](README.md)

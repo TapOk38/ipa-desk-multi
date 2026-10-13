@@ -40,6 +40,10 @@ foreach($language in @('en','ru')){
     $process=[Diagnostics.Process]::Start($si)
     if(-not $process.WaitForExit(30000)){$process.Kill();throw 'Native GUI startup timed out'}
     if($process.ExitCode -ne 0){throw ('Native GUI check failed: '+[IO.File]::ReadAllText((Join-Path $uiRoot 'error.txt')))}
+    $componentPath=[IO.File]::ReadAllText((Join-Path $uiRoot 'component-path.txt'))
+    if([IO.Path]::GetDirectoryName($componentPath) -ne [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd([IO.Path]::DirectorySeparatorChar)){throw 'Component was extracted outside TEMP'}
+    if(Test-Path -LiteralPath $componentPath){throw 'Component directory was not cleaned after UI exit'}
+    if(Test-Path -LiteralPath (Join-Path $uiRoot 'components')){throw 'Legacy component cache unexpectedly created'}
     $state=Get-Content -LiteralPath (Join-Path $uiRoot 'interface.json') -Raw -Encoding UTF8 | ConvertFrom-Json
     if($state.Language -ne $language -or -not $state.SwitchVerified -or $state.AccountCount -ne 1 -or $state.AppCount -ne 1){throw 'Native GUI state mismatch'}
     if($state.Output -ne [IO.Path]::GetFullPath((Join-Path $uiRoot 'Downloads/TapOk IPA Downloader'))){throw 'Output path regression'}

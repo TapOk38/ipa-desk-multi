@@ -50,7 +50,27 @@ static class NativeTests {
         f=new FakeTool();f.Add("{\"success\":true}");f.Before=(arg,work)=>File.WriteAllText(Path.Combine(work,arg[Array.IndexOf(arg,"--output")+1]),"invalid");Throws(()=>MakeEngine(f).Download(target,a,root),"Invalid IPA rejected");Check(Directory.GetFiles(root,"*.partial.ipa*").Length==0,"Failed partial file removed");
         using(var cts=new CancellationTokenSource()){f=new FakeTool();f.Add("{\"success\":true}");f.Before=(arg,work)=>{Ipa(Path.Combine(work,arg[Array.IndexOf(arg,"--output")+1]));cts.Cancel();};Throws(()=>MakeEngine(f,null,cts.Token).Download(target,a,root),"Cancellation after transfer prevents final file");Check(Directory.GetFiles(root,"*.partial.ipa*").Length==0,"Cancelled partial file removed");}
         string run;using(var session=new Session(root,a.Email)){run=session.Root;Check(Directory.Exists(run)&&session.Environment["IPATOOL_AUTH_MODE"]=="cpp","Session uses isolated profile and native mode");File.WriteAllText(Path.Combine(run,"sample"),"fixture");}Check(!Directory.Exists(run),"Temporary session removed");Throws(()=>Session.DeleteTree(root,root),"Session cleanup refuses unrelated directory");
-        var refs=typeof(MainForm).Assembly.GetReferencedAssemblies();Check(!refs.Any(r=>r.Name.Contains("Automation")),"Product has no PowerShell runtime dependency");Check(typeof(MainForm).Assembly.GetManifestResourceNames().Length==0,"Product contains no embedded scripts or payload archive");
+        var refs=typeof(MainForm).Assembly.GetReferencedAssemblies();Check(!refs.Any(r=>r.Name.Contains("Automation")),"Product has no PowerShell runtime dependency");Check(typeof(MainForm).Assembly.GetManifestResourceNames().SequenceEqual(new[]{Component.Resource}),"Product embeds only the pinned component archive");
+        string bundleRoot;
+        using(var bundle=Component.Open(CancellationToken.None,s=>{})){
+            bundleRoot=bundle.Root;
+            Check(Path.GetDirectoryName(bundleRoot)==Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar),"Component is extracted directly into TEMP");
+            Check(Data.Hash(bundle.Exe)==Component.ExeHash,"Embedded executable matches pinned upstream checksum");
+            using(var isolated=new Session(root,"version@example.invalid")){
+                var help=new NativeTool(bundle.Exe,isolated.Environment).Run(new string[0],15,CancellationToken.None,isolated.Root);
+                Check(help.ExitCode==0&&help.Text.Contains("ipatool-cpp")&&help.Text.Contains("list-purchases"),"Embedded tool launches from TEMP and displays help without Apple requests");
+            }
+            Check(Directory.GetFiles(bundleRoot).Length==5&&File.Exists(Path.Combine(bundleRoot,"ipatool-cpp-MIT.txt")),"Bundle includes only executable and license notices");
+            Throws(()=>{using(var stream=File.Open(bundle.Exe,FileMode.Open,FileAccess.Write)){}},"Verified executable cannot be modified while in use");
+            using(var another=Component.Open(CancellationToken.None,s=>{}))Check(another.Root!=bundleRoot&&File.Exists(bundle.Exe),"Concurrent instances use separate component folders");
+        }
+        Check(!Directory.Exists(bundleRoot),"Component folder is removed on normal exit");
+        using(var cts=new CancellationTokenSource()){
+            cts.Cancel();Throws(()=>Component.Open(cts.Token,s=>{}),"Cancelled startup does not prepare component");
+        }
+        var beforeBundles=Directory.GetDirectories(Path.GetTempPath(),"TapOk-IPA-Downloader-*");
+        using(var cts=new CancellationTokenSource())Throws(()=>Component.Open(cts.Token,s=>cts.Cancel()),"Cancellation during preparation is handled");
+        Check(!Directory.GetDirectories(Path.GetTempPath(),"TapOk-IPA-Downloader-*").Except(beforeBundles).Any(),"Cancelled preparation leaves no component folder");
         var transport=new NativeTool(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"ToolFixture.exe"),new Dictionary<string,string>());
         var argv=new[]{"with space","quote\"inside",@"C:\path with space\","Русский","$() & ;", ""};var response=transport.Run(argv,10,CancellationToken.None,root);
         Check(Data.Json().Deserialize<string[]>(response.Text.Trim()).SequenceEqual(argv),"Native arguments preserve quotes, Unicode and trailing backslashes without shell interpolation");

@@ -15,9 +15,9 @@ using System.Windows.Forms;
 [assembly:AssemblyTitle("TapOk IPA Downloader")]
 [assembly:AssemblyProduct("TapOk IPA Downloader")]
 [assembly:AssemblyDescription("Download App Store applications as IPA files")]
-[assembly:AssemblyVersion("0.6.0.0")]
-[assembly:AssemblyFileVersion("0.6.0.1")]
-[assembly:AssemblyInformationalVersion("0.6.0-test.1")]
+[assembly:AssemblyVersion("0.6.1.0")]
+[assembly:AssemblyFileVersion("0.6.1.1")]
+[assembly:AssemblyInformationalVersion("0.6.1-test.1")]
 
 namespace TapOk.Downloader {
     static class Program {
@@ -30,22 +30,22 @@ namespace TapOk.Downloader {
                 string output=Path.Combine(fixture==null?Downloads():Path.Combine(fixture,"Downloads"),"TapOk IPA Downloader");Directory.CreateDirectory(root);
                 string lang=Path.Combine(root,"language.txt");Texts.Russian=File.Exists(lang)&&File.ReadAllText(lang).Trim()=="ru";
                 Application.EnableVisualStyles();Application.SetCompatibleTextRenderingDefault(false);
-                using(var gate=new FileStream(Path.Combine(root,"accounts.lock"),FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.None))using(var form=new MainForm(root,output)){
-                    if(fixture!=null){form.ShowInTaskbar=false;form.Opacity=0;form.Show();form.PerformLayout();Application.DoEvents();form.Smoke(fixture);}
+                using(var component=Component.Open(CancellationToken.None,delegate{}))using(var gate=new FileStream(Path.Combine(root,"accounts.lock"),FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.None))using(var form=new MainForm(root,output,component.Exe)){
+                    if(fixture!=null){File.WriteAllText(Path.Combine(fixture,"component-path.txt"),component.Root);form.ShowInTaskbar=false;form.Opacity=0;form.Show();form.PerformLayout();Application.DoEvents();form.Smoke(fixture);}
                     else Application.Run(form);
                 }return 0;
             }catch(Exception e){if(fixture!=null){Directory.CreateDirectory(fixture);File.WriteAllText(Path.Combine(fixture,"error.txt"),e.ToString());}else MessageBox.Show(e.Message,"TapOk IPA Downloader",MessageBoxButtons.OK,MessageBoxIcon.Error);return 1;}
         }
     }
     public sealed class MainForm : Form {
-        readonly string root,output;List<Account> accounts;List<AppEntry> apps;
+        readonly string root,output,component;List<Account> accounts;List<AppEntry> apps;
         readonly ListView accountView=new ListView(),appView=new ListView();readonly ComboBox language=new ComboBox();
         readonly TextBox log=new TextBox();readonly Label status=new Label();readonly List<Control> managed=new List<Control>();
         readonly Dictionary<Control,string[]> translations=new Dictionary<Control,string[]>();
         Button history,start,stop;bool refreshing,busy,closing;CancellationTokenSource cancel;
         static string T(string ru,string en){return Texts.T(ru,en);}
-        public MainForm(string root,string output){
-            this.root=root;this.output=output;accounts=Data.ReadAccounts(Path.Combine(root,"accounts.json"));apps=Data.ReadApps(Path.Combine(root,"download-list.json"));
+        public MainForm(string root,string output,string component){
+            this.root=root;this.output=output;this.component=component;accounts=Data.ReadAccounts(Path.Combine(root,"accounts.json"));apps=Data.ReadApps(Path.Combine(root,"download-list.json"));
             Text="TapOk IPA Downloader";ClientSize=new Size(1000,820);MinimumSize=new Size(860,720);StartPosition=FormStartPosition.CenterScreen;AutoScaleMode=AutoScaleMode.Dpi;Font=new Font("Segoe UI",10);BackColor=Color.FromArgb(245,247,251);
             var layout=new TableLayoutPanel{Dock=DockStyle.Fill,Padding=new Padding(22),ColumnCount=1,RowCount=9};foreach(int size in new[]{62,40,154,40,172,48,30})layout.RowStyles.Add(new RowStyle(SizeType.Absolute,size));layout.RowStyles.Add(new RowStyle(SizeType.Percent,100));layout.RowStyles.Add(new RowStyle(SizeType.Absolute,0));Controls.Add(layout);
             var header=new TableLayoutPanel{Dock=DockStyle.Fill,ColumnCount=2};header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));header.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute,135));
@@ -91,7 +91,7 @@ namespace TapOk.Downloader {
             if(selected.Count==0 || (!purchases&&targets.Count==0)){MessageBox.Show(this,T("Выберите учётку и приложения. Для истории покупок выделите строку учётки.","Select accounts and apps. For purchase history, highlight an account row."),Text);return;}
             SetBusy(true);cancel=new CancellationTokenSource();List<AppEntry> found=null;int ok=0,failed=0;
             try{await Task.Run(()=>{
-                string tool=Component.Prepare(root,cancel.Token,Log);
+                cancel.Token.ThrowIfCancellationRequested();string tool=component;
                 foreach(var a in selected){cancel.Token.ThrowIfCancellationRequested();Engine engine=null;Session session=null;
                     Action<string> result=text=>Ui(()=>{foreach(ListViewItem row in accountView.Items)if(((Account)row.Tag).Id==a.Id)row.SubItems[2].Text=text;});
                     try{

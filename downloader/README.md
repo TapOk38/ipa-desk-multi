@@ -5,7 +5,7 @@
 
 Downloads apps from the App Store on Windows. Supports adding multiple iCloud accounts.
 
-[Download EXE — 0.6.0-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.0-test.1.exe). Test build; resolution of the earlier Defender detection is not yet confirmed.
+[Download EXE — 0.6.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe). Test build; resolution of the earlier Defender detection is not yet confirmed.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ Windows 10/11 x64, an internet connection and an Apple ID configured for the App
 
 Accounts are processed sequentially. Files are saved to **Downloads → TapOk IPA Downloader**. Each filename includes the app, version, Apple ID and account description.
 
-Required components are downloaded automatically on first use.
+All required components are included in the EXE.
 
 ## Installation and limitations
 
@@ -38,7 +38,7 @@ If an error occurs, check the log and include it in an issue after removing pers
 
 Скачивает приложения из App Store на Windows. Поддерживает добавление нескольких учётных записей iCloud.
 
-[Скачать EXE — 0.6.0-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.0-test.1.exe). Тестовая сборка; устранение прежнего срабатывания Defender пока не подтверждено.
+[Скачать EXE — 0.6.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe). Тестовая сборка; устранение прежнего срабатывания Defender пока не подтверждено.
 
 ## Требования
 
@@ -53,7 +53,7 @@ Windows 10/11 x64, интернет и Apple ID с настроенным App St
 
 Учётные записи обрабатываются последовательно. Файлы сохраняются в **Загрузки → TapOk IPA Downloader**. В имени IPA указаны приложение, версия, Apple ID и описание учётной записи.
 
-При первом использовании необходимые компоненты загружаются автоматически.
+Все необходимые компоненты включены в EXE.
 
 ## Установка и ограничения
 
