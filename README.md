@@ -3,36 +3,24 @@
 <details>
 <summary>English</summary>
 
-Tools for downloading and installing IPA files.
+Tools for downloading App Store apps and installing IPA files on iPhone.
 
-### [TapOk IPA Downloader](downloader/README.md)
+| App and guide | Purpose | Download |
+|---|---|---|
+| [TapOk IPA Downloader](downloader/README.md) | Download IPA files on Windows. Multiple iCloud accounts, download lists and purchase history. | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe) |
+| [TapOk IPA Installer — Windows](installer/README.md) | Install IPA files on iPhone from Windows over USB. | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows-1.2.0-test.2.exe) |
+| [TapOk IPA Installer — Android](android/README.md) | Install IPA files on iPhone from Android over USB. | [APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk) |
 
-Download apps from the App Store on Windows.
-
-### [TapOk IPA Installer — Windows](installer/README.md)
-
-Install IPA files on an iPhone from Windows over USB.
-
-### [TapOk IPA Installer — Android](android/README.md)
-
-Install IPA files on an iPhone from Android over USB.
-
-[Downloads](https://github.com/TapOk38/tapok-ipa-tools/releases/tag/suite-v1.0.0-beta.5) · [Report an issue](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Contributing](.github/CONTRIBUTING.md)
+[Releases](https://github.com/TapOk38/tapok-ipa-tools/releases/tag/suite-v1.0.0-beta.5) · [Report an issue](https://github.com/TapOk38/tapok-ipa-tools/issues)
 
 </details>
 
-Программы для скачивания и установки IPA.
+Программы для скачивания приложений из App Store и установки IPA на iPhone.
 
-### [TapOk IPA Downloader](downloader/README.md)
+| Программа и инструкция | Назначение | Скачать |
+|---|---|---|
+| [TapOk IPA Downloader](downloader/README.md) | Скачивание IPA на Windows. Несколько учётных записей iCloud, список загрузки и история покупок. | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe) |
+| [TapOk IPA Installer — Windows](installer/README.md) | Установка IPA на iPhone с Windows через USB. | [EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Windows-1.2.0-test.2.exe) |
+| [TapOk IPA Installer — Android](android/README.md) | Установка IPA на iPhone с Android через USB. | [APK](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Installer-Android-0.7.0-beta.4.apk) |
 
-Скачивание приложений из App Store на Windows.
-
-### [TapOk IPA Installer — Windows](installer/README.md)
-
-Установка IPA на iPhone с Windows через USB.
-
-### [TapOk IPA Installer — Android](android/README.md)
-
-Установка IPA на iPhone с Android через USB.
-
-[Скачать программы](https://github.com/TapOk38/tapok-ipa-tools/releases/tag/suite-v1.0.0-beta.5) · [Сообщить об ошибке](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Разработчикам](.github/CONTRIBUTING.md)
+[Выпуски](https://github.com/TapOk38/tapok-ipa-tools/releases/tag/suite-v1.0.0-beta.5) · [Сообщить об ошибке](https://github.com/TapOk38/tapok-ipa-tools/issues)

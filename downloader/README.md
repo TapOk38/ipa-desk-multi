@@ -3,66 +3,56 @@
 <details>
 <summary>English</summary>
 
-Downloads apps from the App Store on Windows. Supports adding multiple iCloud accounts.
+Downloads App Store apps as IPA files on Windows. Supports multiple iCloud accounts, download lists and selection from purchase history.
 
-[Download EXE — 0.6.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe). Test build; resolution of the earlier Defender detection is not yet confirmed.
+**[Download EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe)** · 0.6.1-test.1 · All components included.
 
 ## Requirements
 
-Windows 10/11 x64, an internet connection and an Apple ID configured for the App Store. If two-factor authentication is enabled, access to the verification code is required.
+Windows 10/11 x64, an internet connection and an Apple ID configured for the App Store. Access to verification codes is required if two-factor authentication is enabled.
 
 ## Usage
 
-1. Run the EXE. Select the interface language if needed.
-2. Click **Add account** and enter the Apple ID, password and account description.
-3. Click **Add app** to enter an App Store link or ID, or select apps through **Purchase history**. Check the apps and accounts, then click **Download IPA**.
-4. Enter a verification code if Apple requests it. When the download finishes, click **Open folder**.
+1. Run the EXE. Click **Add account** and enter the Apple ID, password and a description to identify the account.
+2. Click **Add app** to enter an App Store link or ID. To select previously obtained apps, select an account row, click **Purchase history**, check the apps and click **Add selected**.
+3. Check the apps and accounts to use, then click **Download IPA**. Enter a verification code if requested.
+4. Click **Open folder** to view the downloaded files. The default folder is **Downloads → TapOk IPA Downloader**.
 
-Accounts are processed sequentially. Files are saved to **Downloads → TapOk IPA Downloader**. Each filename includes the app, version, Apple ID and account description.
+Apps removed from the store can be downloaded through **Purchase history** if they were previously obtained by that account and Apple still provides their files. Paid apps must already belong to the account; the program does not make paid purchases.
 
-All required components are included in the EXE.
+Use [Installer — Windows](../installer/README.md) or [Installer — Android](../android/README.md) to install the IPA on an iPhone.
 
-## Installation and limitations
+## Troubleshooting
 
-Use [TapOk IPA Installer — Windows](../installer/README.md) or [TapOk IPA Installer — Android](../android/README.md) to install the file. Launching the app may require the Apple ID used to download it.
-
-The app must be available to the selected account. A license for a free app is acquired automatically; paid purchases are not made.
-
-Bulk downloading while switching between many Apple IDs on one PC is not recommended; no verified safe limit is known.
-
-If an error occurs, check the log and include it in an issue after removing personal information.
+- **App missing or download failed:** check the selected account and the log. Purchase history does not guarantee that Apple still allows a download.
+- **Antivirus blocks the EXE:** leave the protection enabled and report the detection name and app version. Resolution of the earlier download-time detection has not been confirmed.
 
 [All apps](../README.md) · [Report an issue](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Data storage](PRIVACY.md)
 
 </details>
 
-Скачивает приложения из App Store на Windows. Поддерживает добавление нескольких учётных записей iCloud.
+Скачивает приложения из App Store в формате IPA на Windows. Поддерживает несколько учётных записей iCloud, список загрузки и выбор приложений из истории покупок.
 
-[Скачать EXE — 0.6.1-test.1](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe). Тестовая сборка; устранение прежнего срабатывания Defender пока не подтверждено.
+**[Скачать EXE](https://github.com/TapOk38/tapok-ipa-tools/releases/download/suite-v1.0.0-beta.5/TapOk-IPA-Downloader-0.6.1-test.1.exe)** · 0.6.1-test.1 · Все компоненты включены.
 
 ## Требования
 
-Windows 10/11 x64, интернет и Apple ID с настроенным App Store. При включённой двухфакторной аутентификации необходим доступ к коду подтверждения.
+Windows 10/11 x64, интернет и Apple ID с настроенным App Store. При включённой двухфакторной аутентификации необходим доступ к кодам подтверждения.
 
 ## Использование
 
-1. Запустите EXE. Для русского интерфейса выберите **Русский** в списке **English**.
-2. Нажмите **«Добавить учётку»**, укажите Apple ID, пароль и описание учётной записи.
-3. Нажмите **«Добавить приложение»** и укажите ссылку App Store или ID либо выберите приложения через **«Историю покупок»**. Отметьте приложения и учётки, затем нажмите **«Скачать IPA»**.
-4. Введите код подтверждения, если Apple его запросит. После завершения нажмите **«Открыть папку»**.
+1. Запустите EXE и выберите **Русский** в списке **English**. Нажмите **«Добавить учётку»**, укажите Apple ID, пароль и описание для идентификации учётной записи.
+2. Через **«Добавить приложение»** укажите ссылку App Store или ID. Для выбора ранее полученных приложений выделите строку учётной записи, откройте **«Историю покупок»**, отметьте приложения и нажмите **«Добавить выбранные»**.
+3. Отметьте нужные приложения и учётные записи, затем нажмите **«Скачать IPA»**. Введите код подтверждения, если появится запрос.
+4. Нажмите **«Открыть папку»**, чтобы перейти к скачанным файлам. Папка по умолчанию — **Загрузки → TapOk IPA Downloader**.
 
-Учётные записи обрабатываются последовательно. Файлы сохраняются в **Загрузки → TapOk IPA Downloader**. В имени IPA указаны приложение, версия, Apple ID и описание учётной записи.
+Удалённые из магазина приложения можно скачать через **«Историю покупок»**, если они ранее получены этой учётной записью и Apple продолжает предоставлять их файлы. Платные приложения должны быть уже приобретены; программа не выполняет платные покупки.
 
-Все необходимые компоненты включены в EXE.
+Для установки IPA на iPhone используйте [Installer — Windows](../installer/README.md) или [Installer — Android](../android/README.md).
 
-## Установка и ограничения
+## Решение проблем
 
-Для установки используйте [TapOk IPA Installer — Windows](../installer/README.md) или [TapOk IPA Installer — Android](../android/README.md). При запуске приложения может потребоваться Apple ID, с которым скачан IPA.
-
-Приложение должно быть доступно выбранной учётной записи. Лицензия на бесплатное приложение получается автоматически; платные покупки не выполняются.
-
-Массовое скачивание со сменой множества Apple ID на одном ПК не рекомендуется: подтверждённого безопасного лимита нет.
-
-При ошибке проверьте журнал и приложите его текст к обращению, удалив личные данные.
+- **Приложения нет или загрузка завершается ошибкой:** проверьте выбранную учётную запись и журнал. Наличие приложения в истории покупок не гарантирует доступность скачивания у Apple.
+- **Антивирус блокирует EXE:** оставьте защиту включённой и сообщите название обнаружения и версию программы. Устранение прежнего срабатывания при скачивании пока не подтверждено.
 
 [Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Хранение данных](PRIVACY.md)

@@ -9,29 +9,21 @@ Installs IPA files on an iPhone from Windows over USB.
 
 ## Requirements
 
-Windows 10/11 x64, an Apple device driver, a USB data cable and an IPA file. The driver is installed with [Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k).
+Windows 10/11 x64, [Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k) for the Apple USB driver, a USB data cable and an IPA file. You can download IPA files with [TapOk IPA Downloader](../downloader/README.md).
 
 ## Usage
 
-1. Run the EXE and select the interface language. Connect an unlocked iPhone and confirm trust if prompted.
-2. Click **Refresh**, then **Browse…** and select an IPA.
-3. Click **Install**. Keep the cable connected until **Installed:** appears.
+1. Install Apple Devices if it is not already installed. Connect one unlocked iPhone over USB and confirm trust if prompted.
+2. Run the EXE, click **Refresh**, then **Browse…** and select the IPA file.
+3. Click **Install** and keep the cable connected until **Installed:** appears.
+4. Open the installed app on the iPhone. If it requests an Apple ID, use the account that downloaded the IPA.
 
-If the app requests an Apple ID when launched, use the account that downloaded the IPA.
-
-To install on another iPhone, reconnect the cable and click **Refresh**. Connect one device at a time.
-
-<details>
-<summary>Saving account credentials</summary>
-
-**iCloud credentials** saves an Apple ID and password to display after installation. Enter them on the iPhone manually. One shared account is saved; selecting another IPA does not change it automatically.
-
-</details>
+The IPA must be compatible with the iPhone's iOS version and have a valid signature. The installer does not re-sign apps or remove their Apple ID association.
 
 ## Troubleshooting
 
-- **iPhone not detected:** check the cable, trust confirmation and connection in Apple Devices.
-- **Installation error:** check the log. The IPA must be compatible with iOS and have a valid signature. The tool does not re-sign files or remove their Apple ID association.
+- **iPhone not detected:** check whether it appears in Apple Devices. Check the cable and trust confirmation, then click **Refresh**.
+- **Installation failed:** check the log and the IPA's compatibility with your iOS version.
 
 [All apps](../README.md) · [Report an issue](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Data storage](PRIVACY.md)
 
@@ -43,28 +35,20 @@ To install on another iPhone, reconnect the cable and click **Refresh**. Connect
 
 ## Требования
 
-Windows 10/11 x64, драйвер Apple, USB-кабель с передачей данных и IPA-файл. Драйвер устанавливается вместе с [Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k).
+Windows 10/11 x64, [Apple Devices](https://apps.microsoft.com/detail/9np83lwlpz9k) для установки USB-драйвера Apple, кабель с передачей данных и IPA-файл. Скачать IPA можно через [TapOk IPA Downloader](../downloader/README.md).
 
 ## Использование
 
-1. Запустите EXE. Для русского интерфейса выберите **Русский** в списке **English**. Подключите разблокированный iPhone и подтвердите доверие, если появится запрос.
-2. Нажмите **«Обновить»**, затем **«Выбрать…»** и укажите IPA.
-3. Нажмите **«Установить»**. Не отключайте кабель до сообщения **«Установлено:»**.
+1. Установите Apple Devices, если он ещё не установлен. Подключите один разблокированный iPhone по USB и подтвердите доверие, если появится запрос.
+2. Запустите EXE и выберите **Русский** в списке **English**. Нажмите **«Обновить»**, затем **«Выбрать…»** и укажите IPA-файл.
+3. Нажмите **«Установить»** и не отключайте кабель до сообщения **«Установлено:»**.
+4. Откройте установленное приложение на iPhone. Если потребуется Apple ID, используйте учётную запись, с которой скачан IPA.
 
-Если при запуске приложения потребуется Apple ID, используйте учётную запись, с которой скачан IPA.
-
-Для другого iPhone переподключите кабель и нажмите **«Обновить»**. Подключайте по одному устройству.
-
-<details>
-<summary>Сохранение учётных данных</summary>
-
-Кнопка **«Учётные данные iCloud»** сохраняет Apple ID и пароль для показа после установки. Данные вводятся на iPhone вручную. Сохраняется одна общая учётная запись; при смене IPA она не меняется автоматически.
-
-</details>
+IPA должен быть совместим с версией iOS на iPhone и иметь действующую подпись. Установщик не переподписывает приложения и не снимает привязку к Apple ID.
 
 ## Решение проблем
 
-- **iPhone не определяется:** проверьте кабель, доверие и подключение в Apple Devices.
-- **Ошибка установки:** проверьте журнал. IPA должен быть совместим с iOS и иметь действующую подпись. Программа не переподписывает файл и не снимает привязку к Apple ID.
+- **iPhone не определяется:** проверьте, виден ли он в Apple Devices. Проверьте кабель и подтверждение доверия, затем нажмите **«Обновить»**.
+- **Установка завершилась ошибкой:** проверьте журнал и совместимость IPA с вашей версией iOS.
 
 [Все программы](../README.md) · [Сообщить об ошибке](https://github.com/TapOk38/tapok-ipa-tools/issues) · [Хранение данных](PRIVACY.md)
